@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+ <profiles>
+    <profile>
+      <id>default-profile</id>
+      <repositories>
+        <repository>
+          <id>maven-central-1</id>
+          <name>Central Repository for Maven builds(repo1)</name>
+          <url>https://repo.maven.apache.org/maven2/</url>
+          <layout>default</layout>
+        </repository>
+        <repository>
+          <id>maven-central-2</id>
+          <name>Central Repository for Maven builds(repo2)</name>
+          <url>https://repo1.maven.org/maven2/</url>
+          <layout>default</layout>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>default-profile</activeProfile>
+  </activeProfiles>
+</settings>
