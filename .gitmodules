@@ -1,0 +1,3 @@
+[submodule "bdd-ui/maven-java-bdd-demo"]
+	path = bdd-ui/maven-java-bdd-demo
+	url = ssh://git@gitlab.consulting.redhat.com:2222/feature-file-helper/maven-java-bdd-demo.git
