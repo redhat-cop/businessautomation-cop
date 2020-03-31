@@ -1,0 +1,65 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+
+<div mat-dialog-content class="mat-typography">
+
+  <p [ngClass]="data.message.indexOf('Error')>-1?'red-text':''"
+    *ngIf="data.message  && data.message!=='Enter File Name'">{{data.message}}</p>
+
+  <form class="example-form" *ngIf="data.message==='Enter File Name'">
+    <mat-form-field class="example-form-field example-full-width">
+      <input matInput type="text" placeholder="File Name" [(ngModel)]="data.fileName" name="fileName" (change)="addFeature('fileName');removeSpaces('fileName')">
+      <mat-hint color="primary" align="start" *ngIf="data.title.indexOf('Local')>-1">
+        <strong>
+          Enter File Name for save.
+          <span>File will be exported to Browser Downloads folder as &lt;file name&gt;.feature</span>
+        </strong>
+      </mat-hint>
+      <button mat-button *ngIf="data.fileName" matSuffix mat-icon-button aria-label="Clear" (click)="data.fileName=''">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field class="example-form-field example-full-width" *ngIf="data.title.indexOf('Remote')>-1">
+      <input matInput [matAutocomplete]="auto" type="text" [(ngModel)]="data.pathName" name="pathName"
+        #trigger="matAutocompleteTrigger" placeholder="Remote Path Name" (ngModelChange)="removeSpaces('pathName')"
+        (keydown.enter)="$event.target.blur(); trigger.closePanel()">
+
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let path of remotePathNames" [value]="path">
+          {{path}}
+        </mat-option>
+      </mat-autocomplete>
+
+      <button mat-button *ngIf="data.pathName" matSuffix mat-icon-button aria-label="Clear" (click)="data.pathName=''">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+
+
+  </form>
+
+  <p *ngIf="data.featureFile" class="pre-wrap fixed-font">{{data.featureFile}}</p>
+
+  <div *ngIf="data.message==='Saving...'">
+    <mat-spinner class="spinner" color="warn"></mat-spinner>
+  </div>
+</div>
+
+<div mat-dialog-actions class="right-align">
+  <button mat-button *ngIf="showYesNo" (click)="onNoClick()">No</button>
+  <button mat-button *ngIf="showYesNo" color="warn" [mat-dialog-close]="true" cdkFocusInitial>Yes</button>
+
+  <button mat-button *ngIf="showOK" [mat-dialog-close]="true" cdkFocusInitial>OK</button>
+
+  <button mat-button *ngIf="data.message==='Enter File Name' || data.message==='Saving...'"
+    (click)="onNoClick()">Cancel</button>
+
+  <button mat-button
+    [disabled]="(!data.fileName && data.title.indexOf('Local')>-1) || (!data.fileName || !data.pathName && data.title.indexOf('Remote')>-1)"
+    *ngIf="data.message==='Enter File Name'" [mat-dialog-close]="{fileName:data.fileName, pathName:data.pathName}"
+    cdkFocusInitial>
+    OK
+  </button>
+
+</div>

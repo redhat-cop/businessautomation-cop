@@ -1,0 +1,22 @@
+.right-align {
+    margin-top: 32px;
+    text-align: right;
+}
+
+.example-radio-group {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.example-radio-button {
+    margin: 5px;
+}
+
+.example-selected-value {
+    margin: 15px 0;
+}
+
+.margins-buttons button,
+.margins-buttons a {
+    margin-right: 8px;
+}

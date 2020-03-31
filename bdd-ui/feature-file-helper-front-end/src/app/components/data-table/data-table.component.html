@@ -1,0 +1,4 @@
+<p *ngIf="showError" class="show-error">{{errMsg}}</p>
+<div class="table-data" [ngClass]="showError ? 'red-border' : 'no-border'">
+  <hot-table class="data-table" [settings]="hotSettings" [hotId]="tableID"></hot-table>
+</div>

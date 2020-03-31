@@ -1,0 +1,116 @@
+{
+    "given": [
+        {
+            "text": "The following users are valid",
+            "dataTable": [
+                [
+                    "Username",
+                    "Password",
+                    "UserType"
+                ],
+                [
+                    "Bill",
+                    "password123",
+                    "manager"
+                ],
+                [
+                    "Betty",
+                    "password123",
+                    "supervisor"
+                ],
+                [
+                    "Bob",
+                    "password123",
+                    "user"
+                ]
+            ]
+        },
+        {
+            "text": "these accounts exist",
+            "dataTable": [
+                [
+                    "AccountNum",
+                    "AccountLevel",
+                    "Balance"
+                ],
+                [
+                    "11111",
+                    "2",
+                    "99"
+                ],
+                [
+                    "22222",
+                    "1",
+                    "999"
+                ],
+                [
+                    "33333",
+                    "0",
+                    "9999"
+                ]
+            ]
+        },
+        {
+            "text": "I am a manager",
+            "dataTable": null
+        },
+        {
+            "text": "I am a supervisor",
+            "dataTable": null
+        },
+        {
+            "text": "I am a manager",
+            "dataTable": null
+        }
+    ],
+    "when": [
+        {
+            "text": "I login with with Username \"Bill\" and Password \"password123\"",
+            "dataTable": null
+        },
+        {
+            "text": "I login with with Username \"Bill\" and Password \"password456\"",
+            "dataTable": null
+        },
+        {
+            "text": "I login with my credentials",
+            "dataTable": [
+                [
+                    "Username",
+                    "Password"
+                ],
+                [
+                    "Bill",
+                    "password123"
+                ]
+            ]
+        },
+        {
+            "text": "I request balance for <accountnumber> from the accounts API",
+            "dataTable": null
+        }
+    ],
+    "then": [
+        {
+            "text": "I should get \"user authorised\" as the login response",
+            "dataTable": null
+        },
+        {
+            "text": "My usertype should be \"manager\"",
+            "dataTable": null
+        },
+        {
+            "text": "I should get \"invalid credentials\" as the login response",
+            "dataTable": null
+        },
+        {
+            "text": "I should get <balance> as the balance request response",
+            "dataTable": null
+        }
+    ],
+    "scenarios": [
+        "Manager should be able to to login with correct credentials",
+        "Supervisor should not be able to to login with incorrect credentials",
+        "Manager should be able to access all Accounts up to Level 2"
+    ]
+}

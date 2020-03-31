@@ -1,0 +1,106 @@
+<form [formGroup]="scenarioForm" #formScenario="ngForm">
+  <mat-card class="margin-top-8" ngClass="grey-ccc">
+    <div fxLayout="row">
+      <div fxFlex="100px" class="right padding-right-16">
+        <h4 class="primary-color">SCENARIO #{{scenarioIdx+1}}</h4>
+      </div>
+      <div fxFlex="*">
+        <mat-form-field class="example-full-width padding-btm-zero">
+          <textarea matInput id="scenario" formControlName="scenario"
+            (change)="onInputFieldChange('scenario')"></textarea>
+          <button mat-button *ngIf="f.scenario.value" matSuffix mat-icon-button aria-label="Clear"
+            (click)="f.scenario.setValue('');onInputFieldChange('scenario')">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-error *ngIf="f.scenario.errors?.required">
+            <strong>statement required</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width padding-btm-zero">
+          <textarea matInput placeholder="Comment (Optional)" formControlName="scenarioComment"
+            (change)="onInputFieldChange()"></textarea>
+          <button mat-button *ngIf="f.scenarioComment.value" matSuffix mat-icon-button aria-label="Clear"
+            (click)="f.scenarioComment.setValue('');onInputFieldChange()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width padding-btm-zero">
+          <input matInput placeholder="Tag (Optional)" formControlName="scenarioTag"
+            (change)="onInputFieldChange('tag')">
+          <button mat-button *ngIf="f.scenarioTag.value" matSuffix mat-icon-button aria-label="Clear"
+            (click)="f.scenarioTag.setValue('');onInputFieldChange('tag')">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </div>
+      <div fxFlex="60px">
+        <!-- <button *ngIf="totalScenarios>1" color="warn" mat-icon-button class="menu-right-bold"
+          (click)="doScenarioAction('remove',scenarioIdx)">
+          <mat-icon class="menu-bold">delete_forever</mat-icon>
+        </button> -->
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="align-right">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+
+          <button *ngIf="totalScenarios>1" color="warn" mat-menu-item (click)="doScenarioAction('remove',scenarioIdx)">
+            <mat-icon color="warn">delete_forever</mat-icon>
+            <span>delete this Scenario</span>
+          </button>
+
+          <button mat-menu-item (click)="doScenarioAction('add', scenarioIdx)">
+            <mat-icon>add_circle_outline</mat-icon>
+            <span>add another Scenario</span>
+          </button>
+
+          <button *ngIf="isRemoteData" mat-menu-item (click)="doScenarioAction('import', scenarioIdx)">
+            <mat-icon>playlist_add</mat-icon>
+            <span>Import Scenario</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+  </mat-card>
+</form>
+
+
+<app-given-when-then [scenarioIdx]="scenarioIdx" [stepTitle]="'GIVEN'"
+  (stepOutput)="updateVarsList($event, scenarioIdx)">
+</app-given-when-then>
+<app-given-when-then [scenarioIdx]="scenarioIdx" [stepTitle]="'WHEN'"
+  (stepOutput)="updateVarsList($event, scenarioIdx)">
+</app-given-when-then>
+<app-given-when-then [scenarioIdx]="scenarioIdx" [stepTitle]="'THEN'"
+  (stepOutput)="updateVarsList($event, scenarioIdx)">
+</app-given-when-then>
+
+<div fxLayout="row">
+  <div fxFlex="*" class="right margin-btm-16">
+    <mat-chip-list *ngIf="varsArray.length>0"  [ngClass]="showChips ? 'visible' : 'invisible'">
+      <mat-chip [selectable]="chip.update" selected [color]="chip.update?'warn':'primary'"
+        *ngFor="let chip of varsArray; let idx=index " (click)=handleTableColsUpdate(idx)>
+        {{chip.value}}
+        <mat-icon *ngIf="chip.update" class="var-chip">warning</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+
+
+  <div  fxFlex="260px" class="right">
+    <button *ngIf="!showTable && varsArray.length > 0" color="primary" mat-stroked-button (click)="createTable()">
+      Create Example Table
+    </button>
+    <button *ngIf="showTable" color="primary" mat-stroked-button (click)="resetTable()" class="margin-right-8">
+      Clear All Data
+    </button>
+    <button *ngIf="showTable" color="primary" mat-stroked-button (click)="deleteTable()">
+      Delete Table
+    </button>
+  </div>
+</div>
+
+<app-example-table *ngIf="showTable" (updateExTableParent)="onTableChanged($event)" [scenarioIdx]="scenarioIdx">
+</app-example-table>

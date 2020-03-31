@@ -1,0 +1,194 @@
+<mat-toolbar>
+  <mat-toolbar-row>
+    <div fxLayout="row" class="full-width">
+      <div fxFlex="360px" class="title">
+        <img class="header-logo" src="assets/images/redhat-logo-white.png">
+        <span class="title-text">Feature File Helper</span>
+      </div>
+
+      <div fxFlex="*" class="repo">
+        <span *ngIf="remoteRepo && remoteRepo.name">Remote Repository: {{remoteRepo.name}}</span>
+      </div>
+    </div>
+  </mat-toolbar-row>
+  <mat-toolbar-row>
+    <div fxLayout="row" class="full-width">
+      <nav fxFlex="*" mat-tab-nav-bar>
+        <a mat-tab-link (click)="doNew()">
+          New
+        </a>
+        <a mat-tab-link (click)="viewFeatureFile()">
+          View Feature File
+        </a>
+        <a mat-tab-link>
+          <!-- Open Existing -->
+          <button mat-button [matMenuTriggerFor]="menuImport">Import</button>
+          <mat-menu #menuImport="matMenu" class="sub-menu">
+            <button mat-menu-item (click)="openRemote()">From Remote Repository</button>
+            <button mat-menu-item (click)="openExisting()">From Local File System</button>
+          </mat-menu>
+        </a>
+        <a mat-tab-link>
+          <button mat-button [matMenuTriggerFor]="menuExport">Export</button>
+          <mat-menu #menuExport="matMenu" class="sub-menu">
+            <button *ngIf="remoteRepo" mat-menu-item (click)="fileSave(true)">To Remote Repository</button>
+            <button mat-menu-item (click)="fileSave(false)">To Local File System</button>
+          </mat-menu>
+        </a>
+        <a mat-tab-link>
+          <button mat-button [matMenuTriggerFor]="remoteMenu">Remote</button>
+          <mat-menu #remoteMenu="matMenu" class="sub-menu">
+            <button mat-menu-item (click)="importRemoteData()">Import Remote Repository Data</button>
+            <button *ngIf="remoteRepo" mat-menu-item (click)="clearRemoteData()">Clear Imported Remote Data</button>
+            <button *ngIf="remoteRepo" mat-menu-item (click)="forceResetRemoteRepo()">Reset
+              Remote Repository</button>
+          </mat-menu>
+        </a>
+        <!-- <a mat-tab-link (click)="loadDummy()">
+          Load Test File
+        </a> -->
+        
+      </nav>
+      <div fxFlex="100px" class="version">{{versionStr}}</div>
+      
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<!-- hidden fild for file open -->
+<input style="display: none" type="file" (change)="onFileOpen($event)" #fileInput>
+
+<div class="openfile">
+  <form [formGroup]="featureForm" #formDirective="ngForm">
+
+    <mat-expansion-panel (opened)="featurePanelState = true" (closed)="featurePanelState = false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="fade" [ngClass]="featurePanelState ? 'opacity-2':'opacity-1'">
+
+            <div fxLayout="row">
+              <div fxFlex="100px">
+                Feature
+              </div>
+              <div fxFlex="*" class="no-wrap">
+                {{f.featureTitle.value}}
+              </div>
+            </div>
+
+            <div fxLayout="row">
+              <mat-error class="error-font-size" *ngIf="f.featureTitle.errors?.required && f.featureTitle.touched">
+                Error: Feature Statement required
+              </mat-error>
+            </div>
+
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <mat-card *ngIf="featurePanelState">
+        <div fxLayout="row">
+          <div fxFlex="100px" class="right padding-right-16">
+            <h3 class="primary-color">FEATURE</h3>
+          </div>
+          <div fxFlex="*">
+
+            <mat-form-field class="example-full-width padding-btm-zero">
+              <textarea matInput id="featureTitle" formControlName="featureTitle"
+                (change)="onInputFieldChange('title')"></textarea>
+              <button mat-button *ngIf="f.featureTitle.value" matSuffix mat-icon-button aria-label="Clear"
+                (click)="f.featureTitle.setValue('');onInputFieldChange('title')">
+                <mat-icon>close</mat-icon>
+              </button>
+              <mat-error *ngIf="f.featureTitle.errors?.required">
+                <strong>statement required</strong>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width padding-btm-zero">
+              <textarea matInput placeholder="Comment (Optional)" formControlName="featureComment"
+                (change)="onInputFieldChange()"></textarea>
+              <button mat-button *ngIf="f.featureComment.value" matSuffix mat-icon-button aria-label="Clear"
+                (click)="f.featureComment.setValue('');onInputFieldChange()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width padding-btm-zero">
+              <input matInput placeholder="Tag (Optional)" formControlName="featureTag"
+                (change)="onInputFieldChange('tag')">
+              <button mat-button *ngIf="f.featureTag.value" matSuffix mat-icon-button aria-label="Clear"
+                (click)="f.featureTag.setValue('');onInputFieldChange('tag')">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+
+
+          </div>
+        </div>
+      </mat-card>
+
+    </mat-expansion-panel>
+
+    <mat-expansion-panel (opened)="bgPanelState = true" (closed)="bgPanelState = false" class="margin-top-8">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div fxLayout="row" class="fade" [ngClass]="bgPanelState ? 'opacity-2':'opacity-1'">
+            <div fxFlex="100px">
+              Background
+            </div>
+            <div fxFlex="*">
+              (Optional)
+            </div>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-given-when-then *ngIf="bgPanelState" [stepTitle]="'BACKGROUND'" #background></app-given-when-then>
+    </mat-expansion-panel>
+
+  </form>
+
+  <mat-accordion>
+    <div class="scenario" *ngFor="let scenario of scenarios;let idx=index">
+
+      <mat-expansion-panel (opened)="panelOpenState[idx] = true" (closed)="panelOpenState[idx] = false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <div>
+
+              <div class="fade" [ngClass]="panelOpenState[idx] ? 'opacity-2':'opacity-1'" fxLayout="row">
+                <div fxFlex="100px">
+                  Scenario: {{idx+1}}
+                </div>
+                <div fxFlex="*" class="no-wrap">
+                  <div fxLayout="row" *ngIf="scenario.scenario">{{scenario.scenario}}</div>
+                </div>
+                <div fxFlex="200px"></div>
+              </div>
+
+              <div fxLayout="row">
+                <div *ngIf="showErrors && scenario.errorMessages && scenario.errorMessages.length>0" fxLayout="row">
+                  <mat-error class="error-font-size">
+                    Error: {{scenario.errorMessages}}
+                  </mat-error>
+                </div>
+              </div>
+
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-scenario *ngIf="panelOpenState[idx]" (scenarioAction)="doActionScenario($event)" class="scenario"
+          [scenarioIdx]="idx" [isRemoteData]="remoteRepo" [totalScenarios]="scenarios.length"></app-scenario>
+      </mat-expansion-panel>
+    </div>
+  </mat-accordion>
+
+  <div class="add-button">
+    <button *ngIf="remoteRepo" color="warn" class=" margin-right-8" mat-raised-button (click)="importScenario()">
+      <mat-icon>playlist_add</mat-icon> Import Scenario
+    </button>
+    <button color="warn" mat-raised-button (click)="doActionScenario({action:'add'})">
+      <mat-icon>add_circle_outline</mat-icon> Add Scenario
+    </button>
+  </div>
+
+</div>

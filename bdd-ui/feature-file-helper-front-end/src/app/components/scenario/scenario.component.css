@@ -1,0 +1,127 @@
+.openfile {
+    padding: 16px;
+    padding-top: 8px;
+    height: calc(98vh - 100px);
+    overflow-y: auto;
+}
+
+.mat-form-field .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+}
+
+.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+}
+
+.mat-form-field {
+    width: 100%;
+    padding: 0 !important;
+}
+
+.margin-btm-16 {
+    margin-bottom: 16px;
+    display: block;
+    min-height: 32px;
+}
+
+.visible {
+    visibility: visible;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.mat-card {
+    margin: 0;
+    background-color: #eee;
+    padding: 0;
+}
+
+.right {
+    text-align: right;
+}
+
+.example-button-row {
+    text-align: right;
+    margin-bottom: 8px;
+}
+
+.example-button-row > button {
+    margin: 0 0 0 8px;
+}
+
+.margin-right-8 {
+    margin-right: 8px;
+}
+
+mat-toolbar {
+    background-color: #cb0000;
+    color: #eee;
+}
+
+.mat-toolbar-multiple-rows {
+    min-height: 50px;
+}
+
+.mat-tab-link {
+    color: #fff;
+    opacity: 0.9;
+}
+
+.mat-toolbar-row {
+    height: 50px;
+}
+
+@media (max-width: 599px) {
+    .mat-toolbar-row {
+        height: 50px;
+    }
+}
+
+.view-file {
+    /* height: 76px; */
+    /* width: 80px; */
+    margin-left: 20px;
+
+    /* line-height: 1.3em;
+    white-space: normal */
+}
+
+.var-chip {
+    margin-left: 6px;
+}
+
+.margin-top-8 {
+    margin-top: 8px;
+}
+
+.menu-bold {
+    font-weight: bold;
+    font-size: 32px;
+    width: 40px;
+}
+
+.menu-right-bold {
+    float: right;
+    height: 100%;
+    margin-right: 4px;
+}
+
+.menu-right {
+    float: right;
+    margin-top: 8px;
+}
+
+.grey-ccc {
+    background-color: #ccc;
+}
+
+.primary-color {
+    color: #2196f3;
+}
+
+.align-right {
+    float: right;
+    margin-top: 20px;
+}

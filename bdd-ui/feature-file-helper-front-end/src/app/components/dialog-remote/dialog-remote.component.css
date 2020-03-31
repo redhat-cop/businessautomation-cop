@@ -1,0 +1,46 @@
+.right-align {
+    text-align: right;
+    float: right;
+}
+
+.spinner {
+    margin: 50px auto;
+}
+
+.spinner-file {
+    margin-left: 64px;
+    margin-bottom: 16px;
+}
+
+.feature-contents {
+    white-space: pre-wrap;
+    font-size: 80%;
+    font-family: 'Courier New', Courier, monospace;
+    color: #999;
+    font-weight: bold;
+    margin-left: 144px;
+}
+
+.showfile-spinner {
+    margin-left: 144px;
+    margin-top: 16px;
+}
+
+.import {
+    flex-shrink: 0;
+    margin-right: 30px;
+    padding: 0 !important;
+    border-radius: 5px !important;
+    padding: 0 !important;
+    height: 34px !important;
+    min-width: 48px;
+    line-height: 24px;
+}
+
+.example-full-width {
+    width: 100%;
+}
+
+.min-height {
+    min-height: 200px;
+}

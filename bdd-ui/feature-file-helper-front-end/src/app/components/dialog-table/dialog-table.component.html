@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Update Table Columns</h2>
+
+<div class="margins-buttons">
+  <h3 *ngIf="showRename">Rename Existing</h3>
+  <div *ngIf="!showRename">
+    <button  color="primary" mat-stroked-button (click)="showRename=true">
+      Rename Existing Column
+    </button>
+    <span> or </span>
+    <button *ngIf="!showRename" color="primary" mat-stroked-button (click)="insertColumn()">
+      Insert New Column
+      </button>
+  </div>
+</div>
+
+<div *ngIf="showRename">
+  <p>Choose which Column to rename to "{{data.name}}"</p>
+  <mat-radio-group class="example-radio-group" [(ngModel)]="colName">
+    <mat-radio-button class="example-radio-button" *ngFor="let rename of data.colNames; let idx=index" [value]="rename"
+      (change)="onNameSelected(idx)">
+      <span [ngClass]="rename.indexOf('<b>')>-1 ? 'red-text' : ''">{{rename | removeHTML}}</span>
+    </mat-radio-button>
+  </mat-radio-group>
+</div>
+
+<div class="right-align">
+  <button color="warn" mat-button (click)="onNoClick()">Cancel</button>
+</div>

@@ -1,0 +1,10 @@
+node_modules/
+bower_components/
+reports
+build
+.vscode
+/tmp
+/tmpbu
+/remoteRepoCopy
+/remote-repo-copies
+.DS_Store
