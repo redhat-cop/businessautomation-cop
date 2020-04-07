@@ -1,0 +1,42 @@
+#
+# GIT_TYPE      = "azure" for Azure, blank otherwise
+# GIT_USER_NAME = username for remote git repository
+# GIT_PASSWD    = password to connect to remote git repository
+# GIT_URL       = URL that points to the remote git repository
+#                 examples:
+#                   Git repositories   example URL
+#                   ----------------   --------------------------------
+#                   gitlab             https://gitlab.com/GIT_USER_NAME
+#                   github             https://github.com/GIT_USER_NAME
+#                   gitea (localhost)  http://localhost:3000/GIT_USER_NAME
+#
+#
+# Uncomment and modify as appropriate
+#
+# GIT_TYPE=""
+# GIT_USER_NAME='bitbucket_id'
+# GIT_PASSWD='passwd'
+# GIT_URL='https://bitbucket_id@bitbucket.org/bitbucket_id'
+# 
+# GIT_TYPE="azure"
+# GIT_USER_NAME='azure_id'
+# GIT_PASSWD='passwd'
+# GIT_URL='https://azure_id@dev.azure.com/azure_id/organisation_or_project/_git'
+# 
+# GIT_TYPE=""
+# GIT_USER_NAME='github_id'
+# GIT_PASSWD='passwd'
+# GIT_URL='https://github.com/github_id'
+# 
+# GIT_TYPE=""
+# GIT_USER_NAME='gitlab_id'
+# GIT_PASSWD='passwd'
+# GIT_URL='https://gitlab.com/gitlab_id'
+# 
+# GIT_TYPE=""
+# GIT_USER_NAME='gitea_id'
+# GIT_PASSWD='passwd'
+# GIT_URL='http://localhost:3000/gitea_id'
+
+LOG_LOCATION=$HOME
+
