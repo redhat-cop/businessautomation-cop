@@ -105,6 +105,13 @@ frag=${hwd#dashbuilder}  && [[ "$frag" != "$hwd" ]] && debug "SKIPPING BUILTIN P
 frag=${hwd#\.archetypes} && [[ "$frag" != "$hwd" ]] && debug "SKIPPING BUILTIN PROJECT" && exit 0
 frag=${hwd#*\.config}    && [[ "$frag" != "$hwd" ]] && debug "SKIPPING BUILTIN PROJECT" && exit 0
 
+addBBID=yes
+while read gitName gitUrl gitOps; do
+  debug "CHECKING $gitName $gitUrl $gitOps"
+  [[ "$gitName" == "$BBID" ]] && addBBID=no
+  [[ "$gitName" == "origin" ]] && remoteGitUrl="$gitUrl"
+done < <( git remote -v )
+
 useme=""
 bburl=""
 gitUrl="$remoteGitUrl"
@@ -114,23 +121,20 @@ isit="http://"  && checkurl=${gitUrl#$isit} && [[ "$checkurl" != "$gitUrl" ]] &&
 
 [[ "$bburl" == "" ]] && debug "REMOTE URL CANNOT BE DETERMINED - ABORTING" && exit 3
 
+REPO_NAME="$PRJ_NAME.git"
+[[ "$GIT_TYPE" == "azure" ]] && REPO_NAME="$PRJ_NAME"
+
 # - newly created projects
 if [[ `git remote -v | wc -l` -eq 0 ]]; then
   hwd=`pwd`
-  debug "ADDING $gitUrl"
-  rname=`basename ${hwd%%\/hooks}`
-  [[ "$GIT_TYPE" == "azure" ]] && rname=`basename $rname .git`
-  git remote add $BBID $bburl/$rname
+  debug "NEW PROJECT ADDING $BBID TO $bburl/$REPO_NAME"
+  git remote add $BBID $bburl/$REPO_NAME
 fi
-
-addBBID=yes
-while read gitName gitUrl gitOps; do
-  [[ "$gitName" == "$BBID" ]] && addBBID=no && break
-done < <( git remote -v )
 
 if [[ "$addBBID" == "yes" ]]; then
   while read gitName gitUrl gitOps; do
     if [[ "$gitName" != "$BBID" ]]; then
+      debug "ADDING MISSING $BBID TO $bburl"
       git remote add $BBID $bburl
       break
     fi
