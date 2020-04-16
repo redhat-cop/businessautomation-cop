@@ -1,4 +1,6 @@
 #
+# --- Configuration parameters ---
+#
 # GIT_TYPE      = "azure" for Azure, blank otherwise
 # GIT_USER_NAME = username for remote git repository
 # GIT_PASSWD    = password to connect to remote git repository
@@ -9,6 +11,13 @@
 #                   gitlab             https://gitlab.com/GIT_USER_NAME
 #                   github             https://github.com/GIT_USER_NAME
 #                   gitea (localhost)  http://localhost:3000/GIT_USER_NAME
+#
+#
+# LOG_LOCATION  = location of the bcgithook log file, default to $HOME
+#
+# LOG_SYSTEM_REPOS = [yes|no], set to "yes" to log access to PAM system
+#                              repositories, increases verbosity
+#
 #
 #
 # Uncomment and modify as appropriate
@@ -39,4 +48,5 @@
 # GIT_URL='http://localhost:3000/gitea_id'
 
 LOG_LOCATION=$HOME
+LOG_SYSTEM_REPOS=yes
 

@@ -19,6 +19,7 @@ This project offers a bash-based implementation for such git hooks.
 |`GIT_URL` | **required** | The URL to connect to the git repo. See below for examples for various Git repos. Surround the value in single quotation marks.|
 |`GIT_TYPE` | optional | Leave blank or undefined for all Git repos. Use **"azure"** (in quotation marks) for Azure DevOps |
 |`LOG_LOCATION` | optional | The directory where logs should be written. Defaults to `$HOME` |
+|`LOG_SYSTEM_REPOS` | optional | If set to "yes" will log access to system repositories, can result in some verbosity |
 
 See below for example configurations for various Git repos.
 

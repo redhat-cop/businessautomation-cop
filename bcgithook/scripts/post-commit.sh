@@ -23,6 +23,9 @@
 # LOG_LOCATION  = were bcgithook log files should be stored, defaults to home directory of user
 #                 executing bcgithook post-commit
 #
+# LOG_SYSTEM_REPOS = [yes|no], set to "yes" to log access to PAM system
+#                              repositories, increases verbosity
+#
 #
 #GIT_USER_NAME='git_user_name'
 #GIT_PASSWD='git_password'
@@ -100,10 +103,10 @@ workpasswd=`urlencode "$gitPasswd"`
 
 # - ignore system repos
 hwd=`pwd` && hwd=${hwd#*\.niogit\/}
-frag=${hwd#system}       && [[ "$frag" != "$hwd" ]] && debug "SKIPPING BUILTIN PROJECT" && exit 0
-frag=${hwd#dashbuilder}  && [[ "$frag" != "$hwd" ]] && debug "SKIPPING BUILTIN PROJECT" && exit 0
-frag=${hwd#\.archetypes} && [[ "$frag" != "$hwd" ]] && debug "SKIPPING BUILTIN PROJECT" && exit 0
-frag=${hwd#*\.config}    && [[ "$frag" != "$hwd" ]] && debug "SKIPPING BUILTIN PROJECT" && exit 0
+frag=${hwd#system}       && [[ "$frag" != "$hwd" ]] && ( [[ "$LOG_SYSTEM_REPOS" != "yes" ]] || debug "SKIPPING BUILTIN PROJECT" ) && exit 0
+frag=${hwd#dashbuilder}  && [[ "$frag" != "$hwd" ]] && ( [[ "$LOG_SYSTEM_REPOS" != "yes" ]] || debug "SKIPPING BUILTIN PROJECT" ) && exit 0
+frag=${hwd#\.archetypes} && [[ "$frag" != "$hwd" ]] && ( [[ "$LOG_SYSTEM_REPOS" != "yes" ]] || debug "SKIPPING BUILTIN PROJECT" ) && exit 0
+frag=${hwd#*\.config}    && [[ "$frag" != "$hwd" ]] && ( [[ "$LOG_SYSTEM_REPOS" != "yes" ]] || debug "SKIPPING BUILTIN PROJECT" ) && exit 0
 
 addBBID=yes
 while read gitName gitUrl gitOps; do
