@@ -17,7 +17,7 @@
     "fasy": "~5.0.7",
     "fs-extra": "~7.0.1",
     "http-errors": "~1.6.2",
-    "lodash": "~4.17.11",
+    "lodash": "~4.17.13",
     "moment-timezone": "~0.5.28",
     "morgan": "~1.9.0",
     "nodegit": "~0.24.1",
