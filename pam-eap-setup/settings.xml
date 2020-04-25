@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <servers>
+
+    <!-- configure locally installed maven repository manager -->
+    <!--                                                      -->
+    <!-- to enable it uncomment the relevant line in the      -->
+    <!-- activeprofiles section                               -->
+    <!-- and provide correct passwords below                  -->
+    <server>
+      <id>local_repo_release</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+    <server>
+      <id>local_repo_snapshot</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+  </servers>
+
+  <profiles>
+
+    <!-- maven repository as per https://access.redhat.com/maven-repository -->
+    <profile>
+      <id>jboss_enterprise_maven_repository_ga</id>
+      <repositories>
+        <repository>
+          <id>jboss_ga_repository</id>
+          <url>https://maven.repository.redhat.com/ga/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>jboss_ga_plugin_repository</id>
+          <url>https://maven.repository.redhat.com/ga/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+    <!-- maven repository as per https://access.redhat.com/maven-repository -->
+    <profile>
+      <id>jboss_early_access_repo</id>
+      <repositories>
+        <repository>
+          <id>jboss-early-access-repository</id>
+          <url>https://maven.repository.redhat.com/earlyaccess/all/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+
+    <!-- define local nexus repository -->
+    <profile>
+      <id>local_repo_profile</id>
+      <repositories>
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <id>local_repo_release</id>
+          <name>maven-releases</name>
+          <url>http://localhost:8081/repository/maven-releases/</url>
+        </repository>
+        <repository>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+          <id>local_repo_snapshot</id>
+          <name>maven-snapshot</name>
+          <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>local_repo_release</id>
+          <name>maven-release</name>
+          <url>http://localhost:8081/repository/maven-releases/</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>local_repo_snapshot</id>
+          <name>maven-snapshot</name>
+          <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+ </profiles>
+
+  <activeProfiles>
+   
+    <activeProfile>jboss_enterprise_maven_repository_ga</activeProfile>
+    
+    <!-- uncomment the following to enable access to JBoss Early Access repository -->
+    <!-- <activeProfile>jboss_early_access_repo</activeProfile>                    -->
+    
+    <!-- uncomment the following to enable a locally installed maven repository manager -->
+    <!-- <activeProfile>local_repo_profile</activeProfile>  -->
+    
+  </activeProfiles>
+
+</settings>

@@ -1,0 +1,75 @@
+
+# CHANGELOG
+
+-- RELEASE: 24 APR 2020 --
+
+- PAM : Enable CORS for first four KIE Server nodes. More nodes can be accomodated by copying files from addons directory
+- PAM : Switched to EAP embedded mode for standalone.xml configuration
+- PAM : node offset is written in node configuration file in addition to the startup file
+        any system startup scripts would not need to go through the startup file
+- PAM : added the -o options for extended configuration based on EAP CLI commands
+        this way additional EAP subsystems can be configured 
+        supports per node configuration
+- PAM : EAP RequestDumping can be enabled by the "-o dump_requests" option
+- PAM : Added Bash implementation of post-commit git hooks
+
+-- RELEASE --
+
+17 Jan 2020
+-----------
+- PAM : Added support for RHPAM.7.6.0
+- PAM : Unique EAP node name is autogenarated during installation
+
+04 Jan 2020
+-----------
+- SSO: Modified JBoss node name to differentiate from PAM names
+- SSO: Added ssoPamAdmin user to rhpam SSO realm
+- SSO: Added RHPAM required roles to rhpam SSO realm
+- SSO: Added RHPAM users to rhpam SSO realm
+- SSO: Added KIE client to rhpam SSO realm
+- PAM: Consolidated port offset calculations
+- PAM: Generating unique node names to prevent possible conflicts in clusters
+- PAM: Enabled RequestDumping in EAP as per https://access.redhat.com/solutions/2429371
+       Additional information at
+       https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.2/html-single/configuration_guide/index#undertow-config-requestDumping-handler
+
+       PENDING: implement access log as per https://access.redhat.com/solutions/2423311
+                making it conditional through command line parameter
+
+26 Dec 2019
+-----------
+- Realm for RHPAM is created on RHSSO installation
+
+24 Dec 2019
+-----------
+- Added Java option '-Djava.security.egd=file:/dev/./urandom' on startup scripts
+  based on RHSSO recommendations
+  <https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.3/html-single/server_installation_and_configuration_guide/index#system_requirements>
+  Additional information at : <https://ruleoftech.com/2016/avoiding-jvm-delays-caused-by-random-number-generation>
+
+19 Dec 2019
+-----------
+- added "org.jbpm.var.log.length" to system properties
+
+-- RELEASE --
+
+04 Dec 2019
+-----------
+- added support for RHPAM.7.5.1
+
+30 Nov 2019
+-----------
+ - avoid possible duplication of PAM system parameters for parameters defined in pam.config
+ - added support for RHPAM.7.5.0
+ - added settings.xml as per https://access.redhat.com/maven-repository
+
+26 Nov 2019
+-----------
+ - Added configuration for Prometheus and Prediction Service
+
+11 Nov 2019
+-----------
+ - Added CHANGELOG
+ - Port offset is auto calculated from -n option
+ - Port offset is applied to all nodes in "multi" node installation
+ - Port offset is propagated to node startup scripts
