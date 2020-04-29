@@ -1,0 +1,7 @@
+{
+  "labels" : [ {
+    "org.kie/barista_process" : "process",
+    "org.kie/persistence/proto/barista_process.proto" : "H4sIAAAAAAAAAL2TTUvDQBCGz82vGHLSglus3kpBtAoi2kK9eCqT7BDWZD/Y3Uqr+N/dTaLUFimp0EuyzMf77jzDurXyuIIxpMZqr4fpCBKDeYkFgbYF41bryrHMSDVkGVrhPC5CaU7OhVIhjbYe0lIXwuszoTitWK2UjraTfm3I/SS18UIraHILqTlV8RbXvy12CgWPVdlOVTLow9V9tCcO/QEkMsTjEFuC8AFJr5V8xbcQb4cNqvvmDTa9aHMnqOInzmsb2+bxz15u56e1byuOFThvhSqgvvF5YNWldxJay6nlZMMW4ncMw44ScZpSEGvAsWY1NWf2UIceySNHjyC/D2O4CCaff7K8QctnuJak/PE55sH8aSmzGkZXnq0GrcwEPR1AsxVQKGmqIoe9sDZWeDxWmxvKN84HE8uXZi7e/0GMRwzP4em3wLpIcL3MKmpewMyKPBZf1tC/AOoAeNG3BAAA",
+    "org.kie/persistence/required" : "true"
+  } ]
+}

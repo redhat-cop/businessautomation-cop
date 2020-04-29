@@ -1,0 +1,41 @@
+syntax = "proto2"; 
+package org.drools.bpmn2.drink_order_process; 
+import "kogito-index.proto";
+import "kogito-types.proto";
+option kogito_model = "Drink_order_process";
+option kogito_id = "drink_order_process";
+
+/* @Indexed */ 
+message CardPayment { 
+	option java_package = "org.drools.bpmn2.drink_order_process";
+	/* @Field(store = Store.YES) */ 
+	optional string cardNumber = 1; 
+	/* @Field(store = Store.YES) */ 
+	optional string expDate = 2; 
+	/* @Field(store = Store.YES) */ 
+	optional string nameOnCard = 3; 
+}
+/* @Indexed */ 
+message DrinkOrder { 
+	option java_package = "org.drools.bpmn2.drink_order_process";
+	/* @Field(store = Store.YES) */ 
+	optional CardPayment cardPayment = 1; 
+	/* @Field(store = Store.YES) */ 
+	optional string cupSize = 2; 
+	/* @Field(store = Store.YES) */ 
+	optional string drinkType = 3; 
+	/* @Field(store = Store.YES) */ 
+	optional double orderPrice = 4; 
+}
+/* @Indexed */ 
+message Drink_order_process { 
+	option java_package = "org.drools.bpmn2.drink_order_process";
+	/* @Field(store = Store.YES) */ 
+	optional string id = 1; 
+	/* @Field(store = Store.YES) */ 
+	optional DrinkOrder order = 2; 
+	/* @Field(store = Store.YES) */ 
+	optional bool process_state = 3; 
+	/* @Field(store = Store.YES) */ 
+	optional org.kie.kogito.index.model.KogitoMetadata metadata = 4; 
+}

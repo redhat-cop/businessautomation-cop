@@ -1,0 +1,17 @@
+syntax = "proto2"; 
+package org.kie.kogito.app; 
+import "kogito-types.proto";
+
+message CardPayment { 
+	option java_package = "org.bala.drink.coffee.model";
+	optional string cardNumber = 1; 
+	optional string expDate = 2; 
+	optional string nameOnCard = 3; 
+}
+message DrinkOrder { 
+	option java_package = "org.bala.drink.coffee.model";
+	optional CardPayment cardPayment = 1; 
+	optional string cupSize = 2; 
+	optional string drinkType = 3; 
+	optional double orderPrice = 4; 
+}
