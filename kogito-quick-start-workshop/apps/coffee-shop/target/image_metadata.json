@@ -1,7 +1,0 @@
-{
-  "labels" : [ {
-    "org.kie/drink_order_process" : "process",
-    "org.kie/persistence/proto/drink_order_process.proto" : "H4sIAAAAAAAAAMWUUUvDMBDHn9dPcfRJB3Y4fRNBcAoiusF88amkTSixTS4kmWyK391L2sl0iq6CPjVN/vnf3S+XuJX2bAmnkBqLHsfpCSSGlTWrBKCtMm4RG5cVRukx/Uhd52i5sDnJS+EcyaUyaD2kNVbS44HUXCyz6JaefFz0KyPc2yIaL1FDu5Yr5KIJmUy2w2yJJQ/KTxIiZTIawtlVSENwGI4gUTQfCjpnls/YSgnt4RmSQWf5wB5Zvi6aXH9SN4UZhDCXUjR8z3m0Yes8fLP7i/l+jNsFYA04TxYVlJTA7UIVwpL4kNj18BBLM2E+KMf9DDRTYqoDCxIfkcfLl8DiSUxD3X/Ma/Okyo1xb2rlwszl0y+oxZruqH07aLtYcFwUTbhPBGRmZRnEx9+Df0/wfzo23rNdmW+0TUyhB/WCioEu89z5tuF35R6w1FJk7ZuRtS9TfGay6zh1IzzjzDNQ68H6YF4B2hkXrRgFAAA=",
-    "org.kie/persistence/required" : "true"
-  } ]
-}
