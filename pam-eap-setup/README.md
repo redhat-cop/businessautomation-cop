@@ -105,7 +105,7 @@ Download binaries and place them in the same directory as this script. Most rece
 
 For EAP.7.2 the file "*jboss-eap-7.2.0.zip*" is required.
 
-- EAP.7.2 patch 7.2.1 is supported for PAM.7.3.1 while patch 7.2.2 is supported for PAM.7.4 installations. To enable patching place either "`jboss-eap-7.2.1-patch.zip`" or "`jboss-eap-7.2.2-patch.zip`" in the same directory as the script. The script will use the latest patch version available.
+- EAP.7.2 patch 7.2.1 is supported for PAM.7.3.1 while patch 7.2.2 is supported for PAM.7.4 installations. To enable patching place the latest patch, for example "`jboss-eap-7.2.7-patch.zip`" in the same directory as the script. The script will use the latest patch version available.
 - More information about supported configurations can be found at <https://access.redhat.com/articles/3405381>
 
 Depending on PAM version the following files are required:
@@ -259,6 +259,7 @@ BC or KIE nodes will be created using the same EAP base installation, as per <ht
 - node-identifier property in EAP configured as per <https://access.redhat.com/solutions/721613>
 - ActiveMQ Artemis disk threshold increased as per <https://access.redhat.com/solutions/4390511> to better handle near full disks
 - Enable CORS for first four nodes of KIE Server as per <https://access.redhat.com/solutions/4036301> and <https://access.redhat.com/solutions/3713131>
+- If DEBUG logging enabled, TRACE is also enabled as per <https://access.redhat.com/solutions/148823>
 
 > Written with [StackEdit](https://stackedit.io/).
 > ASCII charts with the help of [ASCIIFlow](http://asciiflow.com/)

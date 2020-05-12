@@ -1,6 +1,14 @@
 
 # CHANGELOG
 
+-- RELEASE: 12 MAY 2020 --
+
+- PAM : Logging, tracing and CORS config have been refactored to use EAP CLI commands 
+        instead of injecting them into standalone.xml through XML parsing
+- PAM : enabled TRACE logging for "org.jboss.as.domain" and "org.wildfly.security"
+        if "-o debug_logging" specified
+        more info: https://access.redhat.com/solutions/148823
+
 -- RELEASE: 24 APR 2020 --
 
 - PAM : Enable CORS for first four KIE Server nodes. More nodes can be accomodated by copying files from addons directory
