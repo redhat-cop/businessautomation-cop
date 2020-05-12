@@ -239,11 +239,11 @@ Options:
           - nodeX_config=file : declare file with additional commands to be applied by
                                 EAPs jboss-cli tool for each node installed
                                 X stands for the number of each node, e.g. node1_config, node2_config, etc
-                                Files to enable CORS for KIE Server in the first four nodes
-                                are provided.
-                                For more nodes copy the relevant files from the addons directory
 
           - debug_logging     : if present will set logging level to DEBUG
+                                Also configures TRACE logging for
+                                 - org.jboss.as.domain
+                                 - org.wildfly.security
 
           - dump_requests     : if present will enable request dumping to log file
 
@@ -513,7 +513,7 @@ function modifyConfiguration() {
     local pamConfigFile=/tmp/pamConfigFile.$INSTALL_ID && [[ "$CYGWIN_ON" == "yes" ]] && pamConfigFile=$(cygpath -w ${pamConfigFile})
     echo 'embed-server' > $pamConfigFile
     printf '%s\n' "${pamConfigList[@]}"  >> $pamConfigFile
-    cat $ADDITIONAL_NODE_CONFIG >> $pamConfigFile
+    cat "$ADDITIONAL_NODE_CONFIG" >> $pamConfigFile
     echo 'stop-embedded-server' >> $pamConfigFile
     ./jboss-cli.sh --file=$pamConfigFile
   popd &> /dev/null
@@ -521,7 +521,7 @@ function modifyConfiguration() {
     cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig 
     cp $EAP_HOME/standalone/configuration/standalone.xml.backup $EAP_HOME/standalone/configuration/standalone.xml
   fi
-  rm -f $tmpf* $ADDITIONAL_NODE_CONFIG $pamConfigFile
+  rm -f $tmpf* "$ADDITIONAL_NODE_CONFIG" $pamConfigFile
   # try to safeguard exposed interfaces
   local dc=2  && [[ "$CYGWIN_ON" == "yes" ]] && dc=3
   l=`grep -H -n '<interface name="management">' $xmlConfig | head -1 | cut -d':' -f$dc`;
@@ -542,22 +542,22 @@ function modifyConfiguration() {
   #
   # modify logging to output to console as well as file
   #
-  tmpf=tmp.`randomid`
-  : > $tmpf
-  l=`grep -H -n 'periodic-rotating-file-handler' $xmlConfig | head -1 | cut -d':' -f$dc`;
-  echo '<!-- NEW_LOG_HANDLER --> <console-handler name="CONSOLE">' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER -->     <level name="INFO"/>' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER -->     <formatter>' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER -->         <named-formatter name="COLOR-PATTERN"/>' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER -->     </formatter>' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER --> </console-handler>' >> $tmpf
-  let lno=$((l-1))
-  sed -i -e "${lno}r $tmpf" $xmlConfig
-  : > $tmpf
-  l1=`grep -H -n '<root-logger>' $xmlConfig | head -1 | cut -d':' -f$dc`;
-  let l2=$((l1+2))
-  echo '<!-- NEW_LOG_HANDLER --> <handler name="CONSOLE"/>' > $tmpf
-  sed -i -e "${l2}r $tmpf" $xmlConfig
+# tmpf=tmp.`randomid`
+# : > $tmpf
+# l=`grep -H -n 'periodic-rotating-file-handler' $xmlConfig | head -1 | cut -d':' -f$dc`;
+# echo '<!-- NEW_LOG_HANDLER --> <console-handler name="CONSOLE">' >> $tmpf
+# echo '<!-- NEW_LOG_HANDLER -->     <level name="INFO"/>' >> $tmpf
+# echo '<!-- NEW_LOG_HANDLER -->     <formatter>' >> $tmpf
+# echo '<!-- NEW_LOG_HANDLER -->         <named-formatter name="COLOR-PATTERN"/>' >> $tmpf
+# echo '<!-- NEW_LOG_HANDLER -->     </formatter>' >> $tmpf
+# echo '<!-- NEW_LOG_HANDLER --> </console-handler>' >> $tmpf
+# let lno=$((l-1))
+# sed -i -e "${lno}r $tmpf" $xmlConfig
+# : > $tmpf
+# l1=`grep -H -n '<root-logger>' $xmlConfig | head -1 | cut -d':' -f$dc`;
+# let l2=$((l1+2))
+# echo '<!-- NEW_LOG_HANDLER --> <handler name="CONSOLE"/>' > $tmpf
+# sed -i -e "${l2}r $tmpf" $xmlConfig
   rm -f $tmpf*
 }
 
@@ -617,23 +617,57 @@ function applyAdditionalNodeConfig() {
   local k="${nodeConfig[nodeCounter]}_config"
   local nodeOffset=${nodeConfig['nodeOffset']}
   local default_config="$WORKDIR/addons/$k"
+  # initialise node config
+  : > "$ADDITIONAL_NODE_CONFIG"
+  # have logging to CONSOLE as well as to FILE
+cat << "__ADDITIONAL_NODE_CONFIG_1" > "$ADDITIONAL_NODE_CONFIG"
+batch
+/subsystem=logging/console-handler=CONSOLE:add
+/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)
+/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)
+/subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])
+/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=INFO)
+run-batch
+__ADDITIONAL_NODE_CONFIG_1
+  # CORS 
+cat << "__ADDITIONAL_NODE_CONFIG_2" >> "$ADDITIONAL_NODE_CONFIG"
+batch
+/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Origin:add(header-name="Access-Control-Allow-Origin", header-value="*")
+/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Origin/:add()
+/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Methods:add(header-name="Access-Control-Allow-Methods",header-value="GET,POST, OPTIONS, PUT, DELETE")
+/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Methods/:add()
+/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Headers:add(header-name="Access-Control-Allow-Headers",header-value="accept, authorization,content-type, x-requested-with")
+/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Headers/:add()
+/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Credentials:add(header-name="Access-Control-Allow-Credentials", header-value="true")
+/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Credentials/:add()
+/subsystem=undertow/configuration=filter/response-header=Access-Control-Max-Age:add(header-name="Access-Control-Max-Age",header-value="2")
+/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Max-Age/:add()
+run-batch
+__ADDITIONAL_NODE_CONFIG_2
   # apply node offset
   if [[ "$nodeOffset" != 0 ]]; then
-    echo "/socket-binding-group=standard-sockets/:write-attribute(name=port-offset,value=\${jboss.socket.binding.port-offset:$nodeOffset})" >> $ADDITIONAL_NODE_CONFIG
+    echo "/socket-binding-group=standard-sockets/:write-attribute(name=port-offset,value=\${jboss.socket.binding.port-offset:$nodeOffset})" >> "$ADDITIONAL_NODE_CONFIG"
   fi
   #
   # apply any node specific configuration
   #
   [[ ! -r "$default_config" ]] && [[ ! -r "${configOptions[$k]}" ]] && [[ -z "${configOptions[debug_logging]}" ]] && [[ -z "${configOptions[dump_requests]}" ]] && return
-  [[ -r "$default_config" ]] && cat "$default_config" >> $ADDITIONAL_NODE_CONFIG
+  [[ -r "$default_config" ]] && cat "$default_config" >> "$ADDITIONAL_NODE_CONFIG"
   #
   if [[ -r "${configOptions[$k]}" ]]; then
-    sout "Applying additional configuration for ${nodeConfig[nodeCounter]} based on ${configOptions[$k]}"
-     cat "${configOptions[$k]}" >> $ADDITIONAL_NODE_CONFIG
+     sout "Applying additional configuration for ${nodeConfig[nodeCounter]} based on ${configOptions[$k]}"
+     cat "${configOptions[$k]}" >> "$ADDITIONAL_NODE_CONFIG"
   fi
   if [[ ! -z "${configOptions[dump_requests]}" ]]; then
-     cat '/subsystem=undertow/configuration=filter/expression-filter=requestDumperExpression:add(expression="dump-request")' >> $ADDITIONAL_NODE_CONFIG
-     cat "/subsystem=undertow/server=default-server/host=default-host/filter-ref=requestDumperExpression:add" >> $ADDITIONAL_NODE_CONFIG
+     echo '/subsystem=undertow/configuration=filter/expression-filter=requestDumperExpression:add(expression="dump-request")' >> "$ADDITIONAL_NODE_CONFIG"
+     echo "/subsystem=undertow/server=default-server/host=default-host/filter-ref=requestDumperExpression:add" >> "$ADDITIONAL_NODE_CONFIG"
+  fi
+  if [[ ! -z "${configOptions[debug_logging]}" ]]; then
+     echo '/subsystem=logging/logger=org.jboss.as.domain/:add(category=org.jboss.as.domain,level=TRACE)' >> "$ADDITIONAL_NODE_CONFIG"
+     echo '/subsystem=logging/logger=org.wildfly.security/:add(category=org.wildfly.security,level=TRACE)' >> "$ADDITIONAL_NODE_CONFIG"
+     echo '/subsystem=logging/root-logger=ROOT/:undefine-attribute(name=level)' >> "$ADDITIONAL_NODE_CONFIG"
+     echo '/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=DEBUG)' >> "$ADDITIONAL_NODE_CONFIG"
+     echo '/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=DEBUG)' >> "$ADDITIONAL_NODE_CONFIG"
   fi
 }
 
