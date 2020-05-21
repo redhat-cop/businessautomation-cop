@@ -2,7 +2,7 @@
 
 [cols="1,6"]
 |===
-|*Example1(pam-example-1)*
+|*pam-example-1*
 |This example show how use DMN to check if a Customer can open a bank account(is underage or not)
 |===
 
