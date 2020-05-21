@@ -1,0 +1,50 @@
+= Example 1
+
+This example show how use DMN to check if a Customer can open a bank account(is underage or not).
+
+== Project 'example1-parent' details
+
+=== Details
+
+example1-model::
+* Define all model
+example1-services-api::
+* Define the services API endpoint
+example1-services-api-impl::
+* Implements all services defined in *example1-services-api*
+
+[cols="1,2,1,1", options="header"]
+.Services
+|===
+|HTTP Method |URI |Request |Response
+
+|POST
+|/example-1/services/customer
+|xref:example1-parent/example1-model/src/main/java/com/redhat/cop/pam/example1/Customer.java[Customer.java]
+|xref:example1-parent/example1-model/src/main/java/com/redhat/cop/pam/example1/CanOpenAccountResults.java[CanOpenAccountResults.java]
+|===
+
+example1-kie-api::
+* Define a method to invoke the DMN
+example1-kie-api-embedded-impl::
+* Show how invoke a DMN service embed in your application(Implements the methods defined in *example1-kie-api*)
+example1-kie-api-remote-impl::
+* Show how invoke a DMN service deployed on a remote kie-server(Implements the methods defined in *example1-kie-api*)
+
+=== Build
+```
+$ cd example1-parent/
+$ mvn clean install
+```
+
+== Project 'dmn-example1-kjar'
+
+=== Details
+
+image::images/DMN.png[]
+
+=== Build
+```
+$ cd example1-kjar/
+$ mvn clean install
+```
