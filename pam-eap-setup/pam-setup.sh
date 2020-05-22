@@ -168,6 +168,32 @@ function prettyPrinter() {
   done
 }
 
+#
+# print elapsed time for execution
+#
+function timeElapsed() {
+  local diff=$SECONDS
+  local tstr="$0 runtime : "
+  local HRS=`expr $diff / 3600`
+  local MIN=`expr $diff % 3600 / 60`
+  local SEC=`expr $diff % 3600 % 60`
+  if [ $HRS -gt 0 ]; then
+   tstr="$tstr $HRS hrs. "
+  fi
+  if [ $MIN -gt 0 ]; then
+   tstr="$tstr $MIN mins. "
+  fi
+  if [ $SEC -gt 0 ]; then
+   if [ $MIN -gt 0 ]; then
+    tstr="$tstr and $SEC secs."
+   elif [ $HRS -gt 0 ]; then
+    tstr="$tstr and $SEC secs."
+   else
+    tstr="$tstr $SEC secs."
+   fi
+  fi
+  echo "$tstr"
+}
 
 #
 # echo the value for the config key escaping slashes
@@ -185,12 +211,12 @@ function prepareConfigLine() {
     [[ ! -z "$key" ]] && [ ${pamConfigAr[$key]+xxx} ] && result="${pamConfigAr[$key]}"
     # result=$(echo ${result} | sed -e "s#/#\\\/#g")
   fi
-  
+
   if [[ "x$keyPrefix" != "xCOMMENT" ]] && [[ ! -z "$result" ]]; then
     pamConfigList+=( "if (outcome == success) of /system-property=$key:read-resource" )
-    pamConfigList+=( "  /system-property=$key:remove" )
+    pamConfigList+=( "  /system-property=$key:remove > $TMP_FILE" )
     pamConfigList+=( "end-if" )
-    pamConfigList+=( "/system-property=$key:add(value=$result)" )
+    pamConfigList+=( "/system-property=$key:add(value=$result) > $TMP_FILE" )
   fi
 }
 
@@ -232,26 +258,47 @@ Options:
           List of controllers in the form of comma-sperated list of 'IP:PORT' pairs
           e.g. 10.10.1.20:8080,192.168.1.34:8350
 
-     -s : Only for KIE ES, optional. Specify Smart Router location, eg 10.10.1.23:9000
+    -s : Only for KIE ES, optional. Specify Smart Router location, eg 10.10.1.23:9000
 
-     -o : Specify additional options. Supported options are:
+    -o : Specify additional options. Supported options are:
 
-          - nodeX_config=file : declare file with additional commands to be applied by
-                                EAPs jboss-cli tool for each node installed
-                                X stands for the number of each node, e.g. node1_config, node2_config, etc
+         - nodeX_config=file : declare file with additional commands to be applied by
+                               EAPs jboss-cli tool for each node installed
+                               X stands for the number of each node, e.g. node1_config, node2_config, etc
 
-          - debug_logging     : if present will set logging level to DEBUG
-                                Also configures TRACE logging for
-                                 - org.jboss.as.domain
-                                 - org.wildfly.security
+         - debug_logging     : if present will set logging level to DEBUG
 
-          - dump_requests     : if present will enable request dumping to log file
+         - dump_requests     : if present will enable request dumping to log file
 
-                                WARNING: enabling debug_logging and dump_requests
-                                can generate copious amount of output and can have
-                                significant impact on perforance
+                               WARNING: enabling debug_logging and dump_requests
+                               can generate copious amount of output and can have
+                               significant impact on perforance
 
-     -h : print this message
+         - install_dir       : Installation directory. Defaults to 'jboss-eap-7.2'.
+                               If specified, installation will first happen to default location
+                               and then moved to this one.
+
+         - jvm_memory        : Configures the '-Xmx' parameter of JVM. Number is assumed to imply MB.
+                               Example 'jvm_memory=4096' will be '-Xmx4096m'
+
+         Configuring an Oracle datasource
+
+         - ojdbc_location    : location of the Oracle JDBC driver
+                               Example "$PWD/oracle_jdbc_driver/ojdbc8.jar"
+
+         - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
+           oracle_port,        which is of the form
+           oracle_sid             jdbc:oracle:thin:@//ORACLE_HOST:ORACLE_PORT/ORACLE_SID
+
+         - oracle_user       : The user name to be used for connecting to Oracle DB
+
+         - oracle_pass       : The password for the Oracle user
+
+         WARNING
+         To properly configure an Oracle datasource all Oracle related
+         parameters need to be specified
+
+    -h : print this message
 
 Notes:
   - If a file named settings.xml is found in the current directory during
@@ -265,7 +312,7 @@ Notes:
       User            Role
       ----            ----
       admin           EAP admin
-      pamAdmin        rest-all,kie-server,admin,analyst,kiemgmt
+      pamAdmin        kie-server,rest-all,admin,analyst,kiemgmt,manager,user,developer,process-admin
       pamAnalyst      analyst
       pamDeveloper    developer
       pamUser         user
@@ -375,8 +422,8 @@ function modifyConfiguration() {
   #
   #   comments support : https://stackoverflow.com/a/48155918
   #
+  unset pamConfigList
   declare -a pamConfigList
-  declare -A pamConfigAr
   if [[ -r pam.config ]]; then
     while read PARAM VALUE; do
      [[ "$PARAM" =~ ^[[:space:]]*# ]] && continue
@@ -396,46 +443,45 @@ function modifyConfiguration() {
 
   # - generate random serverId if none specified
   if [ "$serverId" == "" ]; then
-    serverId='r-'`randomid`
+    serverId='r-'$(randomid)
   fi
-  tmpf=tmp.`randomid`
   # following property not required for PAM, useful for clustered deployemnts, harmless otherwise
-  prepareConfigLine "jboss.node.name"                       "${nodeConfig[nodeName]}"  
-  prepareConfigLine "jboss.tx.node.id"                      "${nodeConfig[nodeName]}"  
-  prepareConfigLine "org.kie.server.repo"                   '${jboss.server.data.dir}'  
-  prepareConfigLine "org.uberfire.nio.git.dir"              '${jboss.server.base.dir}/git'  
-  prepareConfigLine "org.uberfire.metadata.index.dir"       '${jboss.server.base.dir}/metaindex'  
-  prepareConfigLine "org.guvnor.m2repo.dir"                 '${jboss.server.base.dir}/kie'  
-  prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'  
+  prepareConfigLine "jboss.node.name"                       "${nodeConfig[nodeName]}"
+  prepareConfigLine "jboss.tx.node.id"                      "${nodeConfig[nodeName]}"
+  prepareConfigLine "org.kie.server.repo"                   '${jboss.server.data.dir}'
+  prepareConfigLine "org.uberfire.nio.git.dir"              '${jboss.server.base.dir}/git'
+  prepareConfigLine "org.uberfire.metadata.index.dir"       '${jboss.server.base.dir}/metaindex'
+  prepareConfigLine "org.guvnor.m2repo.dir"                 '${jboss.server.base.dir}/kie'
+  prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'
   # <property name="org.kie.server.domain" value="user_authntication_JAAS_LoginContext_domain_when_using_JMS"/>
   # check for settings.xml and (un)comment accordingly while copying settings.xml in place
   local keyPrefix="COMMENT" && [[ -r settings.xml ]] && cp settings.xml $EAP_HOME && keyPrefix=""
   # cPrefix='<!-- ' && cSuffix=' -->' && [[ -r settings.xml ]] && cPrefix="" && cSuffix=""
   # set kie.maven.settings.custom to your custom settings.xml
-  prepareConfigLine "${keyPrefix}:kie.maven.settings.custom"     '${jboss.home.dir}/settings.xml'  
-  prepareConfigLine "COMMENT:org.kie.server.controller.connect"  '10000_milliseconds_delay_for_controller_connect'  
-  prepareConfigLine "appformer.ssh.keys.storage.folder"          '${jboss.server.base.dir}/ssh_keys'  
+  prepareConfigLine "${keyPrefix}:kie.maven.settings.custom"     '${jboss.home.dir}/settings.xml'
+  prepareConfigLine "COMMENT:org.kie.server.controller.connect"  '10000_milliseconds_delay_for_controller_connect'
+  prepareConfigLine "appformer.ssh.keys.storage.folder"          '${jboss.server.base.dir}/ssh_keys'
   # uncomment following line to enable git hooks
-  # prepareConfigLine "org.uberfire.nio.git.hooks"                 '${jboss.home.dir}/git-hooks'  
+  # prepareConfigLine "org.uberfire.nio.git.hooks"                 '${jboss.home.dir}/git-hooks'
   # uncomment the following to set the property and modify the sample file to customize messages from git operations
-  # prepareConfigLine "appformer.git.hooks.bundle"         '${jboss.home.dir}/git-hooks/Messages.properties'  
+  # prepareConfigLine "appformer.git.hooks.bundle"         '${jboss.home.dir}/git-hooks/Messages.properties'
   # properties for Unified KIE Server setup
   # the following values must be the same on all of the KIE Execution Servers
-  prepareConfigLine "org.kie.server.persistence.ds"              'java:jboss/datasources/ExampleDS'  
-  prepareConfigLine "org.kie.server.persistence.dialect"         'org.hibernate.dialect.H2Dialect'  
-  prepareConfigLine "org.kie.executor.jms.queue"                 'queue/KIE.SERVER.EXECUTOR'  
-  prepareConfigLine "kie.keystore.keyStoreURL"                   'file:///${jboss.server.config.dir}/eigg.jceks'  
-  prepareConfigLine "kie.keystore.keyStorePwd"                   'eiggPass'  
+  prepareConfigLine "org.kie.server.persistence.ds"              'java:jboss/datasources/ExampleDS'
+  prepareConfigLine "org.kie.server.persistence.dialect"         'org.hibernate.dialect.H2Dialect'
+  prepareConfigLine "org.kie.executor.jms.queue"                 'queue/KIE.SERVER.EXECUTOR'
+  prepareConfigLine "kie.keystore.keyStoreURL"                   'file:///${jboss.server.config.dir}/eigg.jceks'
+  prepareConfigLine "kie.keystore.keyStorePwd"                   'eiggPass'
 
   if [ "$pamInstall" != "kie" ]; then
     # properties for controller/business-central in a managed KIE Server setup
-    prepareConfigLine "org.kie.server.user"                        "$kieServerUserName"  
+    prepareConfigLine "org.kie.server.user"                        "$kieServerUserName"
     #
     # following is deprecated as of RHPAM.7.4
-    # echo "$(prepareConfigLine "org.kie.server.pwd"             "$kieServerUserPasswd"  
+    # echo "$(prepareConfigLine "org.kie.server.pwd"             "$kieServerUserPasswd"
     #
-    prepareConfigLine "kie.keystore.key.server.alias"              'kieServerUser'  
-    prepareConfigLine "kie.keystore.key.server.pwd"                'kieServerUserPasswd'  
+    prepareConfigLine "kie.keystore.key.server.alias"              'kieServerUser'
+    prepareConfigLine "kie.keystore.key.server.pwd"                'kieServerUserPasswd'
   fi
 
   if [ "$pamInstall" != "controller" ]; then
@@ -449,50 +495,50 @@ function modifyConfiguration() {
     clv=${clv#,}
     nodeConfig['controllerUrl']="${clv}"
     # KIE server capabilities
-    prepareConfigLine "org.drools.server.ext.disabled"             'false'  
+    prepareConfigLine "org.drools.server.ext.disabled"             'false'
     if [[ "$TARGET_TYPE" != "DM" ]]; then
-      prepareConfigLine "org.jbpm.server.ext.disabled"             'false'  
-      prepareConfigLine "org.jbpm.ui.server.ext.disabled"          'false'  
+      prepareConfigLine "org.jbpm.server.ext.disabled"             'false'
+      prepareConfigLine "org.jbpm.ui.server.ext.disabled"          'false'
     fi
-    prepareConfigLine "org.optaplanner.server.ext.disabled"        'false'  
+    prepareConfigLine "org.optaplanner.server.ext.disabled"        'false'
     if [ "$pamInstall" == "kie" ] || [ "$pamInstall" == "both" ]; then
       #local sedclv=$(echo ${clv} | sed -e "s#/#\\\/#g")
       # properties for managed KIE Server
-      prepareConfigLine "org.kie.server.id"                        "$serverId"  
-      prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"  
-      prepareConfigLine "org.kie.server.controller"                "${clv}"  
-      prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"  
+      prepareConfigLine "org.kie.server.id"                        "$serverId"
+      prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"
+      prepareConfigLine "org.kie.server.controller"                "${clv}"
+      prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"
       # overcome 256 character limitation in process variable values
       # if you uncomment the following parameter, remember to alter your database column accordingly
       # see also: https://issues.redhat.com/browse/JBPM-4221
-      # prepareConfigLine "COMMENT:org.jbpm.var.log.length"          "1000"                    
+      # prepareConfigLine "COMMENT:org.jbpm.var.log.length"          "1000"
       #
       # deprecated after RHPAM.7.4
-      # echo '<!-- UNIQ_MARK_1 --><property name="org.kie.server.controller.pwd"  value="REPLACE_ME"/>' | sed s/REPLACE_ME/"$kieControllerUserPasswd"/g >> 
+      # echo '<!-- UNIQ_MARK_1 --><property name="org.kie.server.controller.pwd"  value="REPLACE_ME"/>' | sed s/REPLACE_ME/"$kieControllerUserPasswd"/g >>
       #
-      prepareConfigLine "kie.keystore.key.ctrl.alias"              "kieControllerUser"  
-      prepareConfigLine "kie.keystore.key.ctrl.pwd"                "kieControllerUserPasswd"  
+      prepareConfigLine "kie.keystore.key.ctrl.alias"              "kieControllerUser"
+      prepareConfigLine "kie.keystore.key.ctrl.pwd"                "kieControllerUserPasswd"
       if [[ ! -z $smartRouter ]]; then
-        prepareConfigLine "org.kie.server.router"                  "http://${smartRouter}"  
+        prepareConfigLine "org.kie.server.router"                  "http://${smartRouter}"
       fi
       # set following to false to enable Prometheus end points
-      prepareConfigLine "org.kie.prometheus.server.ext.disabled"   "true"  
+      prepareConfigLine "org.kie.prometheus.server.ext.disabled"   "true"
       # provide custom prediction service
-      # prepareConfigLine "org.jbpm.task.prediction.service" 'SMILERandomForest'  
+      # prepareConfigLine "org.jbpm.task.prediction.service" 'SMILERandomForest'
     fi
   fi
 
   # properties for controller/Business-Central
   # default is full profile
   if [ "$pamInstall" == "controller" ]; then
-    # prepareConfigLine "org.kie.active.profile"                     'full'  
+    # prepareConfigLine "org.kie.active.profile"                     'full'
     if [[ "$TARGET_TYPE" == "DM " ]]; then
       # identify itself as DecisionCentral instead of BusinessCentral
-      prepareConfigLine "org.kie.workbench.profile"          "FORCE_PLANNER_AND_RULES"    
-      prepareConfigLine "org.jbpm.designer.perspective"      "ruleflow"                   
+      prepareConfigLine "org.kie.workbench.profile"          "FORCE_PLANNER_AND_RULES"
+      prepareConfigLine "org.jbpm.designer.perspective"      "ruleflow"
     fi
   else
-    prepareConfigLine "COMMENT:org.kie.active.profile"                     'one_of_full|exec-server|ui-server'  
+    prepareConfigLine "COMMENT:org.kie.active.profile"                     'one_of_full|exec-server|ui-server'
   fi
 
   #
@@ -501,7 +547,7 @@ function modifyConfiguration() {
   if [[ -r pam.config ]]; then
     # configuration properties found at pam.config
     for key in "${!pamConfigAr[@]}"; do
-       prepareConfigLine "${key}"         "${pamConfigAr[$key]}"  
+       prepareConfigLine "${key}"         "${pamConfigAr[$key]}"
      done
   fi
   # since jboss-cli.sh in embedded mode cannot handle multiple base dirs we need to play tricksies...
@@ -512,16 +558,20 @@ function modifyConfiguration() {
   pushd $EAP_HOME/bin &> /dev/null
     local pamConfigFile=/tmp/pamConfigFile.$INSTALL_ID && [[ "$CYGWIN_ON" == "yes" ]] && pamConfigFile=$(cygpath -w ${pamConfigFile})
     echo 'embed-server' > $pamConfigFile
+    # echo 'batch' >> $pamConfigFile
     printf '%s\n' "${pamConfigList[@]}"  >> $pamConfigFile
     cat "$ADDITIONAL_NODE_CONFIG" >> $pamConfigFile
+    # echo 'run-batch' >> $pamConfigFile
     echo 'stop-embedded-server' >> $pamConfigFile
     ./jboss-cli.sh --file=$pamConfigFile
+    rm -f $TMP_FILE
   popd &> /dev/null
   if [[ "$nodedir" != "standalone" ]]; then
-    cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig 
+    cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig
     cp $EAP_HOME/standalone/configuration/standalone.xml.backup $EAP_HOME/standalone/configuration/standalone.xml
   fi
-  rm -f $tmpf* "$ADDITIONAL_NODE_CONFIG" $pamConfigFile
+  cp $pamConfigFile $pamConfigFile.keep
+  rm -f "$ADDITIONAL_NODE_CONFIG" $pamConfigFile
   # try to safeguard exposed interfaces
   local dc=2  && [[ "$CYGWIN_ON" == "yes" ]] && dc=3
   l=`grep -H -n '<interface name="management">' $xmlConfig | head -1 | cut -d':' -f$dc`;
@@ -537,28 +587,6 @@ function modifyConfiguration() {
   let lno=$((l+7))
   sed -i "${lno}s/:.*}/:$nodeIP}/" $xmlConfig
   sync
-  rm -f $tmpf*
-
-  #
-  # modify logging to output to console as well as file
-  #
-# tmpf=tmp.`randomid`
-# : > $tmpf
-# l=`grep -H -n 'periodic-rotating-file-handler' $xmlConfig | head -1 | cut -d':' -f$dc`;
-# echo '<!-- NEW_LOG_HANDLER --> <console-handler name="CONSOLE">' >> $tmpf
-# echo '<!-- NEW_LOG_HANDLER -->     <level name="INFO"/>' >> $tmpf
-# echo '<!-- NEW_LOG_HANDLER -->     <formatter>' >> $tmpf
-# echo '<!-- NEW_LOG_HANDLER -->         <named-formatter name="COLOR-PATTERN"/>' >> $tmpf
-# echo '<!-- NEW_LOG_HANDLER -->     </formatter>' >> $tmpf
-# echo '<!-- NEW_LOG_HANDLER --> </console-handler>' >> $tmpf
-# let lno=$((l-1))
-# sed -i -e "${lno}r $tmpf" $xmlConfig
-# : > $tmpf
-# l1=`grep -H -n '<root-logger>' $xmlConfig | head -1 | cut -d':' -f$dc`;
-# let l2=$((l1+2))
-# echo '<!-- NEW_LOG_HANDLER --> <handler name="CONSOLE"/>' > $tmpf
-# sed -i -e "${l2}r $tmpf" $xmlConfig
-  rm -f $tmpf*
 }
 
 #
@@ -567,32 +595,34 @@ function modifyConfiguration() {
 function startUp() {
   local nodedir=${1:-standalone}
   local nodeCounter=${2:-0}
+  local nodeInstallLocation=${3:-$EAP_HOME}
+  [[ "$CYGWIN_ON" == "yes" ]] && nodeInstallLocation=$(cygpath -w ${nodeInstallLocation})
   # nodeCounter=$((nodeCounter-1)) && [[ "$nodedir" == "standalone" ]] && nodeCounter=0
   # local nodeOffset=$((nodeCounter*100))
   # local nodePort=$((basePort+nodeOffset))
   # nodeOffset=$((nodePort-8080))
   local nodeOffset=${nodeConfig['nodeOffset']}
-  local startScript=gopam.sh
+  local startScript=go_"$(basename ${EAP_LOCATION:-$EAP_HOME})".sh
   [[ "$nodeCounter" -gt 0 ]] && startScript=go${nodedir}.sh
   nodeConfig['startScript']="$startScript"
   cat << __GOPAM > $startScript
   #!/bin/bash
 
   #
-  # usage: ./gopam.sh configuration-xml IP-to-bind-to port-offset
+  # usage: ./${startScript} configuration-xml IP-to-bind-to port-offset
   #
   # example: ./${startScript}
-  #          by default will start on localhost with standalone.xml and default ports (8080)
+  #          by default will start on 0.0.0.0 with standalone.xml and default ports (8080)
   #
   #          ./${startScript} standalone.xml 0.0.0.0 100
   #          will start with standalone.xml binding on all IPs and on port 8180 (port offset 100)
 
   JBOSS_CONFIG=\${1:-standalone.xml}
-  JBOSS_BIND=\${2:-localhost}
+  JBOSS_BIND=\${2:-0.0.0.0}
   JBOSS_PORT_OFFSET=\${3:-$nodeOffset}
   [[ "\$JBOSS_PORT_OFFSET" != "0" ]] && JBOSS_PORT_OFFSET="-Djboss.socket.binding.port-offset=\$JBOSS_PORT_OFFSET"
   [[ "\$JBOSS_PORT_OFFSET" == "0" ]] && JBOSS_PORT_OFFSET=" "
-  [[ -z "\$JBOSS_HOME" ]] && JBOSS_HOME="$EAP_HOME"
+  [[ -z "\$JBOSS_HOME" ]] && JBOSS_HOME="$nodeInstallLocation"
   CLI_OPTIONS=" -Djava.security.egd=file:/dev/./urandom "
   if [[ \$(uname | grep -i CYGWIN) ]]; then
     JBOSS_HOME=\$(cygpath -w \${JBOSS_HOME})
@@ -617,36 +647,29 @@ function applyAdditionalNodeConfig() {
   local k="${nodeConfig[nodeCounter]}_config"
   local nodeOffset=${nodeConfig['nodeOffset']}
   local default_config="$WORKDIR/addons/$k"
-  # initialise node config
+  local -a ncfg
   : > "$ADDITIONAL_NODE_CONFIG"
   # have logging to CONSOLE as well as to FILE
-cat << "__ADDITIONAL_NODE_CONFIG_1" > "$ADDITIONAL_NODE_CONFIG"
-batch
-/subsystem=logging/console-handler=CONSOLE:add
-/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)
-/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)
-/subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])
-/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=INFO)
-run-batch
-__ADDITIONAL_NODE_CONFIG_1
-  # CORS 
-cat << "__ADDITIONAL_NODE_CONFIG_2" >> "$ADDITIONAL_NODE_CONFIG"
-batch
-/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Origin:add(header-name="Access-Control-Allow-Origin", header-value="*")
-/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Origin/:add()
-/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Methods:add(header-name="Access-Control-Allow-Methods",header-value="GET,POST, OPTIONS, PUT, DELETE")
-/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Methods/:add()
-/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Headers:add(header-name="Access-Control-Allow-Headers",header-value="accept, authorization,content-type, x-requested-with")
-/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Headers/:add()
-/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Credentials:add(header-name="Access-Control-Allow-Credentials", header-value="true")
-/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Credentials/:add()
-/subsystem=undertow/configuration=filter/response-header=Access-Control-Max-Age:add(header-name="Access-Control-Max-Age",header-value="2")
-/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Max-Age/:add()
-run-batch
-__ADDITIONAL_NODE_CONFIG_2
+  ncfg+=( "batch" )
+  ncfg+=( "/subsystem=logging/console-handler=CONSOLE:add" )
+  ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)" )
+  ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)" )
+  ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])' )
+  ncfg+=( "/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=INFO)" )
+  # CORS
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Origin:add(header-name="Access-Control-Allow-Origin", header-value="*")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Origin/:add()' )
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Methods:add(header-name="Access-Control-Allow-Methods",header-value="GET,POST, OPTIONS, PUT, DELETE")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Methods/:add()' )
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Headers:add(header-name="Access-Control-Allow-Headers",header-value="accept, authorization,content-type, x-requested-with")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Headers/:add()' )
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Credentials:add(header-name="Access-Control-Allow-Credentials", header-value="true")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Credentials/:add()' )
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Max-Age:add(header-name="Access-Control-Max-Age",header-value="2")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Max-Age/:add()' )
   # apply node offset
   if [[ "$nodeOffset" != 0 ]]; then
-    echo "/socket-binding-group=standard-sockets/:write-attribute(name=port-offset,value=\${jboss.socket.binding.port-offset:$nodeOffset})" >> "$ADDITIONAL_NODE_CONFIG"
+    ncfg+=( "/socket-binding-group=standard-sockets/:write-attribute(name=port-offset,value=\${jboss.socket.binding.port-offset:$nodeOffset})" )
   fi
   #
   # apply any node specific configuration
@@ -659,17 +682,48 @@ __ADDITIONAL_NODE_CONFIG_2
      cat "${configOptions[$k]}" >> "$ADDITIONAL_NODE_CONFIG"
   fi
   if [[ ! -z "${configOptions[dump_requests]}" ]]; then
-     echo '/subsystem=undertow/configuration=filter/expression-filter=requestDumperExpression:add(expression="dump-request")' >> "$ADDITIONAL_NODE_CONFIG"
-     echo "/subsystem=undertow/server=default-server/host=default-host/filter-ref=requestDumperExpression:add" >> "$ADDITIONAL_NODE_CONFIG"
+     ncfg+=( '/subsystem=undertow/configuration=filter/expression-filter=requestDumperExpression:add(expression="dump-request")' )
+     ncfg+=( "/subsystem=undertow/server=default-server/host=default-host/filter-ref=requestDumperExpression:add" )
   fi
   if [[ ! -z "${configOptions[debug_logging]}" ]]; then
-     echo '/subsystem=logging/logger=org.jboss.as.domain/:add(category=org.jboss.as.domain,level=TRACE)' >> "$ADDITIONAL_NODE_CONFIG"
-     echo '/subsystem=logging/logger=org.wildfly.security/:add(category=org.wildfly.security,level=TRACE)' >> "$ADDITIONAL_NODE_CONFIG"
-     echo '/subsystem=logging/root-logger=ROOT/:undefine-attribute(name=level)' >> "$ADDITIONAL_NODE_CONFIG"
-     echo '/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=DEBUG)' >> "$ADDITIONAL_NODE_CONFIG"
-     echo '/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=DEBUG)' >> "$ADDITIONAL_NODE_CONFIG"
+     ncfg+=( '/subsystem=logging/logger=org.jboss.as.domain/:add(category=org.jboss.as.domain,level=TRACE)' )
+     ncfg+=( '/subsystem=logging/logger=org.wildfly.security/:add(category=org.wildfly.security,level=TRACE)' )
+     ncfg+=( '/subsystem=logging/root-logger=ROOT/:undefine-attribute(name=level)' )
+     ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=DEBUG)' )
+     ncfg+=( '/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=DEBUG)' )
   fi
-}
+  local oracle_keys="ojdbc_location oracle_host oracle_port oracle_sid oracle_user oracle_pass"
+  local osum=""
+  for okey in $oracle_keys; do
+    local tmp="${configOptions[$okey]}"
+    [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]] && osum="$osum $tmp"
+  done
+  osum="${osum//\ /}"
+  if [[ -n "$osum" ]]; then
+    local o1='module add --name=com.oracle --resources="@@OJDBC_LOCATION@@" --dependencies=javax.api,javax.transaction.api'
+    local o2='/subsystem=datasources/jdbc-driver=oracle:add(driver-name=oracle,driver-module-name=com.oracle,driver-xa-datasource-class-name=oracle.jdbc.xa.client.OracleXADataSource)'
+    local o3='data-source add --name=OracleDS --jndi-name=java:jboss/OracleDS --driver-name=oracle --connection-url=jdbc:oracle:thin:@//@@ORACLE_HOST@@:@@ORACLE_PORT@@/@@ORACLE_SID@@ --user-name=@@ORACLE_USER@@ --password=@@ORACLE_PASS@@ --jta=true --use-ccm=true --use-java-context=true --enabled=true --max-pool-size=10 --min-pool-size=5 --flush-strategy="FailingConnectionOnly"'
+    pamConfigAr[hibernate.hbm2ddl.auto]="none"
+    pamConfigAr[org.kie.server.persistence.ds]="java:jboss/OracleDS"
+    pamConfigAr[org.kie.server.persistence.dialect]="org.hibernate.dialect.Oracle10gDialect"
+    for okey in $oracle_keys; do
+      local tmp="${configOptions[$okey]}"
+      if [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]]; then
+        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | sed 's]\\]\\\\]g')
+        # when mac is going to get a proper bash?
+        local skey='@@'`echo $okey | awk '{ print toupper($0); }'`'@@'
+        o1=$(echo "$o1" | sed --expression="s]$skey]$tmp]g")
+        o2=$(echo "$o2" | sed --expression="s]$skey]$tmp]g")
+        o3=$(echo "$o3" | sed --expression="s]$skey]$tmp]g")
+      fi
+    done
+    [[ "$nodedir" == "standalone" ]] && ncfg+=( "$o1" )
+    ncfg+=( "$o2" )
+    ncfg+=( "$o3" )
+  fi
+  ncfg+=( "run-batch" )
+  printf '%s\n' "${ncfg[@]}"  >> "$ADDITIONAL_NODE_CONFIG"
+ }
 
 
 function prepareConfigDB() {
@@ -697,7 +751,7 @@ function nodeConfigSave() {
   local pi=""
   for pi in ${nodeConfig['pamInstall']}; do
     sql="insert or ignore into pamrc (installId,pamInstall,nodeName,nodeBase,nodeOffset,nodePort,controllerUrl,installDir,pamTarget,startScript,nodeCounter) values ("
-    sql="${sql}'$INSTALL_ID','$pi','${nodeConfig[nodeName]}','${nodeConfig[nodeBase]}','${nodeConfig[nodeOffset]}','${nodeConfig[nodePort]}','${nodeConfig[controllerUrl]}','$INSTALL_DIR','$target','${nodeConfig[startScript]}','${nodeConfig[nodeCounter]}')"
+    sql="${sql}'$INSTALL_ID','$pi','${nodeConfig[nodeName]}','${nodeConfig[nodeBase]}','${nodeConfig[nodeOffset]}','${nodeConfig[nodePort]}','${nodeConfig[controllerUrl]}','$EAP_HOME','$target','${nodeConfig[startScript]}','${nodeConfig[nodeCounter]}')"
     sqlite3 $CONFIG_DB "${sql};"
   done
 }
@@ -706,7 +760,7 @@ function nodeConfigSave() {
 # - end of function definitions
 #
 
-INSTALL_ID=`randomid`
+TMP_FILE=tmp_file.$(randomid)
 
 #
 # - try to detect CYGWIN
@@ -723,7 +777,6 @@ WORKDIR=$PWD
 [[ "$CYGWIN_ON" == "yes" ]] && WORKDIR=$(cygpath -w ${WORKDIR})
 
 CONFIG_DB="$WORKDIR"/pam-config.db
-ADDITIONAL_NODE_CONFIG=/tmp/additionalNodeConfig.$INSTALL_ID  && [[ "$CYGWIN_ON" == "yes" ]] && ADDITIONAL_NODE_CONFIG=$(cygpath -w ${ADDITIONAL_NODE_CONFIG})
 
 pamTargets=`extractHeaders`
 TARGET_CONFIG=target.conf
@@ -870,16 +923,26 @@ EAP_PATCH_ZIP="$eap_patch_file_found"
 installPAM=yes
 [[ ! -r $PAM_ZIP ]] && sout "WARNING: Cannot read PAM ZIP file $PAM_ZIP -- will proceed without it" && installPAM=no && patchPAM=no
 
-skip_install=no && [[ -d $INSTALL_DIR ]] && sout "INFO: Installation detected at $INSTALL_DIR -- skipping installation" && skip_install=yes
+EAP_HOME="$WORKDIR/$INSTALL_DIR"
+EAP_LOCATION="${configOptions[install_dir]}"
+( [[ "$EAP_LOCATION" == "1" ]] || [[ -z "$EAP_LOCATION" ]] ) && EAP_LOCATION="pam" 
 
-EAP_HOME=$WORKDIR/$INSTALL_DIR
+skip_install=no && [[ -d $INSTALL_DIR ]]  && sout "INFO: Installation detected at $INSTALL_DIR -- skipping installation" && skip_install=yes
+[[ "$skip_install" == "no" ]] && [[ -d $EAP_HOME ]] && sout "INFO: Installation detected at $EAP_HOME -- skipping installation" && skip_install=yes
+
+if [[ ! -z "$EAP_LOCATION" ]]; then
+  eap_location_created=no
+  EAP_LOCATION="$WORKDIR/$EAP_LOCATION"
+  mkdir -p "$EAP_LOCATION"&>/dev/null && eap_location_created=yes
+  [[ "$eap_location_created" == "no" ]] && sout "ERROR: $EAP_LOCATION CANNOT BE CREATED - ABORTING" && exit 1
+fi
 
 if [ "$skip_install" != "yes" ]; then
   #
-  sout "Installing EAP at $EAP_HOME using $EAP7_ZIP"
+  sout "Installing EAP at ${EAP_LOCATION:-$EAP_HOME} using $EAP7_ZIP"
   unzip -qq $EAP7_ZIP
   summary "Installed EAP using :- $EAP7_ZIP"
-  summary "EAP install location :- $INSTALL_DIR"
+  summary "EAP install location :- ${EAP_LOCATION:-$EAP_HOME}"
   #
   cd $EAP_HOME
   if [[ "$patchEAP" == "yes" ]]; then
@@ -915,6 +978,10 @@ if [ "$skip_install" != "yes" ]; then
   if [[ "$installPAM" == "yes" ]]; then
     save_pamInstall=''
     for node in `seq 1 $multiNode`; do
+      INSTALL_ID=$(randomid)
+      ADDITIONAL_NODE_CONFIG=/tmp/additionalNodeConfig.$INSTALL_ID  && [[ "$CYGWIN_ON" == "yes" ]] && ADDITIONAL_NODE_CONFIG=$(cygpath -w ${ADDITIONAL_NODE_CONFIG})
+      unset pamConfigAr
+      declare -A pamConfigAr
       declare -A nodeConfig
       save_pamInstall=$pamInstall
       [[ "$node" -eq 1 ]] && [[ "$pamInstall" == "multi" ]] && pamInstall=both
@@ -929,6 +996,8 @@ if [ "$skip_install" != "yes" ]; then
       nodeOffset=$((nodePort-8080))
       nodeConfig['nodeOffset']=$nodeOffset
       nodeConfig['nodePort']=$nodePort
+      nodeConfig['eap_location']="$EAP_LOCATION"
+      jvm_memory=${configOptions[jvm_memory]} && [[ ! -z "jvm_memory" ]] && nodeConfig['jvm_memory']="$jvm_memory"
       sout "Installing ${bold}${blue}node${node}${normal} as ${bold}${blue}${nodeConfig[nodeName]}${normal}"
       summary "--- Node instalation node${node} as $nodeParam : ${nodeConfig[nodeName]}"
       ( [[ "$pamInstall" == "controller" ]] || [[ "$pamInstall" == "both" ]] ) && installBC && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} controller"
@@ -936,7 +1005,8 @@ if [ "$skip_install" != "yes" ]; then
       installUsers $nodeParam
       applyAdditionalNodeConfig $nodeParam
       modifyConfiguration $nodeParam
-      startUp $nodeParam $nodeCounter
+      [[ ! -z "$jvm_memory" ]] && echo 'JAVA_OPTS="$JAVA_OPTS -Xmx'$jvm_memory'm "' >> "${EAP_HOME}/bin/standalone.conf"
+      startUp $nodeParam $nodeCounter "$EAP_LOCATION"
       # declare -p nodeConfig
       nodeConfigSave
       pamInstall=$save_pamInstall
@@ -966,16 +1036,25 @@ if [ "$skip_install" != "yes" ]; then
       chmod 744 post-commit
     fi
   popd &> /dev/null
+  # copy to EAP_LOCATION if defined
+  if [[ ! -z "$EAP_LOCATION" ]]; then
+    cp -r "$EAP_HOME"/* "$EAP_LOCATION"
+    rm -rf "$EAP_HOME"
+  fi
   # print summary of installation
   summary " "
   prettyPrinter "${summaryAr[@]}"
 fi  # - end of skip_install check
 
+rm -f $TMP_FILE
 
 # - for debugging, enable command output, stop on first error
 # set -x
 # set -e
 
+timeElapsed
+
 #
 # - end of script
 #
+
