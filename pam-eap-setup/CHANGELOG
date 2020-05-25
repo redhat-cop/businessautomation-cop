@@ -1,12 +1,15 @@
 
 # CHANGELOG
 
+-- RELEASE: 25 MAY 2020 --
+
 -- PAM: Added configuration for Oracle datasource
         Added configurabe installation directory
         Added JVM -Xmx configuration support
         Documented DEBUG logging, Oracle datasource definition, specifying install location
         Refactored more configuration to use EAP CLI commands
         Tested against JBoss EAP patch 8
+-- PAM: Regression prevented applying EAP configuration
 
 -- RELEASE: 12 MAY 2020 --
 

@@ -674,7 +674,6 @@ function applyAdditionalNodeConfig() {
   #
   # apply any node specific configuration
   #
-  [[ ! -r "$default_config" ]] && [[ ! -r "${configOptions[$k]}" ]] && [[ -z "${configOptions[debug_logging]}" ]] && [[ -z "${configOptions[dump_requests]}" ]] && return
   [[ -r "$default_config" ]] && cat "$default_config" >> "$ADDITIONAL_NODE_CONFIG"
   #
   if [[ -r "${configOptions[$k]}" ]]; then
