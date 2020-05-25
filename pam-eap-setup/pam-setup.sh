@@ -570,7 +570,6 @@ function modifyConfiguration() {
     cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig
     cp $EAP_HOME/standalone/configuration/standalone.xml.backup $EAP_HOME/standalone/configuration/standalone.xml
   fi
-  cp $pamConfigFile $pamConfigFile.keep
   rm -f "$ADDITIONAL_NODE_CONFIG" $pamConfigFile
   # try to safeguard exposed interfaces
   local dc=2  && [[ "$CYGWIN_ON" == "yes" ]] && dc=3
