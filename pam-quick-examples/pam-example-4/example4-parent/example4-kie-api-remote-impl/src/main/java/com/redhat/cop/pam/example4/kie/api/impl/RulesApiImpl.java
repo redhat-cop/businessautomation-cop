@@ -32,7 +32,7 @@ public class RulesApiImpl implements RulesApi {
 
     private static final String PASSWORD = "Pa$$w0rd";
 
-    private static final String CONTAINER_ID = "com.redhat.cop.pam:example4-kjar:1.0";
+    private static final String CONTAINER_ID = "com.redhat.cop.pam:example4-process-kjar:1.0";
 
     private KieServicesClient kieServicesClient;
 
