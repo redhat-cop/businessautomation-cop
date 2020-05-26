@@ -570,7 +570,6 @@ function modifyConfiguration() {
     cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig
     cp $EAP_HOME/standalone/configuration/standalone.xml.backup $EAP_HOME/standalone/configuration/standalone.xml
   fi
-  cp $pamConfigFile $pamConfigFile.keep
   rm -f "$ADDITIONAL_NODE_CONFIG" $pamConfigFile
   # try to safeguard exposed interfaces
   local dc=2  && [[ "$CYGWIN_ON" == "yes" ]] && dc=3
@@ -674,7 +673,6 @@ function applyAdditionalNodeConfig() {
   #
   # apply any node specific configuration
   #
-  [[ ! -r "$default_config" ]] && [[ ! -r "${configOptions[$k]}" ]] && [[ -z "${configOptions[debug_logging]}" ]] && [[ -z "${configOptions[dump_requests]}" ]] && return
   [[ -r "$default_config" ]] && cat "$default_config" >> "$ADDITIONAL_NODE_CONFIG"
   #
   if [[ -r "${configOptions[$k]}" ]]; then
