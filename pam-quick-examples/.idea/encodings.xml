@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api-embedded-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api-embedded-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api-remote-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api-remote-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-model/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-model/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-services-api-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-services-api-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-services-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-services-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-quarkus-embedded/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-quarkus-embedded/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-quarkus-remote/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-springboot-embedded/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-springboot-embedded/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-springboot-remote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-1/example1-springboot-remote/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-functions/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api-embedded-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api-embedded-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api-remote-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api-remote-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-model/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-model/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-services-api-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-services-api-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-services-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-services-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-quarkus-embedded/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-quarkus-embedded/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-quarkus-remote/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-springboot-embedded/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-springboot-embedded/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-springboot-remote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-2/example2-springboot-remote/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-functions/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api-embedded-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api-embedded-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api-remote-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api-remote-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-model/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-model/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-services-api-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-services-api-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-services-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-services-api/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="example1-springboot-embedded" />
+        <module name="example1-model" />
+        <module name="example2-kie-api" />
+        <module name="example2-quarkus-remote" />
+        <module name="example3-services-api" />
+        <module name="example1-quarkus-remote" />
+        <module name="example2-model" />
+        <module name="example3-kjar" />
+        <module name="example3-functions" />
+        <module name="example1-springboot-remote" />
+        <module name="example1-kie-api-embedded-impl" />
+        <module name="example2-quarkus-embedded" />
+        <module name="example3-model" />
+        <module name="example2-kjar" />
+        <module name="example1-services-api-impl" />
+        <module name="example2-services-api-impl" />
+        <module name="example1-kie-api" />
+        <module name="example3-kie-api-remote-impl" />
+        <module name="example2-kie-api-remote-impl" />
+        <module name="example1-kie-api-remote-impl" />
+        <module name="example1-services-api" />
+        <module name="example3-kie-api-embedded-impl" />
+        <module name="example1-quarkus-embedded" />
+        <module name="example2-springboot-remote" />
+        <module name="example3-kie-api" />
+        <module name="example2-kie-api-embedded-impl" />
+        <module name="example1-kjar" />
+        <module name="example3-services-api-impl" />
+        <module name="example2-functions" />
+        <module name="example2-services-api" />
+        <module name="example2-springboot-embedded" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="example1-kie-api" target="1.8" />
+      <module name="example1-kie-api-embedded-impl" target="1.8" />
+      <module name="example1-kie-api-remote-impl" target="1.8" />
+      <module name="example1-kjar" target="1.5" />
+      <module name="example1-model" target="1.8" />
+      <module name="example1-parent" target="1.8" />
+      <module name="example1-quarkus-embedded" target="1.8" />
+      <module name="example1-quarkus-remote" target="1.8" />
+      <module name="example1-services-api" target="1.8" />
+      <module name="example1-services-api-impl" target="1.8" />
+      <module name="example1-springboot-embedded" target="1.8" />
+      <module name="example1-springboot-remote" target="1.8" />
+      <module name="example2-functions" target="1.8" />
+      <module name="example2-kie-api" target="1.8" />
+      <module name="example2-kie-api-embedded-impl" target="1.8" />
+      <module name="example2-kie-api-remote-impl" target="1.8" />
+      <module name="example2-kjar" target="1.5" />
+      <module name="example2-model" target="1.8" />
+      <module name="example2-parent" target="1.8" />
+      <module name="example2-quarkus-embedded" target="1.8" />
+      <module name="example2-quarkus-remote" target="1.8" />
+      <module name="example2-services-api" target="1.8" />
+      <module name="example2-services-api-impl" target="1.8" />
+      <module name="example2-springboot-embedded" target="1.8" />
+      <module name="example2-springboot-remote" target="1.8" />
+      <module name="example3-functions" target="1.8" />
+      <module name="example3-kie-api" target="1.8" />
+      <module name="example3-kie-api-embedded-impl" target="1.8" />
+      <module name="example3-kie-api-remote-impl" target="1.8" />
+      <module name="example3-kjar" target="1.5" />
+      <module name="example3-model" target="1.8" />
+      <module name="example3-parent" target="1.8" />
+      <module name="example3-services-api" target="1.8" />
+      <module name="example3-services-api-impl" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

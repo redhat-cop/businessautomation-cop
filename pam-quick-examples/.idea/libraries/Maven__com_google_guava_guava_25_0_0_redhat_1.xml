@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.google.guava:guava:25.0.0.redhat-1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/25.0.0.redhat-1/guava-25.0.0.redhat-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/25.0.0.redhat-1/guava-25.0.0.redhat-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/25.0.0.redhat-1/guava-25.0.0.redhat-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api/example1-kie-api.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api/example1-kie-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api-embedded-impl/example1-kie-api-embedded-impl.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api-embedded-impl/example1-kie-api-embedded-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api-remote-impl/example1-kie-api-remote-impl.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-parent/example1-kie-api-remote-impl/example1-kie-api-remote-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-kjar/example1-kjar.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-kjar/example1-kjar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-model/example1-model.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-parent/example1-model/example1-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-parent.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-parent/example1-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-quarkus-embedded/example1-quarkus-embedded.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-quarkus-embedded/example1-quarkus-embedded.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-quarkus-remote/example1-quarkus-remote.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-quarkus-remote/example1-quarkus-remote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-services-api/example1-services-api.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-parent/example1-services-api/example1-services-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-parent/example1-services-api-impl/example1-services-api-impl.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-parent/example1-services-api-impl/example1-services-api-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-springboot-embedded/example1-springboot-embedded.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-springboot-embedded/example1-springboot-embedded.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-1/example1-springboot-remote/example1-springboot-remote.iml" filepath="$PROJECT_DIR$/pam-example-1/example1-springboot-remote/example1-springboot-remote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-functions/example2-functions.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-parent/example2-functions/example2-functions.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api/example2-kie-api.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api/example2-kie-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api-embedded-impl/example2-kie-api-embedded-impl.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api-embedded-impl/example2-kie-api-embedded-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api-remote-impl/example2-kie-api-remote-impl.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-parent/example2-kie-api-remote-impl/example2-kie-api-remote-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-kjar/example2-kjar.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-kjar/example2-kjar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-model/example2-model.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-parent/example2-model/example2-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-parent.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-parent/example2-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-quarkus-embedded/example2-quarkus-embedded.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-quarkus-embedded/example2-quarkus-embedded.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-quarkus-remote/example2-quarkus-remote.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-quarkus-remote/example2-quarkus-remote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-services-api/example2-services-api.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-parent/example2-services-api/example2-services-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-parent/example2-services-api-impl/example2-services-api-impl.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-parent/example2-services-api-impl/example2-services-api-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-springboot-embedded/example2-springboot-embedded.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-springboot-embedded/example2-springboot-embedded.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-2/example2-springboot-remote/example2-springboot-remote.iml" filepath="$PROJECT_DIR$/pam-example-2/example2-springboot-remote/example2-springboot-remote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-functions/example3-functions.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-parent/example3-functions/example3-functions.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api/example3-kie-api.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api/example3-kie-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api-embedded-impl/example3-kie-api-embedded-impl.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api-embedded-impl/example3-kie-api-embedded-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api-remote-impl/example3-kie-api-remote-impl.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-parent/example3-kie-api-remote-impl/example3-kie-api-remote-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-kjar/example3-kjar.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-kjar/example3-kjar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-model/example3-model.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-parent/example3-model/example3-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-parent.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-parent/example3-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-services-api/example3-services-api.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-parent/example3-services-api/example3-services-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pam-example-3/example3-parent/example3-services-api-impl/example3-services-api-impl.iml" filepath="$PROJECT_DIR$/pam-example-3/example3-parent/example3-services-api-impl/example3-services-api-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pam-quick-examples.iml" filepath="$PROJECT_DIR$/.idea/pam-quick-examples.iml" />
+    </modules>
+  </component>
+</project>
