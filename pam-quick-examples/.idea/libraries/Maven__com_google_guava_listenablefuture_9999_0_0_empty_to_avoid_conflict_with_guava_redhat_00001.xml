@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.google.guava:listenablefuture:9999.0.0.empty-to-avoid-conflict-with-guava-redhat-00001">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/listenablefuture/9999.0.0.empty-to-avoid-conflict-with-guava-redhat-00001/listenablefuture-9999.0.0.empty-to-avoid-conflict-with-guava-redhat-00001.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/listenablefuture/9999.0.0.empty-to-avoid-conflict-with-guava-redhat-00001/listenablefuture-9999.0.0.empty-to-avoid-conflict-with-guava-redhat-00001-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/listenablefuture/9999.0.0.empty-to-avoid-conflict-with-guava-redhat-00001/listenablefuture-9999.0.0.empty-to-avoid-conflict-with-guava-redhat-00001-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

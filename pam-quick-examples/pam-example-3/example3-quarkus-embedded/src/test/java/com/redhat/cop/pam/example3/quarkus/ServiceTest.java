@@ -1,6 +1,5 @@
 package com.redhat.cop.pam.example3.quarkus;
 
-
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import com.redhat.cop.pam.example3.CanOpenAccountResults;

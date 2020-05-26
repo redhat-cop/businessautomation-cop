@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.eclipse.sisu:org.eclipse.sisu.inject.extender:0.3.2.redhat-00002">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/sisu/org.eclipse.sisu.inject.extender/0.3.2.redhat-00002/org.eclipse.sisu.inject.extender-0.3.2.redhat-00002.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/sisu/org.eclipse.sisu.inject.extender/0.3.2.redhat-00002/org.eclipse.sisu.inject.extender-0.3.2.redhat-00002-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/sisu/org.eclipse.sisu.inject.extender/0.3.2.redhat-00002/org.eclipse.sisu.inject.extender-0.3.2.redhat-00002-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
