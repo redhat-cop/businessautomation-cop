@@ -10,6 +10,9 @@
 |*pam-example-2*
 |This example show how invoke a java function from DMN to check if a Customer can open a bank account(is underage or not)
 
+|*pam-example-3*
+|This example show how invoke a DMN from a process
+
 |===
 
 
