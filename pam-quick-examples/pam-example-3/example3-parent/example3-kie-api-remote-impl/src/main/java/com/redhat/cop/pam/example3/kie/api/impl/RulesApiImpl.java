@@ -8,16 +8,16 @@ import org.kie.dmn.api.core.DMNDecisionResult;
 import org.kie.dmn.api.core.DMNMessage;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.server.api.model.ServiceResponse;
-import org.kie.server.client.DMNServicesClient;
-import org.kie.server.client.KieServicesClient;
-import org.kie.server.client.KieServicesConfiguration;
-import org.kie.server.client.KieServicesFactory;
+import org.kie.server.api.model.instance.ProcessInstance;
+import org.kie.server.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,10 +31,6 @@ public class RulesApiImpl implements RulesApi {
     private static final String USER = "kieServerUser";
 
     private static final String PASSWORD = "Pa$$w0rd";
-
-    private static final String NAMESPACE = "https://pam.cop.redhat.com/example3/dmn";
-
-    private static final String MODEL_NAME = "customer-can-open-account";
 
     private static final String CONTAINER_ID = "com.redhat.cop.pam:example3-kjar:1.0";
 
@@ -52,23 +48,12 @@ public class RulesApiImpl implements RulesApi {
 
     @Override
     public CanOpenAccountResults canOpenAccount(final Customer customer) {
-        final DMNServicesClient dmnClient = kieServicesClient.getServicesClient(DMNServicesClient.class );
-        final DMNContext dmnContext = dmnClient.newContext();
-        dmnContext.set("customer", customer);
-        final ServiceResponse<DMNResult> serviceResponse = dmnClient.evaluateAll(CONTAINER_ID, NAMESPACE, MODEL_NAME, dmnContext);
-        final DMNResult dmnResult = serviceResponse.getResult();
-        return extractResult(dmnResult);
+        final ProcessServicesClient processServicesClient = kieServicesClient.getServicesClient(ProcessServicesClient.class);
+        final QueryServicesClient queryServicesClient = kieServicesClient.getServicesClient(QueryServicesClient.class);
+        final Map<String, Object> processParameters = new HashMap<>();
+        processParameters.put("customerProcessVar", customer);
+        final Long processInstanceId = processServicesClient.startProcess(CONTAINER_ID,"example3-kjar.customer-can-open-account", processParameters);
+        final ProcessInstance processInstance = queryServicesClient.findProcessInstanceById(processInstanceId, true);
+        return CanOpenAccountResults.valueOf((String)processInstance.getVariables().get("canOpenAccountProcessVar"));
     }
-
-    private CanOpenAccountResults extractResult(final DMNResult dmnResult) {
-        final DMNDecisionResult decisionResults = dmnResult.getDecisionResultByName("can open account");
-        if(decisionResults.hasErrors()){
-            final String errors = dmnResult.getMessages(DMNMessage.Severity.ERROR).stream()
-                    .map(message -> message.toString())
-                    .collect(Collectors.joining(", "));
-            throw new RuntimeException("DMN Error messages {" + errors + "}");
-        }
-        return CanOpenAccountResults.valueOf(String.valueOf(decisionResults.getResult()));
-    }
-
 }
