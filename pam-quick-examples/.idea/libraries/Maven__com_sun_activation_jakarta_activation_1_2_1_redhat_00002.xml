@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sun.activation:jakarta.activation:1.2.1.redhat-00002">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/activation/jakarta.activation/1.2.1.redhat-00002/jakarta.activation-1.2.1.redhat-00002.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/activation/jakarta.activation/1.2.1.redhat-00002/jakarta.activation-1.2.1.redhat-00002-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/activation/jakarta.activation/1.2.1.redhat-00002/jakarta.activation-1.2.1.redhat-00002-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

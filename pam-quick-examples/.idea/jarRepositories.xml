@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteRepositoriesConfiguration">
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Central Repository" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Maven Central repository" />
+      <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss-public-repository-group" />
+      <option name="name" value="JBoss Public Maven Repository Group" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/groups/public-jboss/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="fusesource-ea" />
+      <option name="name" value="JBoss Community Early Access Release Repository" />
+      <option name="url" value="https://repo.fusesource.com/nexus/content/groups/ea" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="fuse-public-repository" />
+      <option name="name" value="FuseSource Community Release Repository" />
+      <option name="url" value="https://repo.fusesource.com/nexus/content/groups/public" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven-central-2" />
+      <option name="name" value="Central Repository for Maven builds(repo2)" />
+      <option name="url" value="https://repo1.maven.org/maven2/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss-public-repository-group-1" />
+      <option name="name" value="JBoss Public Maven Repository Group" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/groups/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven-central-1" />
+      <option name="name" value="Central Repository for Maven builds(repo1)" />
+      <option name="url" value="https://repo.maven.apache.org/maven2/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss.community" />
+      <option name="name" value="JBoss Community repository" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven-redhat" />
+      <option name="name" value="Repository for Maven builds" />
+      <option name="url" value="https://maven.repository.redhat.com/earlyaccess/all" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="redhat-ga-repository" />
+      <option name="name" value="Red Hat GA repository" />
+      <option name="url" value="https://maven.repository.redhat.com/ga/" />
+    </remote-repository>
+  </component>
+</project>

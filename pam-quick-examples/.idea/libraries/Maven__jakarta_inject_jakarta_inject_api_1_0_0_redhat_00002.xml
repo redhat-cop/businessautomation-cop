@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: jakarta.inject:jakarta.inject-api:1.0.0.redhat-00002">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/inject/jakarta.inject-api/1.0.0.redhat-00002/jakarta.inject-api-1.0.0.redhat-00002.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/inject/jakarta.inject-api/1.0.0.redhat-00002/jakarta.inject-api-1.0.0.redhat-00002-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/inject/jakarta.inject-api/1.0.0.redhat-00002/jakarta.inject-api-1.0.0.redhat-00002-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
