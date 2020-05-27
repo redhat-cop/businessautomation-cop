@@ -354,6 +354,8 @@ System properties set also include
 - `org.kie.server.persistence.ds` set to `java:jboss/OracleDS`
 - `org.kie.server.persistence.dialect` set to `org.hibernate.dialect.Oracle10gDialect`
 
+It is also advisable to check whether KB4460791 [What is the supported oracle dialect for RHPAM 7?](https://access.redhat.com/solutions/4460791) is applicable in your case. If it is, just uncomment the relevant line in the `pam.config` file and (re)run the installation.
+
 ---
 > Written with [StackEdit](https://stackedit.io/).
 > ASCII charts with the help of [ASCIIFlow](http://asciiflow.com/)
