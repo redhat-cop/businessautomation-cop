@@ -1,6 +1,10 @@
 
 # CHANGELOG
 
+-- RELEASE: 27 MAY 2020 --
+
+-- PAM : Added PAM.7.7.1
+
 -- RELEASE: 25 MAY 2020 --
 
 -- PAM: Added configuration for Oracle datasource

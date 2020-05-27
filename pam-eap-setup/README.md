@@ -19,7 +19,7 @@ Supported (i.e. tested) versions:
   - patch level 7.2.1 supported for PAM.7.3.1
   - patch level 7.2.2 supported for PAM.7.4
   - patch level 7.2.x onwards supported for 7.5 and later
-- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0
+- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1
 - DM version 7.3.1, 7.4.1, 7.6.0
 
 For details about node configuration check out [Nodes Configuration](#nodes-configuration) section at the end of this document. Also:
@@ -124,6 +124,7 @@ Depending on PAM version the following files are required:
         | 7.5.1     | rhpam-7.5.1-business-central-eap7-deployable.zip, rhpam-7.5.1-kie-server-ee8.zip  |
         | 7.6.0     | rhpam-7.6.0-business-central-eap7-deployable.zip, rhpam-7.6.0-kie-server-ee8.zip  |
         | 7.7.0     | rhpam-7.7.0-business-central-eap7-deployable.zip, rhpam-7.7.0-kie-server-ee8.zip  |
+        | 7.7.1     | rhpam-7.7.1-business-central-eap7-deployable.zip, rhpam-7.7.1-kie-server-ee8.zip  |
 
         |DM Version| Files                                                                           |
         |----------|---------------------------------------------------------------------------------|
