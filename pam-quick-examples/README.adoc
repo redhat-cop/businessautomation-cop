@@ -13,6 +13,9 @@
 |*pam-example-3*
 |This example show how invoke a DMN from a process
 
+|*pam-example-4*
+|This example show how invoke a DMN from a process defined in separate kjar
+
 |===
 
 

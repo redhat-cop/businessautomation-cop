@@ -1,4 +1,4 @@
-= Example 2
+= Example 3
 
 This example show how invoke a java function from DMN to check if a Customer can open a bank account(is underage or not).
 
