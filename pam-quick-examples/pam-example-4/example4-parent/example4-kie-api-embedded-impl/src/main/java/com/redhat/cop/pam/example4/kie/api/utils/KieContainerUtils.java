@@ -16,8 +16,10 @@ public class KieContainerUtils {
     @PostConstruct
     public void initKieContainer() {
         final KieServices kieServices = KieServices.Factory.get();
-        final ReleaseId releaseId = kieServices.newReleaseId("com.redhat.cop.pam", "example4-kjar", "1.0");
-        this.kieContainer = kieServices.newKieContainer(releaseId);
+        final ReleaseId dmnKjarReleaseId = kieServices.newReleaseId("com.redhat.cop.pam", "example4-dmn-kjar", "1.0");
+        this.kieContainer = kieServices.newKieContainer(dmnKjarReleaseId);
+        final ReleaseId processKjarReleaseId = kieServices.newReleaseId("com.redhat.cop.pam", "example4-process-kjar", "1.0");
+        this.kieContainer = kieServices.newKieContainer(processKjarReleaseId);
     }
 
     public KieContainer getKieContainer() {

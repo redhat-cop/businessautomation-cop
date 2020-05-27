@@ -30,6 +30,7 @@ public class RulesApiImpl implements RulesApi {
         final Map<String, Object> processParameters = new HashMap<>();
         processParameters.put("customerProcessVar", customer);
         final KieSession kieSession = kieContainer.newKieSession();
+        kieSession.getWorkItemManager().registerWorkItemHandler("DecisionTask", new org.jbpm.process.workitem.bpmn2.DecisionTaskHandler("com.redhat.cop.pam", "example4-dmn-kjar", "1.0"));
         final ProcessInstance processInstance  = kieSession.startProcess("example4-kjar.customer-can-open-account", processParameters);
         final WorkflowProcessInstance workflowProcessInstance = (WorkflowProcessInstance) processInstance;
         return CanOpenAccountResults.valueOf((String)workflowProcessInstance.getVariable("canOpenAccountProcessVar"));
