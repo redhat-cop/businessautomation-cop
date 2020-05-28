@@ -1,5 +1,6 @@
 = Quick examples
-DMN Examples
+
+<b>DMN Examples</b>
 
 [cols="2,10", options="header"]
 |===
@@ -19,7 +20,7 @@ DMN Examples
 
 |===
 
-BPMN Examples
+<b>BPMN Examples</b>
 
 [cols="2,10", options="header"]
 |===
