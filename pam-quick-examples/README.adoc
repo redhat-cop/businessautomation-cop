@@ -26,13 +26,13 @@ BPMN Examples
 |===
 |name  |description
 
-|*pam-example-1*
+|*bpmn-example-1*
 |
 
-|*pam-example-2*
+|*bpmn-example-2*
 |
 
-|*pam-example-3*
+|*bpmn-example-3*
 |
 
 |===
