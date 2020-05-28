@@ -1,4 +1,5 @@
 = Quick examples
+DMN Examples
 
 [cols="2,10", options="header"]
 |===
@@ -18,6 +19,22 @@
 
 |===
 
+BPMN Examples
+
+[cols="2,10", options="header"]
+|===
+|name  |description
+
+|*pam-example-1*
+|
+
+|*pam-example-2*
+|
+
+|*pam-example-3*
+|
+
+|===
 
 
 
