@@ -1,0 +1,33 @@
+{
+    "config-items": [
+      {
+        "itemName": "RuntimeStrategy",
+        "itemValue": "SINGLETON",
+        "itemType": "java.lang.String"
+      },
+      {
+        "itemName": "MergeMode",
+        "itemValue": "MERGE_COLLECTIONS",
+        "itemType": "java.lang.String"
+      },
+      {
+        "itemName": "KBase",
+        "itemValue": "",
+        "itemType": "java.lang.String"
+      },
+      {
+        "itemName": "KSession",
+        "itemValue": "",
+        "itemType": "java.lang.String"
+      }
+    ],
+    "release-id": {
+      "group-id": "com.redhat.cop.pam",
+      "artifact-id": "dmn-example4-process-kjar",
+      "version": "1.0"
+    },
+    "scanner": {
+      "poll-interval": "5000",
+      "status": "STARTED"
+    }
+  }

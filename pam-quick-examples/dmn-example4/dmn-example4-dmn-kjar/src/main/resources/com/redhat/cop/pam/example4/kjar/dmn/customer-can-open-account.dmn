@@ -1,0 +1,121 @@
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns="https://pam.cop.redhat.com/dmn-example-4/dmn" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:kie="http://www.drools.org/kie/dmn/1.2" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/" id="_5DA4A5D1-C287-4197-ADF6-49FAB0FFB583" name="customer-can-open-account" expressionLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" namespace="https://pam.cop.redhat.com/dmn-example-4/dmn">
+  <dmn:extensionElements/>
+  <dmn:itemDefinition id="_EDC9E465-854B-4FF9-A79D-5809FEC914AB" name="CanOpenAccountResults" isCollection="false">
+    <dmn:typeRef>string</dmn:typeRef>
+    <dmn:allowedValues kie:constraintType="enumeration" id="_C77824AB-A002-4841-B572-E9B3C879B0BD">
+      <dmn:text>"ALLOW", "NOT_ALLOW"</dmn:text>
+    </dmn:allowedValues>
+  </dmn:itemDefinition>
+  <dmn:itemDefinition id="_1036B460-C396-46BA-8B52-F9AC57B2D34B" name="Customer" isCollection="false">
+    <dmn:itemComponent id="_74E4D4F8-5DC9-43F9-B3A8-53F452BF7A7B" name="dateOfBirth" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_79AEEA07-8D21-4A5B-858E-04767458F5E7" name="name" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_0F839AB8-6509-42D0-BC39-AA561C982EDF" name="surname" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+  <dmn:decision id="_53404CCB-03AB-4A89-B2C0-722024864B0D" name="can open account">
+    <dmn:extensionElements/>
+    <dmn:variable id="_391ABDC8-C26C-410A-98AE-E63DEB4B0341" name="can open account" typeRef="CanOpenAccountResults"/>
+    <dmn:informationRequirement id="_0E4F6200-CCE0-43B3-8ECB-D1314D12A278">
+      <dmn:requiredInput href="#_620884DC-ACA2-451C-8429-2E809B0F3A5A"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="_E8B12421-632F-4D93-9E51-AC5E54A5CBC6">
+      <dmn:requiredKnowledge href="#_C75E824C-32E1-434E-949A-FFF6EA91E2CB"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="_446F2F49-5197-405A-8314-F4E74F5B6119">
+      <dmn:text>if is underage rule(customer.dateOfBirth) = true
+then "NOT_ALLOW"
+else "ALLOW"</dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+  <dmn:businessKnowledgeModel id="_C75E824C-32E1-434E-949A-FFF6EA91E2CB" name="is underage rule">
+    <dmn:extensionElements/>
+    <dmn:variable id="_CC7E36A5-E866-4D72-B1A6-0DF3567910AD" name="is underage rule" typeRef="boolean"/>
+    <dmn:encapsulatedLogic id="_249AD115-688C-4006-A56B-B4DD1E5F9023" kind="Java">
+      <dmn:formalParameter id="_C89C7A47-3188-4760-92AF-48ADFBA72B65" name="dateOfBirth" typeRef="string"/>
+      <dmn:context id="_2E73D79B-6B6F-4EEA-BECD-2BB53F775F94">
+        <dmn:contextEntry>
+          <dmn:variable id="_0D7FBB96-BB1F-4099-A571-4318C6E342E2" name="class" typeRef="string"/>
+          <dmn:literalExpression id="_E38FB51F-EE5B-4B2C-A16E-2C1794EDE505">
+            <dmn:text>com.redhat.cop.pam.example4.CustomerFunctions</dmn:text>
+          </dmn:literalExpression>
+        </dmn:contextEntry>
+        <dmn:contextEntry>
+          <dmn:variable id="_5492F2D9-7321-4DA0-A2D8-ACD27BF3B8A8" name="method signature" typeRef="string"/>
+          <dmn:literalExpression id="_71FD69D3-F08A-41EB-A6C5-88B9B5210E9C">
+            <dmn:text>isUnderage(java.lang.String)</dmn:text>
+          </dmn:literalExpression>
+        </dmn:contextEntry>
+      </dmn:context>
+    </dmn:encapsulatedLogic>
+  </dmn:businessKnowledgeModel>
+  <dmn:inputData id="_620884DC-ACA2-451C-8429-2E809B0F3A5A" name="customer">
+    <dmn:extensionElements/>
+    <dmn:variable id="_7274FBE8-C653-4959-B791-464FE73C734C" name="customer" typeRef="Customer"/>
+  </dmn:inputData>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <di:extension>
+        <kie:ComponentsWidthsExtension>
+          <kie:ComponentWidths dmnElementRef="_446F2F49-5197-405A-8314-F4E74F5B6119">
+            <kie:width>739</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_2E73D79B-6B6F-4EEA-BECD-2BB53F775F94">
+            <kie:width>50</kie:width>
+            <kie:width>187</kie:width>
+            <kie:width>913</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_E38FB51F-EE5B-4B2C-A16E-2C1794EDE505">
+            <kie:width>913</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_71FD69D3-F08A-41EB-A6C5-88B9B5210E9C">
+            <kie:width>913</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_249AD115-688C-4006-A56B-B4DD1E5F9023">
+            <kie:width>50</kie:width>
+            <kie:width>1170</kie:width>
+          </kie:ComponentWidths>
+        </kie:ComponentsWidthsExtension>
+      </di:extension>
+      <dmndi:DMNShape id="dmnshape-_53404CCB-03AB-4A89-B2C0-722024864B0D" dmnElementRef="_53404CCB-03AB-4A89-B2C0-722024864B0D" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="480" y="307" width="100" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_C75E824C-32E1-434E-949A-FFF6EA91E2CB" dmnElementRef="_C75E824C-32E1-434E-949A-FFF6EA91E2CB" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="667" y="306" width="100" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-_620884DC-ACA2-451C-8429-2E809B0F3A5A" dmnElementRef="_620884DC-ACA2-451C-8429-2E809B0F3A5A" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="480.29906542056074" y="447" width="100" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="dmnedge-_0E4F6200-CCE0-43B3-8ECB-D1314D12A278" dmnElementRef="_0E4F6200-CCE0-43B3-8ECB-D1314D12A278">
+        <di:waypoint x="530.2990654205607" y="472"/>
+        <di:waypoint x="530" y="357"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-_E8B12421-632F-4D93-9E51-AC5E54A5CBC6" dmnElementRef="_E8B12421-632F-4D93-9E51-AC5E54A5CBC6">
+        <di:waypoint x="717" y="331"/>
+        <di:waypoint x="580" y="332"/>
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</dmn:definitions>
