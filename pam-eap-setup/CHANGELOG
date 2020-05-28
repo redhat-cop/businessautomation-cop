@@ -1,39 +1,43 @@
 
 # CHANGELOG
 
+-- RELEASE: 28 MAY 2020 --
+
+PAM: Installation directory can now be an absolute path
+
 -- RELEASE: 27 MAY 2020 --
 
--- PAM : Added PAM.7.7.1
+PAM : Added PAM.7.7.1
 
 -- RELEASE: 25 MAY 2020 --
 
--- PAM: Added configuration for Oracle datasource
-        Added configurabe installation directory
-        Added JVM -Xmx configuration support
-        Documented DEBUG logging, Oracle datasource definition, specifying install location
-        Refactored more configuration to use EAP CLI commands
-        Tested against JBoss EAP patch 8
--- PAM: Regression prevented applying EAP configuration
+PAM: Added configuration for Oracle datasource
+     Added configurabe installation directory
+     Added JVM -Xmx configuration support
+     Documented DEBUG logging, Oracle datasource definition, specifying install location
+     Refactored more configuration to use EAP CLI commands
+     Tested against JBoss EAP patch 8
+PAM: Regression prevented applying EAP configuration
 
 -- RELEASE: 12 MAY 2020 --
 
-- PAM : Logging, tracing and CORS config have been refactored to use EAP CLI commands
-        instead of injecting them into standalone.xml through XML parsing
-- PAM : enabled TRACE logging for "org.jboss.as.domain" and "org.wildfly.security"
-        if "-o debug_logging" specified
-        more info: https://access.redhat.com/solutions/148823
+PAM : Logging, tracing and CORS config have been refactored to use EAP CLI commands
+      instead of injecting them into standalone.xml through XML parsing
+PAM : enabled TRACE logging for "org.jboss.as.domain" and "org.wildfly.security"
+      if "-o debug_logging" specified
+      more info: https://access.redhat.com/solutions/148823
 
 -- RELEASE: 24 APR 2020 --
 
-- PAM : Enable CORS for first four KIE Server nodes. More nodes can be accomodated by copying files from addons directory
-- PAM : Switched to EAP embedded mode for standalone.xml configuration
-- PAM : node offset is written in node configuration file in addition to the startup file
-        any system startup scripts would not need to go through the startup file
-- PAM : added the -o options for extended configuration based on EAP CLI commands
-        this way additional EAP subsystems can be configured
-        supports per node configuration
-- PAM : EAP RequestDumping can be enabled by the "-o dump_requests" option
-- PAM : Added Bash implementation of post-commit git hooks
+PAM : Enable CORS for first four KIE Server nodes. More nodes can be accomodated by copying files from addons directory
+PAM : Switched to EAP embedded mode for standalone.xml configuration
+PAM : node offset is written in node configuration file in addition to the startup file
+      any system startup scripts would not need to go through the startup file
+PAM : added the -o options for extended configuration based on EAP CLI commands
+      this way additional EAP subsystems can be configured
+      supports per node configuration
+PAM : EAP RequestDumping can be enabled by the "-o dump_requests" option
+PAM : Added Bash implementation of post-commit git hooks
 
 -- RELEASE --
 

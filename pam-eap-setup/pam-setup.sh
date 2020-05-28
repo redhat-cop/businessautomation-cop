@@ -931,7 +931,8 @@ skip_install=no && [[ -d $INSTALL_DIR ]]  && sout "INFO: Installation detected a
 
 if [[ ! -z "$EAP_LOCATION" ]]; then
   eap_location_created=no
-  EAP_LOCATION="$WORKDIR/$EAP_LOCATION"
+  # EAP_LOCATION="$WORKDIR/$EAP_LOCATION"
+  EAP_LOCATION=$(readlink -mn "$EAP_LOCATION")
   mkdir -p "$EAP_LOCATION"&>/dev/null && eap_location_created=yes
   [[ "$eap_location_created" == "no" ]] && sout "ERROR: $EAP_LOCATION CANNOT BE CREATED - ABORTING" && exit 1
 fi
