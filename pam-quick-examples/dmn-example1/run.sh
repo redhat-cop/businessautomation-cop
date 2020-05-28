@@ -4,7 +4,7 @@ EXAMPLE_ID="$(basename $EXAMPLE_PATH)"
 
 KIE_SERVER_URL="http://localhost:8080/kie-server/services/rest/server"
 KIE_SERVER_USER="kieServerUser"
-KIE_SERVER_PASSWORD="Pa\$\$w0rd"
+KIE_SERVER_PASSWORD='kieServerUser1234\;'
 EXAMPLE_CONFIGURATION="embedded"
 EXAMPLE_RUNTIME="springboot"
 
@@ -14,18 +14,21 @@ declare -a kjars=("com.redhat.cop.pam:dmn-example1-kjar:1.0")
 
 function deploy_kjar(){
     echo "=================== Start deploy of kjar $1 ==================="
-    DEPLOY="curl -s -u $KIE_SERVER_USER:$KIE_SERVER_PASSWORD -H 'accept: application/json' -H 'content-type: application/json' -X PUT '$KIE_SERVER_URL/containers/$1' -d@requests/$1.json"
-    UN_DEPLOY="curl -s -u $KIE_SERVER_USER:$KIE_SERVER_PASSWORD -H 'accept: application/json' -H 'content-type: application/json' -X DELETE '$KIE_SERVER_URL/containers/$1'"
-    CHECK_IS_DEPLOY="curl -s -i -u $KIE_SERVER_USER:$KIE_SERVER_PASSWORD -H 'accept: application/json' -H 'content-type: application/json' -X GET '$KIE_SERVER_URL/containers/$1/release-id'"
+    DEPLOY="curl -s -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X PUT '$KIE_SERVER_URL/containers/$1' -d@$EXAMPLE_PATH/requests/$1.json"
+    UN_DEPLOY="curl -s -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X DELETE '$KIE_SERVER_URL/containers/$1'"
+    CHECK_IS_DEPLOY="curl -s -i -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X GET '$KIE_SERVER_URL/containers/$1/release-id'"
     echo "=================== Check if container $1 already deployed ==================="
+    echo $CHECK_IS_DEPLOY
     IS_DEPLOY_RESULT=$(eval $CHECK_IS_DEPLOY)
     echo $IS_DEPLOY_RESULT
     if [[ $IS_DEPLOY_RESULT == *"ReleaseId for container $1"* ]]; then
         echo "=================== Container $1 already deployed. Uneploying existing version ==================="
+        echo $UN_DEPLOY
         UNDEPLOY_RESULT=$(eval $UN_DEPLOY)
         echo $UNDEPLOY_RESULT
     fi
     echo "=================== Deploying container $1 ==================="
+    echo $DEPLOY
     DEPLOY_RESULT=$(eval $DEPLOY)
     echo $DEPLOY_RESULT
     echo "=================== End deploy of kjar $1 ==================="
@@ -66,21 +69,20 @@ function start_test(){
     TEST_PROJECT_ABSOLUTE_PATH=$EXAMPLE_PATH/$EXAMPLE_ID-$EXAMPLE_RUNTIME-$EXAMPLE_CONFIGURATION
     MAVEN_PARAMETERS="-Dcom.redhat.cop.pam.kieserver_url=$KIE_SERVER_URL -Dcom.redhat.cop.pam.kieserver_user=$KIE_SERVER_USER -Dcom.redhat.cop.pam.kieserver_password=$KIE_SERVER_PASSWORD"
     POM_ABSOLUTE_PATH="$TEST_PROJECT_ABSOLUTE_PATH/pom.xml"
-    echo "=================== Starting execution of test with following configuration ==================="
+    echo "=================== Starting execution of tests with following configuration ==================="
     echo "kie-server-url: $KIE_SERVER_URL"
     echo "username: $KIE_SERVER_USER"
     echo "password: $KIE_SERVER_PASSWORD"
     echo "configuration: $EXAMPLE_CONFIGURATION"
     echo "runtime: $EXAMPLE_RUNTIME"
     echo "all tests in folder $TEST_PROJECT_ABSOLUTE_PATH will be executed"
-    if [ $EXAMPLE_CONFIGURATION == *"remote"* ]
-    then
+    if [[ $EXAMPLE_CONFIGURATION == *"remote"* ]]; then
         deploy_kjars
     fi
     echo $POM_ABSOLUTE_PATH
     echo $MAVEN_PARAMETERS
     mvn test -f $POM_ABSOLUTE_PATH $MAVEN_PARAMETERS
-    echo "=================== End execution of test with following configuration ==================="
+    echo "=================== End execution of tests ==================="
 }
 
 while getopts "c:r:k:u:p:h" OPTION

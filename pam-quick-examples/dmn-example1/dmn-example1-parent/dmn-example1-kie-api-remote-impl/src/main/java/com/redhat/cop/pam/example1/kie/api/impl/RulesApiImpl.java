@@ -30,7 +30,7 @@ public class RulesApiImpl implements RulesApi {
 
     private static final String USER = System.getProperty("com.redhat.cop.pam.kieserver_user", "kieServerUser");
 
-    private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password", "Pa$$w0rd");
+    private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password", "kieServerUser1234;");
 
     private static final String NAMESPACE = "https://pam.cop.redhat.com/dmn-example-1/dmn";
 
