@@ -1,4 +1,6 @@
-= Quick examples
+= PAM Quick examples
+
+DMN examples
 
 [cols="2,10,2,2", options="header"]
 |===
@@ -26,6 +28,28 @@
 
 |===
 
+BPMN process examples
+
+[cols="2,10,2,2", options="header"]
+|===
+|name |description |build |run
+
+|*bpmn-example-1*
+|
+|
+|
+
+|*bpmn-example-2*
+|
+|
+|
+
+|*bpmn-example-3*
+|
+|
+|
+
+|===
 
 
 
