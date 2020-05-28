@@ -1,6 +1,6 @@
 = Quick examples
 
-[cols="2,10,2", options="header"]
+[cols="2,10,2,2", options="header"]
 |===
 |name |description |build |run
 
