@@ -17,10 +17,12 @@
 |*dmn-example-3*
 |This example show how invoke a DMN from a process
 |xref:dmn-example3/build.sh[build.sh]
+|xref:dmn-example3/run.sh[run.sh]
 
 |*dmn-example-4*
 |This example show how invoke a DMN from a process defined in separate kjar
 |xref:dmn-example4/build.sh[build.sh]
+|xref:dmn-example4/build.sh[run.sh]
 
 |===
 
