@@ -78,10 +78,14 @@ For installation and configuration please refer to the https://access.redhat.com
 
 Create a user with role `kie-server` and update the properties in xref:dmn-example1-parent/dmn-example1-kie-api-remote-impl/src/main/java/com/redhat/cop/pam/example1/kie/api/impl/RulesApiImpl.java[RulesApiImpl.java]
 ```
-    private static final String URL = "http://localhost:8080/kie-server/services/rest/server";
-    private static final String USER = "kieServerUser";
-    private static final String PASSWORD = "kieServerUser1234;";
+    private static final String URL = System.getProperty("com.redhat.cop.pam.kieserver_url", "http://localhost:8080/kie-server/services/rest/server");
+    private static final String USER = System.getProperty("com.redhat.cop.pam.kieserver_user", "kieServerUser");
+    private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password", "kieServerUser1234;");
 ```
+or define the system property you need to override 
+* `com.redhat.cop.pam.kieserver_url`
+* `com.redhat.cop.pam.kieserver_user`
+* `com.redhat.cop.pam.kieserver_password`
 
 On kie-server deploy the kjar com.redhat.cop.pam:dmn-example1-kjar:1.0
 ```
