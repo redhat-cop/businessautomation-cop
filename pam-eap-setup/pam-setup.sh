@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#^^^ make the script portable and ensure using a recent version of bash on macOS 
+# see more in https://www.cyberciti.biz/tips/finding-bash-perl-python-portably-using-env.html
 
 #
 # - setup a local environment with BusinessCentral and one KIE Server
@@ -81,6 +83,7 @@ MASTER_CONFIG=master.conf
 #
 cat << "__CONFIG" > $MASTER_CONFIG
 PAM770 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+DM771  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.7.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.7.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
 DM760  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.6.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.6.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
 PAM760 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.6.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.6.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
 PAM751 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.5.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.5.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
