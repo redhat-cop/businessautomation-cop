@@ -1,4 +1,4 @@
 **/*.zip
-go_pam.sh
+go_*.sh
 *.db
 pam/

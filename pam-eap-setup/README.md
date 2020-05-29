@@ -130,6 +130,7 @@ Depending on PAM version the following files are required:
         | 7.3.1    | rhdm-7.3.1-decision-central-eap7-deployable.zip, rhdm-7.3.1-kie-server-ee8.zip  |
         | 7.4.1    | rhdm-7.4.1-decision-central-eap7-deployable.zip, rhdm-7.4.1-kie-server-ee8.zip  |
         | 7.6.0    | rhdm-7.6.0-decision-central-eap7-deployable.zip, rhdm-7.6.0-kie-server-ee8.zip  |
+        | 7.7.1    | rhdm-7.7.1-decision-central-eap7-deployable.zip, rhdm-7.7.1-kie-server-ee8.zip  |
 
 ## Usage
 
@@ -143,6 +144,7 @@ Invoke with no arguments for usage info:
                              -b [kie|controller|both|multi=2...], defaults to 'both'
                              [-c ip1:port1,ip2:port2,...]
                              [-s smart_router_ip:port]
+                             [-o option1=value1[:option2=value2...]]
 
         example: pam-setup.sh -n localhost
 
@@ -172,7 +174,10 @@ Invoke with no arguments for usage info:
 
             -s : Only for KIE ES, optional. Specify Smart Router location, eg 10.10.1.23:9000
 
-            -o : Specify additional options. Supported options are:
+            -o : Specify additional options. To specify multiple options use ':' as separator. 
+                 Example: '-o option1=value1[:option2=value2:...]'
+
+                 Supported options are:
 
                  - nodeX_config=file : declare file with additional commands to be applied by
                                        EAPs jboss-cli tool for each node installed
