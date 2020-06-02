@@ -4,13 +4,13 @@ EXAMPLE_ID="$(basename $EXAMPLE_PATH)"
 
 KIE_SERVER_URL="http://localhost:8080/kie-server/services/rest/server"
 KIE_SERVER_USER="kieServerUser"
-KIE_SERVER_PASSWORD='kieServerUser1234\;'
+KIE_SERVER_PASSWORD='kieServerUser1234;'
 EXAMPLE_CONFIGURATION="embedded"
 EXAMPLE_RUNTIME="springboot"
 
 declare -a configurations=("remote" "embedded")
 declare -a runtimes=("springboot")
-declare -a kjars=("com.redhat.cop.pam:dmn-example5-kjar:1.0")
+declare -a kjars=("com.redhat.cop.pam:dmn-example6-kjar:1.0")
 
 function deploy_kjar(){
     echo "=================== Start deploy of kjar $1 ==================="
