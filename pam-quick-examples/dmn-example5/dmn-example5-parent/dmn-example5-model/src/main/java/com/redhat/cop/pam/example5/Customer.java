@@ -17,6 +17,14 @@ public class Customer implements Serializable {
 
     private String dateOfBirth;
 
+    public Customer(){}
+
+    public Customer(String name, String surname, String dateOfBirth){
+        this.name = name;
+        this.surname = surname;
+        this.dateOfBirth = dateOfBirth;
+    }
+
     @FEELProperty("name")
     public String getName() {
         return name;
