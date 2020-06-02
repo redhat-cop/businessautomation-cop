@@ -54,7 +54,7 @@ $ cd dmn-example6-parent/
 $ mvn clean install
 ```
 
-== Project 'dmn-dmn-example6-kjar'
+== Project 'dmn-example6-kjar'
 
 === Details
 
