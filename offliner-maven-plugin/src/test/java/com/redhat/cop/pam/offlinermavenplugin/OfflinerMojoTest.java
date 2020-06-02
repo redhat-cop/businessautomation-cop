@@ -1,4 +1,4 @@
-package org.ippul.maven.plugin;
+package com.redhat.cop.pam.offlinermavenplugin;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -16,7 +16,7 @@ public class OfflinerMojoTest extends AbstractMojoTestCase {
      */
     @Test
     public void test() throws Exception {
-        final File testPom = new File(getBasedir(), "src/test/resources/org/ippul/maven/plugin/pom.xml");
+        final File testPom = new File(getBasedir(), "src/test/resources/com/redhat/cop/pam/offlinermavenplugin/pom.xml");
         final OfflinerMojo mojo = (OfflinerMojo) lookupMojo("offliner", testPom);
         assertNotNull(mojo);
         mojo.execute();
