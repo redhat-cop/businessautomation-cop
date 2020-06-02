@@ -47,3 +47,11 @@ jobs:
           pushd pam-quick-examples/dmn-example4
           bash build.sh
           popd
+
+          pushd pam-quick-examples/dmn-example5
+          bash build.sh
+          popd
+
+          pushd pam-quick-examples/dmn-example6
+          bash build.sh
+          popd

@@ -55,7 +55,7 @@ $ cd dmn-example4-parent/
 $ mvn clean install
 ```
 
-== Project 'dmn-dmn-example4-dmn-kjar'
+== Project 'dmn-example4-dmn-kjar'
 
 === Details
 
@@ -67,7 +67,7 @@ $ cd dmn-example4-dmn-kjar/
 $ mvn clean install
 ```
 
-== Project 'dmn-dmn-example4-process-kjar'
+== Project 'dmn-example4-process-kjar'
 
 === Details
 
