@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.ippul.maven.plugin;
+package com.redhat.cop.pam.offlinermavenplugin;
 
 import java.nio.file.Paths;
 import java.util.List;
