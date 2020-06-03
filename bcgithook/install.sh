@@ -3,7 +3,7 @@
 #
 # installation script for bcgithook
 #
-# please refer to : https://gitlab.com/erouvas/bcgithook/-/blob/master/README.md
+# please refer to : https://github.com/redhat-cop/businessautomation-cop/blob/master/bcgithook/README.md
 # for manual installation instructions
 #
 #
@@ -105,7 +105,7 @@ This script will attempt to:
 Please make sure JBoss EAP or WildFly is NOT RUNNING 
 before executing this script
 
-Additional information: https://gitlab.com/erouvas/bcgithook
+Additional information: https://github.com/redhat-cop/businessautomation-cop/blob/master/bcgithook
 "
 }
 
