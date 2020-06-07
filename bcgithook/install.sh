@@ -139,7 +139,13 @@ jbhome="$1" && [[ "$CYGWIN_ON" == "yes" ]] && jbhome=$(cygpath -w ${jbhome})
 mkdir -p "$CONFIG_HOME"
 [[ ! -d "$CONFIG_HOME" ]] && error "- CONFIGURATION DIRECTORY CANNOT BE CREATED - ABORTING" && exit 4
 
-cp "$DEFAULT_CONF_SOURCE" "$CONFIG_HOME"/default.conf || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
+if [[ ! -r "$CONFIG_HOME"/default.conf ]]; then
+  cp "$DEFAULT_CONF_SOURCE" "$CONFIG_HOME"/default.conf || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
+else
+  cp "$DEFAULT_CONF_SOURCE" "$CONFIG_HOME"/default.conf.new || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
+  sout "${bold}${white}CONFIGURATION FILE NOT INSTALLED${normal} - EXISTING CONFIGURATION FILE NOT OVERRIDEN"
+  sout "${bold}${white}NEW CONFIGURATION FILE COPIED AS .new${normal}"
+fi
 
 gitHookDir="$jbhome"/git-hooks
 mkdir -p "$gitHookDir"
@@ -155,14 +161,14 @@ pushd "$jbhome/bin" &> /dev/null
 cat << "__CLI" > tmp.cli
 embed-server
 if (outcome == success) of /system-property=org.uberfire.nio.git.hooks:read-resource
-  /system-property=org.uberfire.nio.git.hooks:remove
+  /system-property=org.uberfire.nio.git.hooks:remove > tmp.out
 end-if
-/system-property=org.uberfire.nio.git.hooks:add(value=${jboss.home.dir}/git-hooks)
+/system-property=org.uberfire.nio.git.hooks:add(value=${jboss.home.dir}/git-hooks) > tmp.out
 stop-embedded-server
 __CLI
 ./jboss-cli.sh --file=tmp.cli
 
-rm -rf tmp.cli
+rm -rf tmp.cli tmp.out
 
 popd &> /dev/null
 
