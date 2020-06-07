@@ -24,7 +24,17 @@ DMN examples
 |*dmn-example-4*
 |This example show how invoke a DMN from a process defined in separate kjar
 |xref:dmn-example4/build.sh[build.sh]
-|xref:dmn-example4/build.sh[run.sh]
+|xref:dmn-example4/run.sh[run.sh]
+
+|*dmn-example-5*
+|This example show how test a DMN using cucumber and spring-boot
+|xref:dmn-example5/build.sh[build.sh]
+|xref:dmn-example5/run.sh[run.sh]
+
+|*dmn-example-6*
+|This example show how test a DMN in a process using cucumber and spring-boot
+|xref:dmn-example6/build.sh[build.sh]
+|xref:dmn-example6/run.sh[run.sh]
 
 |===
 

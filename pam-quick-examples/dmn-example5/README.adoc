@@ -1,0 +1,116 @@
+= DMN Example 5
+
+This example show how test a DMN using cucumber and spring-boot
+
+== Project 'dmn-example5-parent' details
+
+=== Details
+
+dmn-example5-model::
+* Define all model
+dmn-example5-services-api::
+* Define the services API endpoint
+dmn-example5-services-api-impl::
+* Implements all services defined in *dmn-example5-services-api*
+
+[cols="1,2,1,1", options="header"]
+.Services
+|===
+|HTTP Method |URI |Request |Response
+
+|POST
+|/dmn-example-5/services/customer
+|xref:dmn-example5-parent/dmn-example5-model/src/main/java/com/redhat/cop/pam/example5/Customer.java[Customer.java]
+|xref:dmn-example5-parent/dmn-example5-model/src/main/java/com/redhat/cop/pam/example5/CanOpenAccountResults.java[CanOpenAccountResults.java]
+|===
+
+dmn-example5-kie-api::
+* Define a method to invoke the DMN
+dmn-example5-kie-api-embedded-impl::
+* Show how invoke a DMN service embed in your application(Implements the methods defined in *dmn-example5-kie-api*)
+dmn-example5-kie-api-remote-impl::
+* Show how invoke a DMN service deployed on a remote kie-server(Implements the methods defined in *dmn-example5-kie-api*)
+
+=== Build
+```
+$ cd dmn-example5-parent/
+$ mvn clean install
+```
+
+== Project 'dmn-example5-kjar'
+
+=== Details
+
+image::images/DMN.png[]
+
+=== Build
+```
+$ cd dmn-example5-kjar/
+$ mvn clean install
+```
+
+== Run it
+
+=== Embedded
+
+==== Spring boot
+```
+$ cd dmn-example5-springboot-embedded/
+$ mvn clean install
+```
+TIP: check all scenarios are passed correctly xref:dmn-example5-springboot-embedded/src/test/resources/cucumber-steps.feature[cucumber-steps.feature]
+
+In the build output:
+
+image::images/cucumber-result-log.png[]
+
+To see the scenario report in a browser open:
+
+xref:dmn-example5-springboot-embedded/target/cucumber/index.html[cucumber report]
+
+image::images/cucumber-result.png[]
+
+```
+$ ./mvn spring-boot:run
+```
+
+=== Remote
+IMPORTANT: To try the remote version you need an instance of kie-server up and running.
+For installation and configuration please refer to the https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/[official documentation]
+
+Create a user with role `kie-server` and update the properties in xref:dmn-example5-parent/dmn-example5-kie-api-remote-impl/src/main/java/com/redhat/cop/pam/example5/kie/api/impl/RulesApiImpl.java[RulesApiImpl.java]
+```
+    private static final String URL = "http://localhost:8080/kie-server/services/rest/server";
+    private static final String USER = "kieServerUser";
+    private static final String PASSWORD = "kieServerUser1234;";
+```
+
+On kie-server deploy the kjar com.redhat.cop.pam:dmn-example5-kjar:1.0
+```
+<release-id>
+    <artifact-id>dmn-example5-kjar</artifact-id>
+    <group-id>com.redhat.cop.pam</group-id>
+    <version>1.0</version>
+</release-id>
+```
+
+==== Spring boot
+```
+$ cd dmn-example5-springboot-remote/
+$ mvn clean install
+```
+TIP: check all scenarios are passed correctly xref:dmn-example5-springboot-remote/src/test/resources/cucumber-steps.feature[cucumber-steps.feature]
+
+In the build output:
+
+image::images/cucumber-result-log.png[]
+
+To see the scenario report in a browser open:
+
+xref:dmn-example5-springboot-remote/target/cucumber/index.html[cucumber report]
+
+image::images/cucumber-result.png[]
+
+```
+$ ./mvn spring-boot:run
+```

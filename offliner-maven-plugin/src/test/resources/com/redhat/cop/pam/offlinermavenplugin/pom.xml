@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>offliner-maven-plugin</artifactId>
+                <configuration>
+                    <settingsFile>src/test/resources/com/redhat/cop/pam/offlinermavenplugin/settings.xml</settingsFile>
+                    <outputDirectory>target/test-classes/repository/</outputDirectory>
+                    <artifacts>
+                        <gav>org.jboss.javaee:jboss-transaction-api:1.0.1.GA</gav>
+                        <gav>javax.xml.bind:jaxb-api:2.3.1</gav>
+                    </artifacts>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -128,8 +128,4 @@ Other implementations providing git hook support for Business Central are:
 
 * BA CoP Trello board: https://trello.com/c/3rhn7EyB
 
-## License
-This project is released under the GNU GPLv3 license.
-Check [LICENSE](LICENSE) file for more information.
-
 > Written with [StackEdit](https://stackedit.io/).
