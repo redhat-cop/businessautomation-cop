@@ -1,4 +1,3 @@
-
 # pam-setup
 
 Makes installation of multi-node PAM on non-OCP EAP nodes trivial.
@@ -306,7 +305,7 @@ Example:
 
 Enabling `debug_logging` will have the effect of placing the following defintions in your `standalone.xml` file.
 
-```
+```xml
 <logger category="org.jboss.as.domain">
     <level name="TRACE"/>
 </logger>
@@ -329,8 +328,7 @@ This will also log login related events. The combined effect will be quite exten
 
 By specifying the Oracle related parameters an Oracle datasource will be configured. Example invocation:
 
-```
-
+```bash
 OJDBC_LOCATION=$PWD/oracle_jdbc_driver/ojdbc8.jar
 ORACLE_HOST=hostname_or_ip
 ORACLE_PORT=port_to_connect_to
@@ -346,7 +344,7 @@ ORACLE_PASS=oracle_password
 
 All parameters are required for the configuration to be succesful. The Oracle JDBC URL that will be configured is of the following format:
 
-```
+```bash
 jdbc:oracle:thin:@//ORACLE_HOST:ORACLE_PORT/ORACLE_SID
 ```
 
