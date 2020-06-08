@@ -40,13 +40,15 @@ io.cucmber maven dependency added to POM to facilitate BDD testing usung feature
 
 ## Run BDD Tests
 
-`mvn test`
+```bash
+mvn test
+```
 
 ## Run Application
 
-```
-    mvn clean package -DskipTests
-    java -jar target/my-app-1.0-SNAPSHOT.jar
+```bash
+mvn clean package -DskipTests
+java -jar target/my-app-1.0-SNAPSHOT.jar
 ```
 
 
