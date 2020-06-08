@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 # THE FOLLOWING ENCLOSED IN DASHES SHOULD BE PLACED IN FILE
