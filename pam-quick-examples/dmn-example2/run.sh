@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 EXAMPLE_PATH="$(cd "$(dirname "$0")" && PWD)"
-EXAMPLE_ID="$(basename $EXAMPLE_PATH)"
+EXAMPLE_ID="$(basename "$EXAMPLE_PATH")"
 
 KIE_SERVER_URL="http://localhost:8080/kie-server/services/rest/server"
 KIE_SERVER_USER="kieServerUser"
@@ -19,19 +19,19 @@ function deploy_kjar(){
     UN_DEPLOY="curl -s -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X DELETE '$KIE_SERVER_URL/containers/$1'"
     CHECK_IS_DEPLOY="curl -s -i -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X GET '$KIE_SERVER_URL/containers/$1/release-id'"
     echo "=================== Check if container $1 already deployed ==================="
-    echo $CHECK_IS_DEPLOY
-    IS_DEPLOY_RESULT=$(eval $CHECK_IS_DEPLOY)
-    echo $IS_DEPLOY_RESULT
+    echo "$CHECK_IS_DEPLOY"
+    IS_DEPLOY_RESULT=$(eval "$CHECK_IS_DEPLOY")
+    echo "$IS_DEPLOY_RESULT"
     if [[ $IS_DEPLOY_RESULT == *"ReleaseId for container $1"* ]]; then
         echo "=================== Container $1 already deployed. Uneploying existing version ==================="
-        echo $UN_DEPLOY
-        UNDEPLOY_RESULT=$(eval $UN_DEPLOY)
-        echo $UNDEPLOY_RESULT
+        echo "$UN_DEPLOY"
+        UNDEPLOY_RESULT=$(eval "$UN_DEPLOY")
+        echo "$UNDEPLOY_RESULT"
     fi
     echo "=================== Deploying container $1 ==================="
-    echo $DEPLOY
-    DEPLOY_RESULT=$(eval $DEPLOY)
-    echo $DEPLOY_RESULT
+    echo "$DEPLOY"
+    DEPLOY_RESULT=$(eval "$DEPLOY")
+    echo "$DEPLOY_RESULT"
     echo "=================== End deploy of kjar $1 ==================="
 }
 
@@ -39,7 +39,7 @@ function deploy_kjars(){
     for i in "${kjars[@]}"
         do
         :
-        deploy_kjar $i
+        deploy_kjar "$i"
     done
 }
 
@@ -80,9 +80,9 @@ function start_test(){
     if [[ $EXAMPLE_CONFIGURATION == *"remote"* ]]; then
         deploy_kjars
     fi
-    echo $POM_ABSOLUTE_PATH
-    echo $MAVEN_PARAMETERS
-    mvn test -f $POM_ABSOLUTE_PATH $MAVEN_PARAMETERS
+    echo "$POM_ABSOLUTE_PATH"
+    echo "$MAVEN_PARAMETERS"
+    mvn test -f "$POM_ABSOLUTE_PATH" "$MAVEN_PARAMETERS"
     echo "=================== End execution of tests ==================="
 }
 
