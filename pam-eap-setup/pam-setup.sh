@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-#^^^ make the script portable and ensure using a recent version of bash on macOS 
-# see more in https://www.cyberciti.biz/tips/finding-bash-perl-python-portably-using-env.html
 
 #
 # - setup a local environment with BusinessCentral and one KIE Server
