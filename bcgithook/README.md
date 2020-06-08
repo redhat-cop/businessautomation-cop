@@ -1,6 +1,7 @@
 # bcgithook: Business Central git hooks in bash
 Business Central is able to push changes into remote git repositories utilizing post-commit git hooks.
 This project offers a bash-based implementation for such git hooks.
+
 ## Features
 * Lightweight, relies only on standard git client and bash
 * Works with any git provider, e.g. [GitLab](https://gitlab.com/), [GitHub](https://github.com/), [Bitbucket](https://bitbucket.org/), [Azure DevOps Repos](https://azure.microsoft.com/en-gb/services/devops/repos/), [Gitea](https://gitea.io/en-us/), [Gogs](https://gogs.io/), etc
@@ -41,7 +42,7 @@ Please execute the `install.sh` script providing the directory of your [JBoss EA
 
 * Create default configuration in file `$HOME/.bcgithook/default.conf`. Missing directories will be created.
 * Modify [JBoss EAP](https://developers.redhat.com/products/eap/overview) or [WildFly](https://wildfly.org/) configuration in `JBOSS_HOME/standalone/configuration/standalone.xml` by adding the following system property
-```
+```xml
 <property name="org.uberfire.nio.git.hooks" value="${jboss.home.dir}/git-hooks"/>
 ```
 * Create the `JBOSS_HOME/git-hooks` directory
@@ -56,7 +57,7 @@ Pushing to GitLab works without any additional configuration.
 When a project is created in Business Central it will be pushed to a same-named repository to Gitlab.
 
 Example configuration:
-```
+```bash
 GIT_TYPE=""
 GIT_USER_NAME=gitlab_id
 GIT_PASSWD=passwd
@@ -68,7 +69,7 @@ replace `gitlab_id` with your GitLab Id. Do not put a trailing `/` in the `GIT_U
 Create the repository to GitHub before trying to push to it. The repository should be created empty without README, license or `.gitginore` file. Once the repository is created at GitHub a project with the same name can be created at Business Central and it will be pushed to GitHub
 
 Example configuration:
-```
+```bash
 GIT_TYPE=""
 GIT_USER_NAME=github_id
 GIT_PASSWD=passwd
@@ -82,7 +83,7 @@ Unless otherwise configured the file to be modified is `custom/conf/app.ini`
 The [Gitea Cheat Sheet](https://docs.gitea.io/en-us/config-cheat-sheet/) provides additional guidance.
 
 Example configuration:
-```
+```bash
 GIT_TYPE=""
 GIT_USER_NAME=gitea_id
 GIT_PASSWD=passwd
@@ -94,7 +95,7 @@ replace `gitea_id` with your Gitea Id. Do not put a trailing `/` in the `GIT_URL
 Create the repository in Azure DevOps before trying to push to it. The repository should be created empty without README, license or `.gitginore` file. Once the repository is created at Azure DevOps a project with the same name can be created at Business Central and it will be pushed to Azure DevOps
 
 Example configuration:
-```
+```bash
 GIT_TYPE="azure"
 GIT_USER_NAME=azure_id
 GIT_PASSWD=passwd
@@ -107,7 +108,7 @@ Replace `azure_id` , `organisation` with the appropriate values. Do not put a tr
 Create the repository to Bitbucket before trying to push to it. The repository should be created empty without README, license or `.gitginore` file. Once the repository is created at Bitbucket a project with the same name can be created at Business Central and it will be pushed to Bitbucket
 
 Example configuration:
-```
+```bash
 GIT_TYPE=""
 GIT_USER_NAME=bitbucket_id
 GIT_PASSWD=passwd
