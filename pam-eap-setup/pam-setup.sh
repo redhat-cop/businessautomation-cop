@@ -998,7 +998,7 @@ if [ "$skip_install" != "yes" ]; then
       nodeConfig['nodeOffset']=$nodeOffset
       nodeConfig['nodePort']=$nodePort
       nodeConfig['eap_location']="$EAP_LOCATION"
-      jvm_memory=${configOptions[jvm_memory]} && [[ ! -z "jvm_memory" ]] && nodeConfig['jvm_memory']="$jvm_memory"
+      jvm_memory=${configOptions[jvm_memory]} && [[ ! -z "$jvm_memory" ]] && nodeConfig['jvm_memory']="$jvm_memory"
       sout "Installing ${bold}${blue}node${node}${normal} as ${bold}${blue}${nodeConfig[nodeName]}${normal}"
       summary "--- Node instalation node${node} as $nodeParam : ${nodeConfig[nodeName]}"
       ( [[ "$pamInstall" == "controller" ]] || [[ "$pamInstall" == "both" ]] ) && installBC && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} controller"
