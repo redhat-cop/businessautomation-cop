@@ -10,7 +10,7 @@ dmn-example6-model::
 * Define all model
 dmn-example6-functions::
 * Contains the xref:dmn-example6-parent/dmn-example6-functions/src/main/java/com/redhat/cop/pam/example6/CustomerFunctions.java[function] that will be invoked from DMN in this example
-```
+```java
 public class CustomerFunctions {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerFunctions.class);
@@ -49,7 +49,7 @@ dmn-example6-kie-api-remote-impl::
 * Show how invoke a DMN service from a process deployed on a remote kie-server(Implements the methods defined in *dmn-example6-kie-api*)
 
 === Build
-```
+```bash
 $ cd dmn-example6-parent/
 $ mvn clean install
 ```
@@ -63,7 +63,7 @@ image::images/DMN.png[]
 image::images/process.png[]
 
 === Build
-```
+```bash
 $ cd dmn-example6-kjar/
 $ mvn clean install
 ```
@@ -73,7 +73,7 @@ $ mvn clean install
 === Embedded
 
 ==== Spring boot
-```
+```bash
 $ cd dmn-example6-springboot-embedded/
 $ mvn clean install
 ```
@@ -89,7 +89,7 @@ xref:dmn-example6-springboot-embedded/target/cucumber/index.html[cucumber report
 
 image::images/cucumber-result.png[]
 
-```
+```bash
 $ ./mvn spring-boot:run
 ```
 
@@ -98,14 +98,14 @@ IMPORTANT: To try the remote version you need an instance of kie-server up and r
 For installation and configuration please refer to the https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/[official documentation]
 
 Create a user with role `kie-server` and update the properties in xref:dmn-example6-parent/dmn-example6-kie-api-remote-impl/src/main/java/com/redhat/cop/pam/example6/kie/api/impl/RulesApiImpl.java[RulesApiImpl.java]
-```
+```java
     private static final String URL = "http://localhost:8080/kie-server/services/rest/server";
     private static final String USER = "kieServerUser";
     private static final String PASSWORD = "kieServerUser1234;";
 ```
 
 On kie-server deploy the kjar com.redhat.cop.pam:dmn-example6-kjar:1.0
-```
+```xml
 <release-id>
     <artifact-id>dmn-example6-kjar</artifact-id>
     <group-id>com.redhat.cop.pam</group-id>
@@ -114,7 +114,7 @@ On kie-server deploy the kjar com.redhat.cop.pam:dmn-example6-kjar:1.0
 ```
 
 ==== Spring boot
-```
+```bash
 $ cd dmn-example6-springboot-remote/
 $ mvn clean install
 ```
@@ -130,5 +130,6 @@ xref:dmn-example6-springboot-remote/target/cucumber/index.html[cucumber report]
 
 image::images/cucumber-result.png[]
 
-```
+```bash
 $ ./mvn spring-boot:run
+```

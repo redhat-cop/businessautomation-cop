@@ -10,7 +10,7 @@ dmn-example2-model::
 * Define all model
 dmn-example2-functions::
 * Contains the xref:dmn-example2-parent/dmn-example2-functions/src/main/java/com/redhat/cop/pam/example2/CustomerFunctions.java[function] that will be invoked from DMN in this example
-```
+```java
 public class CustomerFunctions {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerFunctions.class);
@@ -49,7 +49,7 @@ dmn-example2-kie-api-remote-impl::
 * Show how invoke a DMN service deployed on a remote kie-server(Implements the methods defined in *dmn-example2-kie-api*)
 
 === Build
-```
+```bash
 $ cd dmn-example2-parent/
 $ mvn clean install
 ```
@@ -61,7 +61,7 @@ $ mvn clean install
 image::images/DMN.png[]
 
 === Build
-```
+```bash
 $ cd dmn-example2-kjar/
 $ mvn clean install
 ```
@@ -71,22 +71,22 @@ $ mvn clean install
 === Embedded
 
 ==== Quarkus
-```
+```bash
 $ cd dmn-example2-quarkus-embedded/
 $ mvn clean install
 ```
 TIP: check all test passed xref:dmn-example2-quarkus-embedded/src/test/java/com/redhat/cop/pam/example2/quarkus/ServiceTest.java[ServiceTest.java]
-```
+```bash
 $ ./mvnw compile quarkus:dev
 ```
 
 ==== Spring boot
-```
+```bash
 $ cd dmn-example2-springboot-embedded/
 $ mvn clean install
 ```
 TIP: check all test passed xref:dmn-example2-springboot-embedded/src/test/java/com/redhat/cop/pam/example2/springboot/ServiceTest.java[ServiceTest.java]
-```
+```bash
 $ ./mvn spring-boot:run
 ```
 === Remote
@@ -94,7 +94,7 @@ IMPORTANT: To try the remote version you need an instance of kie-server up and r
 For installation and configuration please refer to the https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/[official documentation]
 
 Create a user with role `kie-server` and update the properties in xref:dmn-example2-parent/dmn-example2-kie-api-remote-impl/src/main/java/com/redhat/cop/pam/example2/kie/api/impl/RulesApiImpl.java[RulesApiImpl.java]
-```
+```java
     private static final String URL = System.getProperty("com.redhat.cop.pam.kieserver_url", "http://localhost:8080/kie-server/services/rest/server");
     private static final String USER = System.getProperty("com.redhat.cop.pam.kieserver_user", "kieServerUser");
     private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password", "kieServerUser1234;");
@@ -106,7 +106,7 @@ or define the system property you need to override
 * `com.redhat.cop.pam.kieserver_password`
 
 On kie-server deploy the kjar com.redhat.cop.pam:dmn-example2-kjar:1.0
-```
+```xml
 <release-id>
     <artifact-id>dmn-example2-kjar</artifact-id>
     <group-id>com.redhat.cop.pam</group-id>
@@ -114,22 +114,22 @@ On kie-server deploy the kjar com.redhat.cop.pam:dmn-example2-kjar:1.0
 </release-id>
 ```
 ==== Quarkus
-```
+```bash
 $ cd dmn-example2-quarkus-remote/
 $ mvn clean install
 ```
 TIP: check all test passed xref:dmn-example2-quarkus-remote/src/test/java/com/redhat/cop/pam/example2/quarkus/ServiceTest.java[ServiceTest.java]
-```
+```bash
 $ ./mvnw compile quarkus:dev
 ```
 
 ==== Spring boot
-```
+```bash
 $ cd dmn-example2-springboot-remote/
 $ mvn clean install
 ```
 TIP: check all test passed xref:dmn-example2-springboot-remote/src/test/java/com/redhat/cop/pam/example2/springboot/ServiceTest.java[ServiceTest.java]
-```
+```bash
 $ ./mvn spring-boot:run
 ```
 
@@ -143,7 +143,7 @@ Using https://www.postman.com/[postman] import xref:postman-collections/dmn-exam
 |POST
 |http://localhost:8280/dmn-example-2/services/customer
 |
-```
+```json
 {
     "name": "Donald",
     "surname" : "Duck",
@@ -155,7 +155,7 @@ Using https://www.postman.com/[postman] import xref:postman-collections/dmn-exam
 |POST
 |http://localhost:8280/dmn-example-2/services/customer
 |
-```
+```json
 {
     "name": "Young",
     "surname" : "Rossi",

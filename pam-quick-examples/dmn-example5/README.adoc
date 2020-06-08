@@ -32,7 +32,7 @@ dmn-example5-kie-api-remote-impl::
 * Show how invoke a DMN service deployed on a remote kie-server(Implements the methods defined in *dmn-example5-kie-api*)
 
 === Build
-```
+```bash
 $ cd dmn-example5-parent/
 $ mvn clean install
 ```
@@ -44,7 +44,7 @@ $ mvn clean install
 image::images/DMN.png[]
 
 === Build
-```
+```bash
 $ cd dmn-example5-kjar/
 $ mvn clean install
 ```
@@ -54,7 +54,7 @@ $ mvn clean install
 === Embedded
 
 ==== Spring boot
-```
+```bash
 $ cd dmn-example5-springboot-embedded/
 $ mvn clean install
 ```
@@ -70,7 +70,7 @@ xref:dmn-example5-springboot-embedded/target/cucumber/index.html[cucumber report
 
 image::images/cucumber-result.png[]
 
-```
+```bash
 $ ./mvn spring-boot:run
 ```
 
@@ -79,14 +79,14 @@ IMPORTANT: To try the remote version you need an instance of kie-server up and r
 For installation and configuration please refer to the https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/[official documentation]
 
 Create a user with role `kie-server` and update the properties in xref:dmn-example5-parent/dmn-example5-kie-api-remote-impl/src/main/java/com/redhat/cop/pam/example5/kie/api/impl/RulesApiImpl.java[RulesApiImpl.java]
-```
+```java
     private static final String URL = "http://localhost:8080/kie-server/services/rest/server";
     private static final String USER = "kieServerUser";
     private static final String PASSWORD = "kieServerUser1234;";
 ```
 
 On kie-server deploy the kjar com.redhat.cop.pam:dmn-example5-kjar:1.0
-```
+```xml
 <release-id>
     <artifact-id>dmn-example5-kjar</artifact-id>
     <group-id>com.redhat.cop.pam</group-id>
@@ -95,7 +95,7 @@ On kie-server deploy the kjar com.redhat.cop.pam:dmn-example5-kjar:1.0
 ```
 
 ==== Spring boot
-```
+```bash
 $ cd dmn-example5-springboot-remote/
 $ mvn clean install
 ```
@@ -111,6 +111,6 @@ xref:dmn-example5-springboot-remote/target/cucumber/index.html[cucumber report]
 
 image::images/cucumber-result.png[]
 
-```
+```bash
 $ ./mvn spring-boot:run
 ```
