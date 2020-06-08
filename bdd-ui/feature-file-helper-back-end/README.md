@@ -36,7 +36,7 @@ For each remnote Repo, need to enter:
 
     use plaintext username / password
 
-    ```
+    ```javascript
       credentialsType: 'basic',
       username: process.env.GITHUB_USERNAME,
       password: process.env.GITHUB_PASSWORD
@@ -46,7 +46,7 @@ For each remnote Repo, need to enter:
   
     use pathname to ssh private and public key files, for example: `/Users/rh/.ssh/id_rsa` and `/Users/rh/.ssh/id_rsa.pub`
 
-    ```
+    ```javascript
       credentialsType: 'ssh_file',
       username: 'git',
       publicKeyContents: fs.readFileSync(process.env.SSH_PUBLICKEY_PATH_FMGITHUB, {
@@ -58,7 +58,7 @@ For each remnote Repo, need to enter:
     ```
 
 `basic` example:
-```
+```javascript
 remoteRepo = {
   id: '00003',
   name: 'Red Hat Consulting Maven Java Demo (demo-1 branch)',
@@ -76,7 +76,7 @@ remoteRepo = {
 ```
 
 `ssh_file` example:
-```
+```javascript
 remoteRepo = {
   id: '00002',
   name: 'local-bitbucket-2',
@@ -107,7 +107,7 @@ Env variables can be used to configure local folder for storing git repos and fo
 * APP_ENV: dev | prod
 
 
-```
+```json
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
@@ -155,7 +155,8 @@ Endpoints are coded in `routes/remoteRepo.js`
     * filename, pathName and repoId need to be passed in as parameters
 
 * **POST remoteRepo/saveFeatureFile** - saves a specific feature file
-        ```
+
+        ```json
         example body
 
         {
@@ -171,7 +172,7 @@ Endpoints are coded in `routes/remoteRepo.js`
     * deletes local copy of remote repo and then pulls a fresh copy
     * The repoId needs to be passed in as a parameter
    
-        ```
+        ```json
         required body: 
 
         {
@@ -197,7 +198,7 @@ run `npm start` to start server
 Start App on on `http://localhost:3000`
 
 
-```
+```bash
 GITHUB_USERNAME=username \
 GITHUB_PASSWORD=password \
 SSH_PUBLICKEY_PATH_FMGITHUB='/Users/rh/.ssh/id_rsa.pub' \

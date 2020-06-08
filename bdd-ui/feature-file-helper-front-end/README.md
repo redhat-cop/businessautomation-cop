@@ -58,7 +58,7 @@ docs are at `docs/technical-info.md` and `docs/user-info.md`
 
     * host name is set in `src/app/constants/index.ts`
 
-    ```
+    ```java
     public static BACKEND_HOST: string = 'http://localhost:3000';
     ```
 
@@ -73,7 +73,7 @@ There are unit teste for the parsers and utils services, run with `ng test`
 
     * With nodejs installed, app can be run, using simple http-server module for example, as follows:
 
-        ```
+        ```bash
         npx http-server dist/feature-tool -p 8100
 
         in browser, navigate to http://localhost:8100/home
@@ -85,7 +85,7 @@ There are unit teste for the parsers and utils services, run with `ng test`
 
     * execute commands:
 
-        ```
+        ```bash
         cd ./dist/feature-tool
         jar cvf ../feature-tool-ui.war .
         ```
