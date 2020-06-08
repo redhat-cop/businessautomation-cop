@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 EXAMPLE_PATH="$(cd "$(dirname "$0")" && PWD)"
 EXAMPLE_ID="$(basename $EXAMPLE_PATH)"
 
