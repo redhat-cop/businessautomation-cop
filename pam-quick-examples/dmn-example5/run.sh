@@ -122,6 +122,10 @@ do
             usage
             exit 0
             ;;
+        *)
+            usage
+            exit 1
+            ;;
     esac
 done
 
