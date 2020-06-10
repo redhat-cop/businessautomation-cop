@@ -3,7 +3,13 @@
 
 name: Java CI with Maven for pam-quick-examples
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - pam-quick-examples/**
+  pull_request:
+    paths:
+      - pam-quick-examples/**
 
 jobs:
   build:

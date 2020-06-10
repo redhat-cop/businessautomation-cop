@@ -3,7 +3,13 @@
 
 name: Java CI with Maven for kogito-quick-start-workshop
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - kogito-quick-start-workshop/**
+  pull_request:
+    paths:
+      - kogito-quick-start-workshop/**
 
 jobs:
   build:

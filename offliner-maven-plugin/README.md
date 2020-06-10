@@ -1,6 +1,6 @@
 # offliner-maven-plugin
 
-usage example 
+usage example
 ```
 <plugin>
    <groupId>com.redhat.cop.pam</groupId>

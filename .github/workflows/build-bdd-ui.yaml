@@ -3,7 +3,13 @@
 
 name: Build CI with Maven and Node for bdd-ui
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - bdd-ui/**
+  pull_request:
+    paths:
+      - bdd-ui/**
 
 jobs:
   build:

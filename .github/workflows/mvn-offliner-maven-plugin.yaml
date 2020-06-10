@@ -3,7 +3,13 @@
 
 name: Java CI with Maven for offliner-maven-plugin
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - offliner-maven-plugin/**
+  pull_request:
+    paths:
+      - offliner-maven-plugin/**
 
 jobs:
   build:
