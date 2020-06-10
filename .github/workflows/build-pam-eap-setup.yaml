@@ -1,0 +1,21 @@
+name: Build for pam-eap-setup
+
+on:
+  push:
+    paths:
+      - pam-eap-setup/**
+  pull_request:
+    paths:
+      - pam-eap-setup/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          ignore: bcgithook bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-quick-examples

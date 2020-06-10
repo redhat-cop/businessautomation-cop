@@ -1,0 +1,21 @@
+name: Build for bcgithook
+
+on:
+  push:
+    paths:
+      - bcgithook/**
+  pull_request:
+    paths:
+      - bcgithook/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          ignore: bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-quick-examples
