@@ -3,9 +3,11 @@ name: Build for pam-eap-setup
 on:
   push:
     paths:
+      - .github/workflows/build-pam-eap-setup.yaml
       - pam-eap-setup/**
   pull_request:
     paths:
+      - .github/workflows/build-pam-eap-setup.yaml
       - pam-eap-setup/**
 
 jobs:

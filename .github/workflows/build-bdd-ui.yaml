@@ -6,9 +6,11 @@ name: Build CI with Maven and Node for bdd-ui
 on:
   push:
     paths:
+      - .github/workflows/build-bdd-ui.yaml
       - bdd-ui/**
   pull_request:
     paths:
+      - .github/workflows/build-bdd-ui.yaml
       - bdd-ui/**
 
 jobs:

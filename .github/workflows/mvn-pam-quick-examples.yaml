@@ -6,9 +6,11 @@ name: Java CI with Maven for pam-quick-examples
 on:
   push:
     paths:
+      - .github/workflows/mvn-pam-quick-examples.yaml
       - pam-quick-examples/**
   pull_request:
     paths:
+      - .github/workflows/mvn-pam-quick-examples.yaml
       - pam-quick-examples/**
 
 jobs:

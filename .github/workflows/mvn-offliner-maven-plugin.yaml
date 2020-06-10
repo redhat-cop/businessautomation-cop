@@ -6,9 +6,11 @@ name: Java CI with Maven for offliner-maven-plugin
 on:
   push:
     paths:
+      - .github/workflows/mvn-offliner-maven-plugin.yaml
       - offliner-maven-plugin/**
   pull_request:
     paths:
+      - .github/workflows/mvn-offliner-maven-plugin.yaml
       - offliner-maven-plugin/**
 
 jobs:

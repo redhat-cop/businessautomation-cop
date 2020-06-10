@@ -3,9 +3,11 @@ name: Build for bcgithook
 on:
   push:
     paths:
+      - .github/workflows/build-bcgithook.yaml
       - bcgithook/**
   pull_request:
     paths:
+      - .github/workflows/build-bcgithook.yaml
       - bcgithook/**
 
 jobs:
