@@ -80,7 +80,7 @@ function start_test(){
     if [[ $EXAMPLE_CONFIGURATION == *"remote"* ]]; then
         deploy_kjars
     fi
-    echo $POM_ABSOLUTE_PATH
+    echo "$POM_ABSOLUTE_PATH"
     echo "$MAVEN_PARAMETERS"
     mvn test -f "$POM_ABSOLUTE_PATH" "$MAVEN_PARAMETERS"
     echo "=================== End execution of tests ==================="
