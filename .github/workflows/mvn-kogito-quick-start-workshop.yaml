@@ -6,9 +6,11 @@ name: Java CI with Maven for kogito-quick-start-workshop
 on:
   push:
     paths:
+      - .github/workflows/mvn-kogito-quick-start-workshop.yaml
       - kogito-quick-start-workshop/**
   pull_request:
     paths:
+      - .github/workflows/mvn-kogito-quick-start-workshop.yaml
       - kogito-quick-start-workshop/**
 
 jobs:
