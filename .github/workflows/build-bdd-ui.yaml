@@ -30,6 +30,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          ignore: bcgithook kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-quick-examples
+
       - name: Build bdd-ui/maven-java-bdd-demo
         run: mvn -B clean install -f bdd-ui/maven-java-bdd-demo/pom.xml --no-transfer-progress
 
