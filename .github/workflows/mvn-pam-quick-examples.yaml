@@ -36,6 +36,11 @@ jobs:
           repositories: '[{ "id": "redhat-ga-repository", "url": "https://maven.repository.redhat.com/ga" }]'
           plugin_repositories: '[{ "id": "redhat-ga-repository", "url": "https://maven.repository.redhat.com/ga" }]'
 
+      - name: Run ShellCheck
+        uses: garethahealy/action-shellcheck@master
+        with:
+          ignore: bcgithook bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup
+
       - name: Build pam-quick-examples
         run: |
           pushd pam-quick-examples/dmn-example1
