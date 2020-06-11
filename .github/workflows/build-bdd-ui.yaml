@@ -15,7 +15,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -33,6 +39,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run ShellCheck
+        if: matrix.os == 'ubuntu-latest'
         uses: ludeeus/action-shellcheck@master
         with:
           ignore: bcgithook kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-quick-examples
