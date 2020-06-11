@@ -1,44 +1,44 @@
-= PAM Quick examples
+= Process Automation Manager Quick Examples
 
-DMN examples
+=== Decision Model and Notation (DMN) Examples
 
 [cols="2,10,2,2", options="header"]
 |===
 |name |description |build |run
 
 |*dmn-example-1*
-|This example show how use DMN to check if a Customer can open a bank account(is underage or not)
+|This example shows how use DMN to check if a customer can open a bank account (is underage or not)
 |xref:dmn-example1/build.sh[build.sh]
 |xref:dmn-example1/run.sh[run.sh]
 
 |*dmn-example-2*
-|This example show how invoke a java function from DMN to check if a Customer can open a bank account(is underage or not)
+|This example shows how to invoke a java function from DMN to check if a customer can open a bank account (is underage or not)
 |xref:dmn-example2/build.sh[build.sh]
 |xref:dmn-example2/run.sh[run.sh]
 
 |*dmn-example-3*
-|This example show how invoke a DMN from a process
+|This example shows how invoke a DMN from a process
 |xref:dmn-example3/build.sh[build.sh]
 |xref:dmn-example3/run.sh[run.sh]
 
 |*dmn-example-4*
-|This example show how invoke a DMN from a process defined in separate kjar
+|This example shows how to invoke a DMN from a process defined in separate `kjar`
 |xref:dmn-example4/build.sh[build.sh]
 |xref:dmn-example4/run.sh[run.sh]
 
 |*dmn-example-5*
-|This example show how test a DMN using cucumber and spring-boot
+|This example shows how to test a DMN using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
 |xref:dmn-example5/build.sh[build.sh]
 |xref:dmn-example5/run.sh[run.sh]
 
 |*dmn-example-6*
-|This example show how test a DMN in a process using cucumber and spring-boot
+|This example shows how to test a DMN in a process using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
 |xref:dmn-example6/build.sh[build.sh]
 |xref:dmn-example6/run.sh[run.sh]
 
 |===
 
-BPMN process examples
+=== BPMN process examples
 
 [cols="2,10,2,2", options="header"]
 |===
@@ -60,6 +60,3 @@ BPMN process examples
 |
 
 |===
-
-
-
