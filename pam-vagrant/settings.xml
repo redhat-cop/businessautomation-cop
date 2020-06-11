@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <servers>
+    <!-- configure remote nexus repository -->
+    <server>
+      <id>nexus_local_release</id>
+      <username>admin</username>
+      <password>@@NEXUS_PASSWORD@@</password>
+    </server>
+    <server>
+      <id>nexus_local_snapshot</id>
+      <username>admin</username>
+      <password>@@NEXUS_PASSWORD@@</password>
+    </server>
+
+  </servers>
+
+  <profiles>
+
+    <!-- Profile with online repositories required by BRMS/BPMS -->
+    <profile>
+      <id>brms_bpms_online_profile</id>
+      <repositories>
+        <repository>
+          <id>jboss_ga_repository</id>
+          <url>https://maven.repository.redhat.com/ga/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>jboss_ga_plugin_repository</id>
+          <url>https://maven.repository.redhat.com/ga/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+    <profile>
+      <id>jboss-public-repository-group</id>
+      <repositories>
+        <repository>
+          <id>jboss-public-repository-group-repository</id>
+          <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>jboss-public-repository-groupplugin_repository</id>
+          <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+    <!-- define local nexus repository -->
+    <profile>
+      <id>nexus_local_profile</id>
+      <repositories>
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <id>nexus_local_release</id>
+          <name>maven-releases</name>
+          <url>http://localhost:8081/repository/maven-releases/</url>
+        </repository>
+        <repository>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+          <id>nexus_local_snapshot</id>
+          <name>maven-snapshot</name>
+          <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>nexus_local_release</id>
+          <name>maven-release</name>
+          <url>http://localhost:8081/repository/maven-releases/</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>nexus_local_snapshot</id>
+          <name>maven-snapshot</name>
+          <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+    
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>jboss-public-repository-group</activeProfile>
+    <activeProfile>brms_bpms_online_profile</activeProfile> 
+    <activeProfile>nexus_local_profile</activeProfile>
+  </activeProfiles>
+
+</settings>
