@@ -6,16 +6,20 @@ name: Java CI with Maven for pam-quick-examples
 on:
   push:
     paths:
-      - .github/workflows/mvn-pam-quick-examples.yaml
+      - .github/workflows/pam-quick-examples.yaml
       - pam-quick-examples/**
   pull_request:
     paths:
-      - .github/workflows/mvn-pam-quick-examples.yaml
+      - .github/workflows/pam-quick-examples.yaml
       - pam-quick-examples/**
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
