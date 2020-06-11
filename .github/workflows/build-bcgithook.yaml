@@ -1,4 +1,4 @@
-name: Build for bcgithook
+name: Build for bcgithook.
 
 on:
   push:
