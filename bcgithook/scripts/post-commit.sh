@@ -38,6 +38,39 @@
 #
 # ------------------------------------------------------------------------------
 
+#
+# sanity environment check
+#
+CYGWIN_ON=no
+MACOS_ON=no
+LINUX_ON=no
+min_bash_version=4
+
+# - try to detect CYGWIN
+# a=`uname -a` && al=${a,,} && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+# use awk to workaround MacOS bash version
+a=$(uname -a) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+if [[ "$CYGWIN_ON" == "yes" ]]; then
+  echo "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
+  min_bash_version=4
+fi
+
+# - try to detect MacOS
+a=$(uname) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%darwin} && [[ "$al" != "$ac" ]] && MACOS_ON=yes
+[[ "$MACOS_ON" == "yes" ]] && min_bash_version=5 && echo "macOS DETECTED"
+
+# - try to detect Linux
+a=$(uname) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%linux} && [[ "$al" != "$ac" ]] && LINUX_ON=yes
+[[ "$LINUX_ON" == "yes" ]] && min_bash_version=4
+
+bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
+[[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1 
+
+#
+# end of checks
+#
+
+
 CONFIG_HOME="$HOME/.bcgithook"
 [[ ! -d "$CONFIG_HOME" ]] && mkdir -p "$CONFIG_HOME" 
 CONFIG_FILE="$CONFIG_HOME/default.conf"
@@ -51,7 +84,7 @@ PRJ_NAME=null && hwd="`pwd`" && PRJ_NAME="`basename ${hwd%%\/hooks} .git`"
 PRJ_CONFIG_FILE="$CONFIG_HOME/$PRJ_NAME.conf" && [[ -r "$PRJ_CONFIG_FILE" ]] && CONFIG_FILE="$PRJ_CONFIG_FILE"
 
 debug() {
-  timestamp=`date '+%Y-%m-%d %H:%M:%S'`
+  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
   out "[$timestamp] [$CONFIG_FILE] [$PRJ_NAME] $1"
 }
 out() {
