@@ -54,6 +54,3 @@ Please include a deeper explanation of the showcase that get deployed and the re
 We follow a standard open source forking workflow in this repo. Please see the [Red Hat Communities of Practice Contribution Guide](https://redhat-cop.github.io/contrib/) for a walkthrough of this workflow.
 
 > Written with [StackEdit](https://stackedit.io/).
-
-
-> Written with [StackEdit](https://stackedit.io/).
