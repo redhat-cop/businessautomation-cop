@@ -15,9 +15,10 @@ declare -a kjars=("com.redhat.cop.pam:dmn-example2-kjar:1.0")
 
 function deploy_kjar(){
     echo "=================== Start deploy of kjar $1 ==================="
-    DEPLOY="curl -s -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X PUT '$KIE_SERVER_URL/containers/$1' -d@$EXAMPLE_PATH/requests/$1.json"
-    UN_DEPLOY="curl -s -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X DELETE '$KIE_SERVER_URL/containers/$1'"
-    CHECK_IS_DEPLOY="curl -s -i -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X GET '$KIE_SERVER_URL/containers/$1/release-id'"
+    GAV=$1
+    DEPLOY="curl -s -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X PUT '$KIE_SERVER_URL/containers/$GAV' -d@$EXAMPLE_PATH/requests/${GAV//:/_}.json"
+    UN_DEPLOY="curl -s -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X DELETE '$KIE_SERVER_URL/containers/$GAV'"
+    CHECK_IS_DEPLOY="curl -s -i -u '$KIE_SERVER_USER:$KIE_SERVER_PASSWORD' -H 'accept: application/json' -H 'content-type: application/json' -X GET '$KIE_SERVER_URL/containers/$GAV/release-id'"
     echo "=================== Check if container $1 already deployed ==================="
     echo "$CHECK_IS_DEPLOY"
     IS_DEPLOY_RESULT=$(eval "$CHECK_IS_DEPLOY")
