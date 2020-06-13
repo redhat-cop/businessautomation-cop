@@ -27,4 +27,4 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: ludeeus/action-shellcheck@master
         with:
-          ignore: bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-quick-examples
+          ignore: bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-quick-examples pam-vagrant
