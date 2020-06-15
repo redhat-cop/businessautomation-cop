@@ -38,39 +38,6 @@
 #
 # ------------------------------------------------------------------------------
 
-#
-# sanity environment check
-#
-CYGWIN_ON=no
-MACOS_ON=no
-LINUX_ON=no
-min_bash_version=4
-
-# - try to detect CYGWIN
-# a=`uname -a` && al=${a,,} && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
-# use awk to workaround MacOS bash version
-a=$(uname -a) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
-if [[ "$CYGWIN_ON" == "yes" ]]; then
-  echo "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
-  min_bash_version=4
-fi
-
-# - try to detect MacOS
-a=$(uname) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%darwin} && [[ "$al" != "$ac" ]] && MACOS_ON=yes
-[[ "$MACOS_ON" == "yes" ]] && min_bash_version=5 && echo "macOS DETECTED"
-
-# - try to detect Linux
-a=$(uname) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%linux} && [[ "$al" != "$ac" ]] && LINUX_ON=yes
-[[ "$LINUX_ON" == "yes" ]] && min_bash_version=4
-
-bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
-[[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1 
-
-#
-# end of checks
-#
-
-
 CONFIG_HOME="$HOME/.bcgithook"
 [[ ! -d "$CONFIG_HOME" ]] && mkdir -p "$CONFIG_HOME" 
 CONFIG_FILE="$CONFIG_HOME/default.conf"
@@ -79,7 +46,7 @@ LOG_LOCATION="$HOME"
 LOG_FILE="bcgithook_operations.log"
 ERR_FILE="bcgithook_error.log"
 
-PRJ_NAME=null && hwd="`pwd`" && PRJ_NAME="`basename ${hwd%%\/hooks} .git`"
+PRJ_NAME=null && hwd="$(pwd)" && PRJ_NAME="$(basename ${hwd%%\/hooks} .git)"
 
 PRJ_CONFIG_FILE="$CONFIG_HOME/$PRJ_NAME.conf" && [[ -r "$PRJ_CONFIG_FILE" ]] && CONFIG_FILE="$PRJ_CONFIG_FILE"
 
@@ -92,6 +59,39 @@ out() {
     printf "%s\n" "$@" >> "$LOG_LOCATION/$LOG_FILE"
   fi
 }
+
+#
+# sanity environment check
+#
+CYGWIN_ON=no
+MACOS_ON=no
+LINUX_ON=no
+min_bash_version=4
+
+# - try to detect CYGWIN
+# a=`uname -a` && al=${a,,} && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+# use awk to workaround MacOS bash version
+a=$(uname -a) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+if [[ "$CYGWIN_ON" == "yes" ]]; then
+  echo "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
+  min_bash_version=4
+fi
+
+# - try to detect MacOS
+a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%darwin} && [[ "$al" != "$ac" ]] && MACOS_ON=yes
+[[ "$MACOS_ON" == "yes" ]] && min_bash_version=5 && echo "macOS DETECTED"
+
+# - try to detect Linux
+a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%linux} && [[ "$al" != "$ac" ]] && LINUX_ON=yes
+[[ "$LINUX_ON" == "yes" ]] && min_bash_version=4
+
+bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
+[[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1 
+
+#
+# end of checks
+#
+
 urlencode() {
   old_lc_collate=$LC_COLLATE
   LC_COLLATE=C
@@ -100,7 +100,7 @@ urlencode() {
   for (( i = 0; i < length; i++ )); do
       local c="${1:i:1}"
       case $c in
-          [a-zA-Z0-9.~_-]) printf "$c" ;;
+          [a-zA-Z0-9.~_-]) printf "%s" "$c" ;;
           *) printf '%%%02X' "'$c" ;;
       esac
   done
@@ -131,18 +131,18 @@ remoteGitUrl="$GIT_URL"
 
 BBID=bbgit
 
-workusername=`urlencode "$gitUserName"`
-workpasswd=`urlencode "$gitPasswd"`
+workusername=$(urlencode "$gitUserName")
+workpasswd=$(urlencode "$gitPasswd")
 
 # - ignore system repos
-hwd=`pwd` && hwd=${hwd#*\.niogit\/}
+hwd=$(pwd) && hwd=${hwd#*\.niogit\/}
 frag=${hwd#system}       && [[ "$frag" != "$hwd" ]] && ( [[ "$LOG_SYSTEM_REPOS" != "yes" ]] || debug "SKIPPING BUILTIN PROJECT" ) && exit 0
 frag=${hwd#dashbuilder}  && [[ "$frag" != "$hwd" ]] && ( [[ "$LOG_SYSTEM_REPOS" != "yes" ]] || debug "SKIPPING BUILTIN PROJECT" ) && exit 0
 frag=${hwd#\.archetypes} && [[ "$frag" != "$hwd" ]] && ( [[ "$LOG_SYSTEM_REPOS" != "yes" ]] || debug "SKIPPING BUILTIN PROJECT" ) && exit 0
 frag=${hwd#*\.config}    && [[ "$frag" != "$hwd" ]] && ( [[ "$LOG_SYSTEM_REPOS" != "yes" ]] || debug "SKIPPING BUILTIN PROJECT" ) && exit 0
 
 addBBID=yes
-while read gitName gitUrl gitOps; do
+while read -r gitName gitUrl gitOps; do
   debug "CHECKING $gitName $gitUrl $gitOps"
   [[ "$gitName" == "$BBID" ]] && addBBID=no
   [[ "$gitName" == "origin" ]] && remoteGitUrl="$gitUrl"
@@ -161,22 +161,21 @@ REPO_NAME="$PRJ_NAME.git"
 [[ "$GIT_TYPE" == "azure" ]] && REPO_NAME="$PRJ_NAME"
 
 # - newly created projects
-if [[ `git remote -v | wc -l` -eq 0 ]]; then
-  hwd=`pwd`
+if [[ $(git remote -v | wc -l) -eq 0 ]]; then
+  hwd=$(pwd)
   debug "NEW PROJECT ADDING $BBID TO $bburl/$REPO_NAME"
-  git remote add $BBID $bburl/$REPO_NAME
+  git remote add "$BBID" "$bburl"/"$REPO_NAME"
 fi
 
 if [[ "$addBBID" == "yes" ]]; then
   while read gitName gitUrl gitOps; do
     if [[ "$gitName" != "$BBID" ]]; then
       debug "ADDING MISSING $BBID TO $bburl"
-      git remote add $BBID $bburl
+      git remote add "$BBID" "$bburl"
       break
     fi
   done < <( git remote -v )
 fi
 
 debug "PUSHING TO $remoteGitUrl"
-git push -u $BBID --all 
-
+git push -u "$BBID" --all 
