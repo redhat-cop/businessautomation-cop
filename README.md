@@ -1,4 +1,3 @@
-[![Build Status](https://prow-default.apps.ci-1.cop.rht-labs.com/badge.svg?jobs=cq-daily-master)](https://prow-default.apps.ci-1.cop.rht-labs.com/?job=cq-daily-master)
 [![License](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)]()
 
 # Business Automation Community of Practice
