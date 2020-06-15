@@ -17,6 +17,38 @@
 #
 
 #
+# sanity environment check
+#
+CYGWIN_ON=no
+MACOS_ON=no
+LINUX_ON=no
+min_bash_version=4
+
+# - try to detect CYGWIN
+# a=`uname -a` && al=${a,,} && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+# use awk to workaround MacOS bash version
+a=$(uname -a) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+if [[ "$CYGWIN_ON" == "yes" ]]; then
+  echo "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
+  min_bash_version=4
+fi
+
+# - try to detect MacOS
+a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%darwin} && [[ "$al" != "$ac" ]] && MACOS_ON=yes
+[[ "$MACOS_ON" == "yes" ]] && min_bash_version=5 && echo "macOS DETECTED"
+
+# - try to detect Linux
+a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%linux} && [[ "$al" != "$ac" ]] && LINUX_ON=yes
+[[ "$LINUX_ON" == "yes" ]] && min_bash_version=4
+
+bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
+[[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1 
+
+#
+# end of checks
+#
+
+#
 # - declare some useful functions
 #
 
@@ -112,14 +144,6 @@ Additional information: https://github.com/redhat-cop/businessautomation-cop/blo
 #
 # - goon with installation
 #
-
-# - try to detect CygWin
-CYGWIN_ON=no
-a=`uname -a` && al=`echo $a | awk '{ print tolower($0); }'` && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
-if [[ "$CYGWIN_ON" == "yes" ]]; then
-  sout "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
-fi
-
 
 SOURCE="`dirname $0`" && [[ "$CYGWIN_ON" == "yes" ]] && SOURCE=$(cygpath -w ${SOURCE})
 DEFAULT_CONF_SOURCE="$SOURCE"/scripts/default.conf.example
