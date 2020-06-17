@@ -23,6 +23,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: redhat-csp-download
+        if: matrix.os == 'ubuntu-latest'
+        uses: garethahealy/github-actions/redhat-csp-download@master
+        with:
+          rh_username: ${{ secrets.RH_USERNAME }}
+          rh_password: ${{ secrets.RH_PASSWORD }}
+          download: '[{"file":"/github/workspace/pam-eap-setup/jboss-eap-7.2.0.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=64311"},{"file":"/github/workspace/pam-eap-setup/rhpam-7.7.1-business-central-eap7-deployable.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=82441"},{"file":"/github/workspace/pam-eap-setup/rhpam-7.7.1-kie-server-ee8.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=82291"}]'
+
+      - name: Run pam-setup.sh
+        if: matrix.os == 'ubuntu-latest'
+        uses: ./.github/actions/eap-base
+        with:
+          should_run: ${{ secrets.RH_USERNAME }}
+          command: "cd pam-eap-setup; ./pam-setup.sh; rm -rf pam"
+
       - name: Run ShellCheck
         if: matrix.os == 'ubuntu-latest'
         uses: ludeeus/action-shellcheck@master

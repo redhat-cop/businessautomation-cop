@@ -1,0 +1,20 @@
+name: 'eap-base'
+description: 'Action to run Red Hat EAP'
+author: 'Red Hat CoP'
+branding:
+  icon: monitor
+  color: purple
+inputs:
+  should_run:
+    description: "If this is empty, the action is skipped."
+    required: false
+  command:
+    description: "Command to exec"
+    required: true
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.should_run }}
+    - ${{ inputs.command }}
