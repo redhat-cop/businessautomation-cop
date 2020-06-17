@@ -23,8 +23,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install Ansible
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt install software-properties-common
+          sudo apt-add-repository --yes --update ppa:ansible/ansible
+          sudo apt install -y python3-dev python3-pip python3-venv python3-wheel
+          sudo apt install -y ansible
+          pip install wheel
+
+      - name: Download product zips
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          if [ -z "${{ secrets.RH_USERNAME }}" ] || [ -z "${{ secrets.RH_PASSWORD }}" ]
+          then
+            echo "RH_USERNAME or RH_PASSWORD is empty. Skipping."
+            exit 0
+          fi
+
+          pushd .ansible
+          pip install install -r requirements.txt
+          ansible-galaxy install -r requirements.yml
+          ansible-playbook download.yml -e rh_username=${{ secrets.RH_USERNAME }} -e rh_password=${{ secrets.RH_PASSWORD }} -vvv
+          popd
+
       - name: Run ShellCheck
         if: matrix.os == 'ubuntu-latest'
         uses: ludeeus/action-shellcheck@master
         with:
           ignore: bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-quick-examples pam-vagrant
+

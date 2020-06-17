@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  gather_facts: no
+  roles:
+    - sabre1041.redhat-csp-download
+
+  tasks:
+    - name: Download product zips
+      #no_log: true
+      redhat_csp_download:
+        url: "{{ item.url }}"
+        dest: "{{ item.file }}"
+        username: "{{ rh_username }}"
+        password: "{{ rh_password }}"
+      with_items:
+        - { file: "jboss-eap-7.2.0.zip", url: "https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=55301"}
+        #- { file: "rhpam-7.7.1-business-central-eap7-deployable.zip", url: "todo"}
+        #- { file: "rhpam-7.7.1-kie-server-ee8.zip", url: "todo"}
