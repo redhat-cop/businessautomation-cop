@@ -50,9 +50,11 @@ PRJ_NAME=null && hwd="$(pwd)" && PRJ_NAME="$(basename ${hwd%%\/hooks} .git)"
 
 PRJ_CONFIG_FILE="$CONFIG_HOME/$PRJ_NAME.conf" && [[ -r "$PRJ_CONFIG_FILE" ]] && CONFIG_FILE="$PRJ_CONFIG_FILE"
 
+randomid="$(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')"
+
 debug() {
   timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-  out "[$timestamp] [$CONFIG_FILE] [$PRJ_NAME] $1"
+  out "[$timestamp] [$randomid] [$CONFIG_FILE] [$PRJ_NAME] $1"
 }
 out() {
   if [ -n "$LOG_FILE" ] ; then
@@ -111,6 +113,8 @@ urldecode() {
   local url_encoded="${1//+/ }"
   printf '%b' "${url_encoded//%/\\x}"
 }
+
+debug "START"
 
 [[ ! -r "$CONFIG_FILE" ]] && LOG_FILE="$ERR_FILE" \
                           && debug "CONFIG FILE $CONFIG_FILE NOT FOUND - ABORTING" \
@@ -177,5 +181,20 @@ if [[ "$addBBID" == "yes" ]]; then
   done < <( git remote -v )
 fi
 
+bruli="$(git branch | colrm 1 2 | awk '{print $1}')"
+
 debug "PUSHING TO $remoteGitUrl"
-git push -u "$BBID" --all 
+# git push -u $BBID --all 
+for bru in $bruli; do
+  deny=no 
+  [[ -n "$BRANCH_ALLOW" ]] && deny=yes && for de in ${BRANCH_ALLOW//,/ }; do [[ "$de" == "$bru" ]] && deny=no; done
+  for de in ${BRANCH_DENY//,/ }; do [[ "$de" == "$bru" ]] && deny=yes; done
+  if [[ "$deny" == "yes" ]]; then
+    debug "COMMITS TO BRANCH [$bru] ARE NOT ALLOWED - COMMIT NOT PUSHED TO $remoteGitUrl"
+  else
+    debug "PUSHING BRANCH [$bru] TO $remoteGitUrl"
+    git push -u "$BBID" "$bru":"$bru"
+  fi
+done
+
+debug "END"
