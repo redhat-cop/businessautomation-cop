@@ -18,6 +18,28 @@
 # LOG_SYSTEM_REPOS = [yes|no], set to "yes" to log access to PAM system
 #                              repositories, increases verbosity
 #
+# BRANCH_DENY=master,release
+# BRANCH_ALLOW=br2,feature/fa
+#
+# Optional allow and deny list for branches
+# Specify a comma-separated list of branches
+#
+#  - if BRANCH_ALLOW exists, only commits in branches in the list will be pushed to the remote repo
+#  - if BRANCH_DENY exists, commits in branches in the list will not be pushed to the remote repo
+#  - if both lists exist, BRANCH_DENY takes precedene
+#
+# Example:
+# (a)
+# - BRANCH_ALLOW=branch2,feature/fa
+# - BRANCH_DENY=master,release
+# Commits in branches "branch2" and "feature/fa" will be pushed to remote repo
+# Commits in branches "master" and "release" will not be pushed to remote repo
+#
+# (b)
+# - BRANCH_ALLOW=branch2,feature/fa
+# - BRANCH_DENY=master,release,branch2
+# Commits in branches "feature/fa" will be pushed to remote repo
+# Commits in branches "master", "release" and "branch2" will not be pushed to remote repo
 #
 #
 # Uncomment and modify as appropriate
@@ -46,6 +68,10 @@
 # GIT_USER_NAME='gitea_id'
 # GIT_PASSWD='passwd'
 # GIT_URL='http://localhost:3000/gitea_id'
+#
+# BRANCH_DENY=master,release
+# BRANCH_ALLOW=br2,feature/fa
+# 
 
 LOG_LOCATION=$HOME
 LOG_SYSTEM_REPOS=yes
