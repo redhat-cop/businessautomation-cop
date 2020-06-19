@@ -52,6 +52,11 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 # - declare some useful functions
 #
 
+# - shellcheck directives 
+# shellcheck disable=SC2034 # do not report on unused variables
+# shellcheck disable=SC2155 # Declare and assign separately to avoid masking return values
+# shellcheck disable=SC2145 # Argument mixes string and array. Use * or separate argument
+
 # are we running from a terminal
 if test -t 1; then
     # see if it supports colors...
@@ -82,16 +87,16 @@ prettyPrinter() {
   declare -a arr=("$@")
   local maxlen=0
   for i in "${arr[@]}"; do
-    local h=$(echo $i | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
+    local h=$(echo "$i" | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
     local strlenh=${#h}
     [[ $strlenh -gt $maxlen ]] && maxlen=$strlenh
   done
-  local spacer=$(printf '%*s' $maxlen)
+  local spacer=$(printf '%*s' "$maxlen")
   for i in "${arr[@]}"; do
-    local h=$(echo $i | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
+    local h=$(echo "$i" | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
     local strlen=${#h}
     h=" ${spacer}${h}"
-    local r=$(echo $i | awk -F':-' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i; }')
+    local r=$(echo "$i" | awk -F':-' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i; }')
     local rprefix=""
     local rsuffix=""
     [[ "$r" == "" ]] && r=$i && rprefix="${bold}${white}"
@@ -103,7 +108,7 @@ prettyPrinter() {
 sout() {
   declare -a arr=("$@")
   for i in "${arr[@]}"; do
-    echo ':: '$i
+    echo ':: '"$i"
   done
 }
 error() {
@@ -115,7 +120,7 @@ echo "
 Will install bcgithook post-commit git hook and default 
 configuration
 
-usage: $(basename $0) [JBOSS_HOME] [-h help]
+usage: $(basename "$0") [JBOSS_HOME] [-h help]
 
 JBOSS_HOME should point to a JBoss EAP or WildFly installation.
 
@@ -145,13 +150,13 @@ Additional information: https://github.com/redhat-cop/businessautomation-cop/blo
 # - goon with installation
 #
 
-SOURCE="$(dirname $0)" && [[ "$CYGWIN_ON" == "yes" ]] && SOURCE="$(cygpath -w ${SOURCE})"
+SOURCE="$(dirname "$0")" && [[ "$CYGWIN_ON" == "yes" ]] && SOURCE="$(cygpath -w "${SOURCE}")"
 DEFAULT_CONF_SOURCE="$SOURCE"/scripts/default.conf.example
 POST_COMMIT_SOURCE="$SOURCE"/scripts/post-commit.sh
 
 CONFIG_HOME="$HOME/.bcgithook" && [[ "$CYGWIN_ON" == "yes" ]] && CONFIG_HOME=$(cygpath -w "${CONFIG_HOME}")
 
-jbhome="$1" && [[ "$CYGWIN_ON" == "yes" ]] && jbhome="$(cygpath -w ${jbhome})"
+jbhome="$1" && [[ "$CYGWIN_ON" == "yes" ]] && jbhome="$(cygpath -w "${jbhome}")"
 
 # - some sanity checks
 [[ ! -r "$DEFAULT_CONF_SOURCE" ]] && error "- DEFAULT CONFIGURATION CANNOT BE FOUND - ABORTING" && exit 1
@@ -176,9 +181,11 @@ mkdir -p "$gitHookDir"
 [[ ! -d "$gitHookDir" ]] && error "- GIT HOOKS DIRECTORY CANNOT BE CREATED - ABORTING" && exit 6
 
 cp "$POST_COMMIT_SOURCE" "$gitHookDir/post-commit" || ( error "- POST COMMIT SCRIPT CANNOT BE COPIED INTO PLACE - ABORTING" && exit 7 )
-echo '#'                                             >> "$gitHookDir/post-commit"
-echo "# INSTALLED AT : $(date '+%Y-%m-%d %H:%M:%S')" >> "$gitHookDir/post-commit" 
-echo '#'                                             >> "$gitHookDir/post-commit"
+echo "
+#                                             
+# INSTALLED AT : $(date '+%Y-%m-%d %H:%M:%S')
+#
+">> "$gitHookDir/post-commit"
 
 pushd "$jbhome/bin" &> /dev/null
 
