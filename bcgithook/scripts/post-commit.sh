@@ -119,6 +119,7 @@ debug "START"
 [[ ! -r "$CONFIG_FILE" ]] && LOG_FILE="$ERR_FILE" \
                           && debug "CONFIG FILE $CONFIG_FILE NOT FOUND - ABORTING" \
                           && exit 1
+# shellcheck source=/dev/null
 source "$CONFIG_FILE"
 
 [[ ! -d "$LOG_LOCATION" ]] && LOG_LOCATION="$CONFIG_HOME" \
