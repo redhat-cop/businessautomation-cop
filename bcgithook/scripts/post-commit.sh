@@ -172,7 +172,7 @@ if [[ $(git remote -v | wc -l) -eq 0 ]]; then
 fi
 
 if [[ "$addBBID" == "yes" ]]; then
-  while read gitName gitUrl gitOps; do
+  while read -r gitName gitUrl gitOps; do
     if [[ "$gitName" != "$BBID" ]]; then
       debug "ADDING MISSING $BBID TO $bburl"
       git remote add "$BBID" "$bburl"
