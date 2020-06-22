@@ -930,7 +930,7 @@ if [[ ! -z "$optO" ]]; then
     while read -rd=; do tmpar+=("$REPLY"); done <<<"${multiOptions[$ondx]}="
     k="${tmpar[0]}"
     v="${tmpar[1]}" && v="${v:-1}"
-    configOptions["$k"]="${v}"
+    [[ -n "$k" ]] && configOptions["$k"]="${v}"
     unset tmpar
   done
   unset tmpar multiOptions
