@@ -16,18 +16,18 @@ min_bash_version=4
 # - try to detect CYGWIN
 # a=`uname -a` && al=${a,,} && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
 # use awk to workaround MacOS bash version
-a=$(uname -a) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+a=$(uname -a) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
 if [[ "$CYGWIN_ON" == "yes" ]]; then
   echo "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
   min_bash_version=4
 fi
 
 # - try to detect MacOS
-a=$(uname) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%darwin} && [[ "$al" != "$ac" ]] && MACOS_ON=yes
+a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%darwin} && [[ "$al" != "$ac" ]] && MACOS_ON=yes
 [[ "$MACOS_ON" == "yes" ]] && min_bash_version=5 && echo "macOS DETECTED"
 
 # - try to detect Linux
-a=$(uname) && al=$(echo $a | awk '{ print tolower($0); }') && ac=${al%linux} && [[ "$al" != "$ac" ]] && LINUX_ON=yes
+a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%linux} && [[ "$al" != "$ac" ]] && LINUX_ON=yes
 [[ "$LINUX_ON" == "yes" ]] && min_bash_version=4
 
 bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
@@ -87,7 +87,7 @@ if test -t 1; then
     # see if it supports colors...
     ncolors=$(tput colors)
 
-    if test -n "$ncolors" && test $ncolors -ge 8; then
+    if test -n "$ncolors" && test "$ncolors" -ge 8; then
         bold="$(tput bold)"
         underline="$(tput smul)"
         standout="$(tput smso)"
@@ -133,30 +133,30 @@ function extractHeaders() {
 }
 
 function extractConfiguration() {
-  grep -v '^#' $MASTER_CONFIG | grep "^$2 " | awk -F'|' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i"\n"; }' > $1
-  cp $1 /tmp/$2.conf
+  grep -v '^#' $MASTER_CONFIG | grep "^$2 " | awk -F'|' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i"\n"; }' > "$1"
+  cp "$1" /tmp/"$2".conf
 }
 
 function randomid() {
   # longer version, seems overkill
   #echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
-  echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}'`
+  $(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')
 }
 
 function bigString() {
   local in=$1
   local le=${#in}
   local o=$in;
-  if [ $le -gt 60 ]; then
+  if [ "$le" -gt 60 ]; then
     o=${in:0:15}'...'${in: -25}
   fi
-  echo $o
+  echo "$o"
 }
 
 function sout() {
   declare -a arr=("$@")
   for i in "${arr[@]}"; do
-    echo ':: '$i
+    echo ':: '"$i"
   done
 }
 
@@ -167,7 +167,7 @@ function waitForKey() {
   echo
   echo "$@"
   echo
-  read -p 'Press ENTER key to continue...'
+  read -r -p 'Press ENTER key to continue...'
   echo
 }
 
@@ -181,16 +181,16 @@ function prettyPrinter() {
   declare -a arr=("$@")
   local maxlen=0
   for i in "${arr[@]}"; do
-    local h=`echo $i | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }'`
+    local h=$(echo "$i" | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
     local strlenh=${#h}
     [[ $strlenh -gt $maxlen ]] && maxlen=$strlenh
   done
-  local spacer=`printf '%*s' $maxlen`
+  local spacer=$(printf '%*s' $maxlen)
   for i in "${arr[@]}"; do
-    local h=`echo $i | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }'`
+    local h=$(echo "$i" | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
     local strlen=${#h}
     h=" ${spacer}${h}"
-    local r=`echo $i | awk -F':-' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i; }'`
+    local r=$(echo "$i" | awk -F':-' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i; }')
     local rprefix=""
     local rsuffix=""
     [[ "$r" == "" ]] && r=$i && rprefix="${bold}${white}"
@@ -205,19 +205,19 @@ function prettyPrinter() {
 function timeElapsed() {
   local diff=$SECONDS
   local tstr="$0 runtime : "
-  local HRS=`expr $diff / 3600`
-  local MIN=`expr $diff % 3600 / 60`
-  local SEC=`expr $diff % 3600 % 60`
-  if [ $HRS -gt 0 ]; then
+  local HRS=$((diff / 3600))
+  local MIN=$((diff % 3600 / 60))
+  local SEC=$((expr $diff % 3600 % 60))
+  if [ "$HRS" -gt 0 ]; then
    tstr="$tstr $HRS hrs. "
   fi
-  if [ $MIN -gt 0 ]; then
+  if [ "$MIN" -gt 0 ]; then
    tstr="$tstr $MIN mins. "
   fi
-  if [ $SEC -gt 0 ]; then
-   if [ $MIN -gt 0 ]; then
+  if [ "$SEC" -gt 0 ]; then
+   if [ "$MIN" -gt 0 ]; then
     tstr="$tstr and $SEC secs."
-   elif [ $HRS -gt 0 ]; then
+   elif [ "$HRS" -gt 0 ]; then
     tstr="$tstr and $SEC secs."
    else
     tstr="$tstr $SEC secs."
@@ -239,7 +239,7 @@ function prepareConfigLine() {
   local args=() && while read -rd:; do args+=("$REPLY"); done <<<"$key:" && local keyPrefix="${args[0]}" && key="${args[1]}"
   [[ -z $key ]] && key="$keyPrefix"
   if [[ "x$key" != "xCOMMENT" ]]; then
-    [[ ! -z "$key" ]] && [ ${pamConfigAr[$key]+xxx} ] && result="${pamConfigAr[$key]}"
+    [[ -n "$key" ]] && [ ${pamConfigAr[$key]+xxx} ] && result="${pamConfigAr[$key]}"
     # result=$(echo ${result} | sed -e "s#/#\\\/#g")
   fi
 
@@ -256,14 +256,14 @@ echo "
 Will install PAM on a standalone EAP node or an EAP cluster. Execute this script on each
 node that will be part of the cluster.
 
-usage: `basename $0` [-h help]
+usage: $(basename "$0") [-h help]
                      -n ip[:node]
                      -b [kie|controller|both|multi=2...], defaults to 'both'
                      [-c ip1:port1,ip2:port2,...]
                      [-s smart_router_ip:port]
                      [-o additional_options ], specify additional options
 
-example: `basename $0` -n localhost
+example: $(basename "$0") -n localhost
 
 Options:
     -n : the IP[:port] of the node it will operate on, default is localhost:8080
@@ -315,7 +315,7 @@ Options:
          Configuring an Oracle datasource
 
          - ojdbc_location    : location of the Oracle JDBC driver
-                               Example "$PWD/oracle_jdbc_driver/ojdbc8.jar"
+                               Example ""$PWD"/oracle_jdbc_driver/ojdbc8.jar"
 
          - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
            oracle_port,        which is of the form
@@ -361,15 +361,15 @@ function installUsers() {
   local nodedir=${1:-standalone}
   # have to add EAP admin user as PAM overrides config
   local scPath="$EAP_HOME/${nodedir}/configuration"
-  [[ "$CYGWIN_ON" == "yes" ]] && scPath=$(cygpath -w ${scPath})
-  pushd $EAP_HOME/bin &> /dev/null
-    ./add-user.sh -sc $scPath -s --user "$eapAdminName" --password "$eapAdminPasswd"
+  [[ "$CYGWIN_ON" == "yes" ]] && scPath="$(cygpath -w "${scPath}")"
+  pushd "$EAP_HOME"/bin &> /dev/null
+    ./add-user.sh -sc "$scPath" -s --user "$eapAdminName" --password "$eapAdminPasswd"
      summary "Added EAP admin user :- $eapAdminName / $eapAdminPasswd"
     #
     # look for : org.jbpm.ht.admin.user, org.jbpm.ht.admin.group, 16.3.1. Tasks visible to the current user
     #
     for u in "${uList[@]}"; do
-      ./add-user.sh -sc $scPath -s -a --user "$u" --password "${uPass[$u]}" --role "${uRole[$u]}"
+      ./add-user.sh -sc "$scPath" -s -a --user "$u" --password "${uPass[$u]}" --role "${uRole[$u]}"
       summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
     done
   popd &> /dev/null
@@ -379,9 +379,9 @@ function installUsers() {
 # - install BC
 #
 function installBC() {
-  cd $WORKDIR
-  unzip -qq -o $PAM_ZIP
-  summary "Installed PAM using :- `bigString $PAM_ZIP`"
+  cd "$WORKDIR"
+  unzip -qq -o "$PAM_ZIP"
+  summary "Installed PAM using :- $(bigString "$PAM_ZIP")"
 }
 
 #
@@ -389,18 +389,18 @@ function installBC() {
 #
 function installKIE() {
   local nodedir=${1:-standalone}
-  cd $WORKDIR
+  cd "$WORKDIR"
   rm -rf tmp/kie_zip
   mkdir -p tmp/kie_zip
-  cp $KIE_ZIP tmp/kie_zip
+  cp "$KIE_ZIP" tmp/kie_zip
   pushd tmp/kie_zip &> /dev/null
-    unzip -qq -o $KIE_ZIP
+    unzip -qq -o "$KIE_ZIP"
   popd &> /dev/null
-  cp -r tmp/kie_zip/kie-server.war $EAP_HOME/${nodedir}/deployments
-  : > $EAP_HOME/${nodedir}/deployments/kie-server.war.dodeploy
-  cp tmp/kie_zip/SecurityPolicy/* $EAP_HOME/bin
+  cp -r tmp/kie_zip/kie-server.war "$EAP_HOME"/"${nodedir}"/deployments
+  : > "$EAP_HOME"/"${nodedir}"/deployments/kie-server.war.dodeploy
+  cp tmp/kie_zip/SecurityPolicy/* "$EAP_HOME"/bin
   rm -rf tmp
-  summary "Installed KIE SERVER :- `bigString $KIE_ZIP`"
+  summary "Installed KIE SERVER :- $(bigString "$KIE_ZIP")"
 }
 
 
@@ -409,24 +409,24 @@ function installKIE() {
 #
 function checkConfiguration() {
   local nodedir=${1:-standalone}
-  cd $WORKDIR
-  xmlConfig=$EAP_HOME/${nodedir}/configuration/standalone.xml
-  xmlConfigHA=$EAP_HOME/${nodedir}/configuration/standalone-full-ha.xml
-  if [ ! -r $xmlConfig ]; then
+  cd "$WORKDIR"
+  xmlConfig="$EAP_HOME"/${nodedir}/configuration/standalone.xml
+  xmlConfigHA="$EAP_HOME"/${nodedir}/configuration/standalone-full-ha.xml
+  if [ ! -r "$xmlConfig" ]; then
     sout "ERROR: Cannot read configuration $xmlConfig -- exiting"
     exit 1;
   fi
-  if [ ! -r $xmlConfigHA ]; then
+  if [ ! -r "$xmlConfigHA" ]; then
     sout "ERROR: Cannot read configuration $xmlConfigHA -- exiting"
     exit 1;
   fi
-  cp $xmlConfig $xmlConfig-orig
-  cp $xmlConfigHA $xmlConfig
-  [[ "$CYGWIN_ON" == "yes" ]] && xmlConfig=$(cygpath -w ${xmlConfig})
+  cp "$xmlConfig" "$xmlConfig"-orig
+  cp "$xmlConfigHA" "$xmlConfig"
+  [[ "$CYGWIN_ON" == "yes" ]] && xmlConfig="$(cygpath -w "${xmlConfig}")"
   #
   # custom directories to accommodate multinode installation
   #
-  mkdir -p $EAP_HOME/${nodedir}/{kie,git,metaindex}
+  mkdir -p "$EAP_HOME"/"${nodedir}"/{kie,git,metaindex}
 }
 
 #
@@ -445,7 +445,7 @@ function modifyConfiguration() {
   #nodeCounter=$((nodeCounter-1)) && [[ "$nodedir" == "standalone" ]] && nodeCounter=0
   #local nodeOffset=${nodeConfig['nodeOffset']}
   #nodePort=$((basePort+nodeOffset))
-  checkConfiguration $nodedir
+  checkConfiguration "$nodedir"
   BASE_URL='http://'${nodeIP}:${nodeConfig['nodePort']}
 
   #
@@ -468,7 +468,7 @@ function modifyConfiguration() {
   # - create keystore with the KIE server and Controller user
   #
   local ksPath="$EAP_HOME/${nodedir}/configuration"
-  [[ "$CYGWIN_ON" == "yes" ]] && ksPath=$(cygpath -w ${ksPath})
+  [[ "$CYGWIN_ON" == "yes" ]] && ksPath="$(cygpath -w "${ksPath}")"
   echo "${uPass[$kieServerUserName]}"     | keytool -noprompt -importpassword -keystore "$ksPath/eigg.jceks" -keypass kieServerUserPasswd     -alias kieServerUser     -storepass eiggPass -storetype JCEKS 2> /dev/null
   echo "${uPass[$kieControllerUserName]}" | keytool -noprompt -importpassword -keystore "$ksPath/eigg.jceks" -keypass kieControllerUserPasswd -alias kieControllerUser -storepass eiggPass -storetype JCEKS 2> /dev/null
 
@@ -486,7 +486,7 @@ function modifyConfiguration() {
   prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'
   # <property name="org.kie.server.domain" value="user_authntication_JAAS_LoginContext_domain_when_using_JMS"/>
   # check for settings.xml and (un)comment accordingly while copying settings.xml in place
-  local keyPrefix="COMMENT" && [[ -r settings.xml ]] && cp settings.xml $EAP_HOME && keyPrefix=""
+  local keyPrefix="COMMENT" && [[ -r settings.xml ]] && cp settings.xml "$EAP_HOME" && keyPrefix=""
   # cPrefix='<!-- ' && cSuffix=' -->' && [[ -r settings.xml ]] && cPrefix="" && cSuffix=""
   # set kie.maven.settings.custom to your custom settings.xml
   prepareConfigLine "${keyPrefix}:kie.maven.settings.custom"     '${jboss.home.dir}/settings.xml'

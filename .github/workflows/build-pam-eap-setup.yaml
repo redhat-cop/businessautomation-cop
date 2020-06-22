@@ -27,6 +27,6 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: ludeeus/action-shellcheck@master
         env:
-          SHELLCHECK_OPTS: -e SC2155 -e SC2034 -e SC2145
+          SHELLCHECK_OPTS: -e SC2155 -e SC2034 -e SC2145 -e SC2164
         with:
           ignore: bcgithook bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-quick-examples pam-vagrant
