@@ -1,4 +1,4 @@
-# bcgithook: Business Central git hooks in bash
+﻿# bcgithook: Business Central git hooks in bash
 Business Central is able to push changes into remote git repositories utilizing post-commit git hooks.
 This project offers a bash-based implementation for such git hooks.
 
@@ -21,8 +21,36 @@ This project offers a bash-based implementation for such git hooks.
 |`GIT_TYPE` | optional | Leave blank or undefined for all Git repos. Use **"azure"** (in quotation marks) for Azure DevOps |
 |`LOG_LOCATION` | optional | The directory where logs should be written. Defaults to `$HOME` |
 |`LOG_SYSTEM_REPOS` | optional | If set to "yes" will log access to system repositories, can result in some verbosity |
+|`BRANCH_ALLOW`| optional | A comma-separated list of branches to allow commits to be pushed to. Do not leave space between the comma and the branch name or enclose in quotes |
+|`BRANCH_DENY`| optional | a comma-separated list of branches to deny commits to be pushed to. Do not leave space between the comma and and the branch name or enclose in quotes. |
 
 See below for example configurations for various Git repos.
+
+### Commits per branch
+Post-commit git hooks by default will push all commits in a branch to the configured remote git repository. This behaviour can be modified by declaring ALLOW and DENY lists.
+
+ALLOW and DENY lists refer to branches that the post-commit git hooks will selectively push commits to according to the following rules:
+
+* Both lists are optional. You can define either ALLOW or DENY, both or none.
+* If no list is defined post-commit git hooks will by default allow all commits to be pushed to the remote git repo.
+* If only the ALLOW list is defined, commits will be pushed to the remote git repo only for branches that can be found in this list.
+* If only the DENY list is defined, commits to branches that can be found in this list will NOT be pushed to the remote git repo.
+* If both ALLOW and DENY lists are defined, then the DENY list takes precedence. If a branch can be found at both the ALLOW and DENY lists, then commits to that branch will not be pushed to the remote git repo.
+
+**Example 1: Separate branches in ALLOW and DENY lists**
+
+| Definition | Expected Action
+|-|-|
+|`BRANCH_ALLOW=branch2,feature/fa`|Commits in branches "branch2" and "feature/fa" will be pushed to the remote git repo.|
+|`BRANCH_DENY=master,release`|Commits in branches "master" and "release" will not be pushed to the remote git repo.|
+
+**Example 2: Some branches in both ALLOW and DENY lists**
+
+| Definition | Expected Action
+|-|-|
+|`BRANCH_ALLOW=branch2,feature/fa`|Commits in branch "feature/fa" will be pushed to the remote git repo. Branch "branch2" is also declared at `BRANCH_DENY` which takes precedence.|
+|`BRANCH_DENY=master,release,branch2`|Commits in branches "master", "release" and "branch2" will not be pushed to the remote git repo.|
+
 
 ### per-project configuration
 **bcgithook** allows for different configuration per-project. For this to happen a file with the same name as the project having the `.conf` suffix should be placed in `$HOME/.bcgithook` directory. `default.conf` can be used as a template however only values that are different from `default.conf` need to be defined. For example, a project named "FormApplicationProcess" would use the `FormApplicationProcess.conf` configuration file if that file is found.
