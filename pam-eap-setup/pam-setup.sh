@@ -33,6 +33,35 @@ a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%linux} &
 bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 [[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1 
 
+#
+# sanity checks on environment environment
+#
+command -v sed &> /dev/null || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
+command -v java &> /dev/null || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
+command -v unzip &> /dev/null || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
+command -v curl &> /dev/null || { echo >&2 'ERROR: CURL not installed. Please install CURL to continue - Aborting'; exit 1; }
+command -v sqlite3 &> /dev/null || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
+# required to checkout and built dependencies
+command -v mvn &> /dev/null || { echo >&2 'ERROR: Maven not installed. Please install Maven.3.3.9 (or later) to continue - Aborting'; exit 1; }
+command -v git &> /dev/null || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
+
+# - check sed version on Mac
+if [[ "$MACOS_ON" == "yes" ]]; then
+  macsed=no
+  macstatus=256
+  sed --version &> sed.out; macstatus=$?
+  if [[ "$macstatus" -eq 0 ]]; then
+    maxv=$(sed --version | head -1 | awk '{print $NF}' | cut -d'.' -f 1)
+    minv=$(sed --version | head -1 | awk '{print $NF}' | cut -d'.' -f 2)
+    [[ "$maxv" -ge "4" ]] && [[ "$minv" -ge "8" ]] && macsed=yes
+    unset maxv minv
+  else
+    macsed=no
+  fi
+  [[ "$macsed" == "yes" ]] || { echo >&2 'ERROR: GNU sed not found. Please install GNU sed.4.8 (or latest) to continue - Aborting'; exit 2; }
+  unset macsed macstatus
+  rm -f sed.out
+fi
 
 #
 # === ENVIRONMENT DIVISION - CONFIGURATION SECTION ===
@@ -69,17 +98,6 @@ serverId='remote-kieserver'
 #
 # -- No need to configure anything beyond this point
 #
-
-#
-# sanity checks on environment environment
-#
-command -v java &> /dev/null || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
-command -v unzip &> /dev/null || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
-command -v curl &> /dev/null || { echo >&2 'ERROR: CURL not installed. Please install CURL to continue - Aborting'; exit 1; }
-command -v sqlite3 &> /dev/null || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
-# required to checkout and built dependencies
-command -v mvn &> /dev/null || { echo >&2 'ERROR: Maven not installed. Please install Maven.3.3.9 (or later) to continue - Aborting'; exit 1; }
-command -v git &> /dev/null || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
 
 # check if stdout is a terminal...
 if test -t 1; then
@@ -604,18 +622,18 @@ function modifyConfiguration() {
   rm -f "$ADDITIONAL_NODE_CONFIG" $pamConfigFile
   # try to safeguard exposed interfaces
   local dc=2  && [[ "$CYGWIN_ON" == "yes" ]] && dc=3
-  l=`grep -H -n '<interface name="management">' $xmlConfig | head -1 | cut -d':' -f$dc`;
+  l=$(grep -H -n '<interface name="management">' $xmlConfig | head -1 | cut -d':' -f$dc);
   #  modify management interface, should already be 127.0.0.1 but making sure
   let lno=$((l+1))
-  sed -i "${lno}s/:.*}/:127.0.0.1}/" $xmlConfig
+  sed -i "${lno}s/:.*}/:127.0.0.1}/" "$xmlConfig"
   sync
   # - modify public interface
   let lno=$((l+4))
-  sed -i "${lno}s/:.*}/:$nodeIP}/" $xmlConfig
+  sed -i "${lno}s/:.*}/:$nodeIP}/" "$xmlConfig"
   sync
   # - modify private interface
   let lno=$((l+7))
-  sed -i "${lno}s/:.*}/:$nodeIP}/" $xmlConfig
+  sed -i "${lno}s/:.*}/:$nodeIP}/" "$xmlConfig"
   sync
 }
 
