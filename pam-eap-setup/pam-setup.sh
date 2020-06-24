@@ -140,7 +140,7 @@ function extractConfiguration() {
 function randomid() {
   # longer version, seems overkill
   #echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
-  $(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')
+  echo $(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')
 }
 
 function bigString() {
@@ -207,7 +207,7 @@ function timeElapsed() {
   local tstr="$0 runtime : "
   local HRS=$((diff / 3600))
   local MIN=$((diff % 3600 / 60))
-  local SEC=$((expr $diff % 3600 % 60))
+  local SEC=$((diff % 3600 % 60))
   if [ "$HRS" -gt 0 ]; then
    tstr="$tstr $HRS hrs. "
   fi
