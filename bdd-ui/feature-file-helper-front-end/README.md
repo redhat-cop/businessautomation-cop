@@ -46,6 +46,8 @@ docs are at `docs/technical-info.md` and `docs/user-info.md`
 
     * use node 8.11.3 or higher
 
+    * tested using node v12.18.0
+
     * run `npm install`
 
     * run `npm install -g @angular/cli`
