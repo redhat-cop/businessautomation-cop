@@ -39,10 +39,8 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 command -v sed &> /dev/null || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
 command -v java &> /dev/null || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
 command -v unzip &> /dev/null || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
-command -v curl &> /dev/null || { echo >&2 'ERROR: CURL not installed. Please install CURL to continue - Aborting'; exit 1; }
 command -v sqlite3 &> /dev/null || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
 # required to checkout and built dependencies
-command -v mvn &> /dev/null || { echo >&2 'ERROR: Maven not installed. Please install Maven.3.3.9 (or later) to continue - Aborting'; exit 1; }
 command -v git &> /dev/null || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
 
 # - check sed version on Mac
