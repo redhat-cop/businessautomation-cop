@@ -1,6 +1,7 @@
 
 # CHANGELOG
 
+action
 -- RELEASE: 28 MAY 2020 --
 
 PAM: Installation directory can now be an absolute path
