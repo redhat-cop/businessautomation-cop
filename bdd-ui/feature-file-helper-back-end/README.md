@@ -184,6 +184,8 @@ Endpoints are coded in `routes/remoteRepo.js`
 
 node version v8.11.3 or higher
 
+tested using node 12.18.0
+
 run `npm install` to install dependencies.
 
 run `npm test` to run unit tests.
