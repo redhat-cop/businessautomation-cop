@@ -1,5 +1,4 @@
-﻿![Build for bcgithook](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20bcgithook/badge.svg)
-
+﻿
 # bcgithook: Business Central git hooks in bash
 Business Central is able to push changes into remote git repositories utilizing post-commit git hooks.
 This project offers a bash-based implementation for such git hooks.
