@@ -112,6 +112,8 @@ sout() {
   done
 }
 error() {
+  # NOTE: Investigate if should be fixed, disabled for time being
+  # shellcheck disable=SC2145
   sout "${bold}${yellow}ERROR${normal} $@"
 }
 
