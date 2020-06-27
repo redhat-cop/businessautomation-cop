@@ -1,3 +1,5 @@
+![Java CI with Maven for offliner-maven-plugin](https://github.com/redhat-cop/businessautomation-cop/workflows/Java%20CI%20with%20Maven%20for%20offliner-maven-plugin/badge.svg)
+
 # offliner-maven-plugin
 
 usage example
