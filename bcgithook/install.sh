@@ -51,12 +51,6 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 #
 # - declare some useful functions
 #
-
-# - shellcheck directives 
-# shellcheck disable=SC2034 # do not report on unused variables
-# shellcheck disable=SC2155 # Declare and assign separately to avoid masking return values
-# shellcheck disable=SC2145 # Argument mixes string and array. Use * or separate argument
-
 # are we running from a terminal
 if test -t 1; then
     # see if it supports colors...
@@ -112,6 +106,8 @@ sout() {
   done
 }
 error() {
+  # NOTE: Investigate if should be fixed, disabled for time being
+  # shellcheck disable=SC2145
   sout "${bold}${yellow}ERROR${normal} $@"
 }
 
