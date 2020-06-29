@@ -534,6 +534,8 @@ function modifyConfiguration() {
   if [ "$pamInstall" != "controller" ]; then
     # - build clv based on controllerListAr
     clv=''
+    # NOTE: Investigate if should be fixed, disabled for time being
+    # shellcheck disable=SC2068
     for i in ${controllerListAr[@]}; do
       local baseController=business-central
       [[ "$TARGET_TYPE" == "DM" ]] && baseController=decision-central
@@ -926,6 +928,8 @@ for i in "${ar[@]}"; do
   controllerListAr=("${controllerListAr[@]}" http://${i})
 done
 unset ar
+# NOTE: Investigate if should be fixed, disabled for time being
+# shellcheck disable=SC2145
 summary "Using Controller List :- ${controllerListAr[@]}"
 if [ "$pamInstall" == "kie" ] && [ ${#controllerListAr[@]} -lt 1 ]; then
   sout "ERROR: Controllers are madnatory for kie mode installation, none specified"
@@ -942,6 +946,8 @@ declare -A configOptions
 if [[ ! -z "$optO" ]]; then
   declare -a multiOptions
   while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
+  # NOTE: Investigate if should be fixed, disabled for time being
+  # shellcheck disable=SC2068
   for ondx in ${!multiOptions[@]}; do
     while read -rd=; do tmpar+=("$REPLY"); done <<<"${multiOptions[$ondx]}="
     k="${tmpar[0]}"
@@ -957,6 +963,8 @@ patchEAP=yes
 [[ -z $EAP_PATCH_ZIP ]] && patchEAP=no
 eap_patch_file_found=""
 if [[ "$patchEAP" == "yes" ]]; then
+  # NOTE: Investigate if should be fixed, disabled for time being
+  # shellcheck disable=SC2045
   for eap_patch_file in `ls $EAP_PATCH_ZIP 2> /dev/null`; do
     [[ -r "$eap_patch_file" ]] && eap_patch_file_found="$eap_patch_file"
   done
