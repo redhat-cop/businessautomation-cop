@@ -534,7 +534,7 @@ function modifyConfiguration() {
   if [ "$pamInstall" != "controller" ]; then
     # - build clv based on controllerListAr
     clv=''
-    # NOTE: Investigate if should be fixed, disabled for time being
+    # NOTE: Controller List is a list of IPs or FQDN and ports, every other value would result in a misconfiguration. Quoting the variable does not guard against this
     # shellcheck disable=SC2068
     for i in ${controllerListAr[@]}; do
       local baseController=business-central
@@ -928,7 +928,7 @@ for i in "${ar[@]}"; do
   controllerListAr=("${controllerListAr[@]}" http://${i})
 done
 unset ar
-# NOTE: Investigate if should be fixed, disabled for time being
+# NOTE: Controller List is a list of IPs or FQDN and ports, every other value would result in a misconfiguration. Quoting the variable does not guard against this
 # shellcheck disable=SC2145
 summary "Using Controller List :- ${controllerListAr[@]}"
 if [ "$pamInstall" == "kie" ] && [ ${#controllerListAr[@]} -lt 1 ]; then
@@ -946,7 +946,7 @@ declare -A configOptions
 if [[ ! -z "$optO" ]]; then
   declare -a multiOptions
   while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
-  # NOTE: Investigate if should be fixed, disabled for time being
+  # NOTE: Special characters in options will result in misconfigurations, quoting the multiOptions will not guard against this
   # shellcheck disable=SC2068
   for ondx in ${!multiOptions[@]}; do
     while read -rd=; do tmpar+=("$REPLY"); done <<<"${multiOptions[$ondx]}="
@@ -963,9 +963,9 @@ patchEAP=yes
 [[ -z $EAP_PATCH_ZIP ]] && patchEAP=no
 eap_patch_file_found=""
 if [[ "$patchEAP" == "yes" ]]; then
-  # NOTE: Investigate if should be fixed, disabled for time being
+  # NOTE: ls by default orders results so in case of multiple pacthes available only the last (most recent one) is applied
   # shellcheck disable=SC2045
-  for eap_patch_file in `ls $EAP_PATCH_ZIP 2> /dev/null`; do
+  for eap_patch_file in $(ls $EAP_PATCH_ZIP 2> /dev/null); do
     [[ -r "$eap_patch_file" ]] && eap_patch_file_found="$eap_patch_file"
   done
 fi
