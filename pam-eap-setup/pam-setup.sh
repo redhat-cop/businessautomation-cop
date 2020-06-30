@@ -654,32 +654,32 @@ function startUp() {
   [[ "$nodeCounter" -gt 0 ]] && startScript=go${nodedir}.sh
   nodeConfig['startScript']="$startScript"
   cat << __GOPAM > $startScript
-  #!/bin/bash
+#!/bin/bash
 
-  #
-  # usage: ./${startScript} configuration-xml IP-to-bind-to port-offset
-  #
-  # example: ./${startScript}
-  #          by default will start on 0.0.0.0 with standalone.xml and default ports (8080)
-  #
-  #          ./${startScript} standalone.xml 0.0.0.0 100
-  #          will start with standalone.xml binding on all IPs and on port 8180 (port offset 100)
+#
+# usage: ./${startScript} configuration-xml IP-to-bind-to port-offset
+#
+# example: ./${startScript}
+#          by default will start on 0.0.0.0 with standalone.xml and default ports (8080)
+#
+#          ./${startScript} standalone.xml 0.0.0.0 100
+#          will start with standalone.xml binding on all IPs and on port 8180 (port offset 100)
 
-  JBOSS_CONFIG=\${1:-standalone.xml}
-  JBOSS_BIND=\${2:-0.0.0.0}
-  JBOSS_PORT_OFFSET=\${3:-$nodeOffset}
-  [[ "\$JBOSS_PORT_OFFSET" != "0" ]] && JBOSS_PORT_OFFSET="-Djboss.socket.binding.port-offset=\$JBOSS_PORT_OFFSET"
-  [[ "\$JBOSS_PORT_OFFSET" == "0" ]] && JBOSS_PORT_OFFSET=" "
-  [[ -z "\$JBOSS_HOME" ]] && JBOSS_HOME="$nodeInstallLocation"
-  CLI_OPTIONS=" -Djava.security.egd=file:/dev/./urandom "
-  if [[ \$(uname | grep -i CYGWIN) ]]; then
-    JBOSS_HOME=\$(cygpath -w \${JBOSS_HOME})
-    CLI_OPTIONS=" "
-  fi
+JBOSS_CONFIG=\${1:-standalone.xml}
+JBOSS_BIND=\${2:-0.0.0.0}
+JBOSS_PORT_OFFSET=\${3:-$nodeOffset}
+[[ "\$JBOSS_PORT_OFFSET" != "0" ]] && JBOSS_PORT_OFFSET="-Djboss.socket.binding.port-offset=\$JBOSS_PORT_OFFSET"
+[[ "\$JBOSS_PORT_OFFSET" == "0" ]] && JBOSS_PORT_OFFSET=" "
+[[ -z "\$JBOSS_HOME" ]] && JBOSS_HOME="$nodeInstallLocation"
+CLI_OPTIONS=" -Djava.security.egd=file:/dev/./urandom "
+if [[ \$(uname | grep -i CYGWIN) ]]; then
+  JBOSS_HOME=\$(cygpath -w \${JBOSS_HOME})
+  CLI_OPTIONS=" "
+fi
 
-  pushd \${JBOSS_HOME}/bin/ &> /dev/null
-    ./standalone.sh -b \$JBOSS_BIND -c \$JBOSS_CONFIG \$JBOSS_PORT_OFFSET -Djboss.server.base.dir=\$JBOSS_HOME/$nodedir \$CLI_OPTIONS
-  popd &> /dev/null
+pushd \${JBOSS_HOME}/bin/ &> /dev/null
+  ./standalone.sh -b \$JBOSS_BIND -c \$JBOSS_CONFIG \$JBOSS_PORT_OFFSET -Djboss.server.base.dir=\$JBOSS_HOME/$nodedir \$CLI_OPTIONS
+popd &> /dev/null
 __GOPAM
   chmod u+x $startScript
   summary "Startup script :- $startScript"
