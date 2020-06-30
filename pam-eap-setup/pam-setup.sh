@@ -534,7 +534,7 @@ function modifyConfiguration() {
   if [ "$pamInstall" != "controller" ]; then
     # - build clv based on controllerListAr
     clv=''
-    # NOTE: Investigate if should be fixed, disabled for time being
+    # NOTE: Controller List is a list of IPs or FQDN and ports, every other value would result in a misconfiguration. Quoting the variable does not guard against this
     # shellcheck disable=SC2068
     for i in ${controllerListAr[@]}; do
       local baseController=business-central
@@ -654,32 +654,32 @@ function startUp() {
   [[ "$nodeCounter" -gt 0 ]] && startScript=go${nodedir}.sh
   nodeConfig['startScript']="$startScript"
   cat << __GOPAM > $startScript
-  #!/bin/bash
+#!/bin/bash
 
-  #
-  # usage: ./${startScript} configuration-xml IP-to-bind-to port-offset
-  #
-  # example: ./${startScript}
-  #          by default will start on 0.0.0.0 with standalone.xml and default ports (8080)
-  #
-  #          ./${startScript} standalone.xml 0.0.0.0 100
-  #          will start with standalone.xml binding on all IPs and on port 8180 (port offset 100)
+#
+# usage: ./${startScript} configuration-xml IP-to-bind-to port-offset
+#
+# example: ./${startScript}
+#          by default will start on 0.0.0.0 with standalone.xml and default ports (8080)
+#
+#          ./${startScript} standalone.xml 0.0.0.0 100
+#          will start with standalone.xml binding on all IPs and on port 8180 (port offset 100)
 
-  JBOSS_CONFIG=\${1:-standalone.xml}
-  JBOSS_BIND=\${2:-0.0.0.0}
-  JBOSS_PORT_OFFSET=\${3:-$nodeOffset}
-  [[ "\$JBOSS_PORT_OFFSET" != "0" ]] && JBOSS_PORT_OFFSET="-Djboss.socket.binding.port-offset=\$JBOSS_PORT_OFFSET"
-  [[ "\$JBOSS_PORT_OFFSET" == "0" ]] && JBOSS_PORT_OFFSET=" "
-  [[ -z "\$JBOSS_HOME" ]] && JBOSS_HOME="$nodeInstallLocation"
-  CLI_OPTIONS=" -Djava.security.egd=file:/dev/./urandom "
-  if [[ \$(uname | grep -i CYGWIN) ]]; then
-    JBOSS_HOME=\$(cygpath -w \${JBOSS_HOME})
-    CLI_OPTIONS=" "
-  fi
+JBOSS_CONFIG=\${1:-standalone.xml}
+JBOSS_BIND=\${2:-0.0.0.0}
+JBOSS_PORT_OFFSET=\${3:-$nodeOffset}
+[[ "\$JBOSS_PORT_OFFSET" != "0" ]] && JBOSS_PORT_OFFSET="-Djboss.socket.binding.port-offset=\$JBOSS_PORT_OFFSET"
+[[ "\$JBOSS_PORT_OFFSET" == "0" ]] && JBOSS_PORT_OFFSET=" "
+[[ -z "\$JBOSS_HOME" ]] && JBOSS_HOME="$nodeInstallLocation"
+CLI_OPTIONS=" -Djava.security.egd=file:/dev/./urandom "
+if [[ \$(uname | grep -i CYGWIN) ]]; then
+  JBOSS_HOME=\$(cygpath -w \${JBOSS_HOME})
+  CLI_OPTIONS=" "
+fi
 
-  pushd \${JBOSS_HOME}/bin/ &> /dev/null
-    ./standalone.sh -b \$JBOSS_BIND -c \$JBOSS_CONFIG \$JBOSS_PORT_OFFSET -Djboss.server.base.dir=\$JBOSS_HOME/$nodedir \$CLI_OPTIONS
-  popd &> /dev/null
+pushd \${JBOSS_HOME}/bin/ &> /dev/null
+  ./standalone.sh -b \$JBOSS_BIND -c \$JBOSS_CONFIG \$JBOSS_PORT_OFFSET -Djboss.server.base.dir=\$JBOSS_HOME/$nodedir \$CLI_OPTIONS
+popd &> /dev/null
 __GOPAM
   chmod u+x $startScript
   summary "Startup script :- $startScript"
@@ -928,7 +928,7 @@ for i in "${ar[@]}"; do
   controllerListAr=("${controllerListAr[@]}" http://${i})
 done
 unset ar
-# NOTE: Investigate if should be fixed, disabled for time being
+# NOTE: Controller List is a list of IPs or FQDN and ports, every other value would result in a misconfiguration. Quoting the variable does not guard against this
 # shellcheck disable=SC2145
 summary "Using Controller List :- ${controllerListAr[@]}"
 if [ "$pamInstall" == "kie" ] && [ ${#controllerListAr[@]} -lt 1 ]; then
@@ -946,7 +946,7 @@ declare -A configOptions
 if [[ ! -z "$optO" ]]; then
   declare -a multiOptions
   while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
-  # NOTE: Investigate if should be fixed, disabled for time being
+  # NOTE: Special characters in options will result in misconfigurations, quoting the multiOptions will not guard against this
   # shellcheck disable=SC2068
   for ondx in ${!multiOptions[@]}; do
     while read -rd=; do tmpar+=("$REPLY"); done <<<"${multiOptions[$ondx]}="
@@ -963,9 +963,9 @@ patchEAP=yes
 [[ -z $EAP_PATCH_ZIP ]] && patchEAP=no
 eap_patch_file_found=""
 if [[ "$patchEAP" == "yes" ]]; then
-  # NOTE: Investigate if should be fixed, disabled for time being
+  # NOTE: ls by default orders results so in case of multiple pacthes available only the last (most recent one) is applied
   # shellcheck disable=SC2045
-  for eap_patch_file in `ls $EAP_PATCH_ZIP 2> /dev/null`; do
+  for eap_patch_file in $(ls $EAP_PATCH_ZIP 2> /dev/null); do
     [[ -r "$eap_patch_file" ]] && eap_patch_file_found="$eap_patch_file"
   done
 fi
