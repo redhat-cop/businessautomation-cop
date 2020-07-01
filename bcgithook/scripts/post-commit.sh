@@ -188,7 +188,7 @@ debug "PUSHING TO $remoteGitUrl"
 # git push -u $BBID --all 
 for bru in $bruli; do
   deny=no 
-  [[ -n "$BRANCH_ALLOW" ]] && deny=yes && for de in ${BRANCH_ALLOW//,/ }; do [[ "$de" == "$bru" ]] && deny=no; done
+  [[ -n "$BRANCH_ALLOW" ]] && deny=yes &&  if [ "$BRANCH_ALLOW_IS_REGEX" = true ] ; then [[ "$bru" =~ $BRANCH_ALLOW ]] && deny=no; else for de in ${BRANCH_ALLOW//,/ }; do [[ "$de" == "$bru" ]] && deny=no; done fi
   for de in ${BRANCH_DENY//,/ }; do [[ "$de" == "$bru" ]] && deny=yes; done
   if [[ "$deny" == "yes" ]]; then
     debug "COMMITS TO BRANCH [$bru] ARE NOT ALLOWED - COMMIT NOT PUSHED TO $remoteGitUrl"

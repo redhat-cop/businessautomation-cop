@@ -20,9 +20,10 @@
 #
 # BRANCH_DENY=master,release
 # BRANCH_ALLOW=br2,feature/fa
+# BRANCH_ALLOW_IS_REGEX = [true|false], default false, set to "true" when the BRANCH_ALLOW field contains a regular expression
 #
 # Optional allow and deny list for branches
-# Specify a comma-separated list of branches
+# Specify a comma-separated list of branches, or a regular-expression when the BRANCH_ALLOW_IS_REGEX flag is true.  Use quotes when using regular expressions
 #
 #  - if BRANCH_ALLOW exists, only commits in branches in the list will be pushed to the remote repo
 #  - if BRANCH_DENY exists, commits in branches in the list will not be pushed to the remote repo
@@ -41,6 +42,11 @@
 # Commits in branches "feature/fa" will be pushed to remote repo
 # Commits in branches "master", "release" and "branch2" will not be pushed to remote repo
 #
+# (c)
+# - BRANCH_ALLOW_IS_REGEX=true
+# - BRANCH_ALLOW="^(branch2)|(feature/fa)$"
+# - BRANCH_DENY=master,release
+# Results in the same behavior as example (a) above, but with Regular Expressions
 #
 # Uncomment and modify as appropriate
 #
