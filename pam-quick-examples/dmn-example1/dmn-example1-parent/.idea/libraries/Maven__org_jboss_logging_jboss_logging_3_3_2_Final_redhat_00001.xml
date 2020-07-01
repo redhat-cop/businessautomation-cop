@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.jboss.logging:jboss-logging:3.3.2.Final-redhat-00001">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final-redhat-00001/jboss-logging-3.3.2.Final-redhat-00001.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final-redhat-00001/jboss-logging-3.3.2.Final-redhat-00001-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final-redhat-00001/jboss-logging-3.3.2.Final-redhat-00001-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

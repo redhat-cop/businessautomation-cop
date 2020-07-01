@@ -7,6 +7,8 @@ import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNDecisionResult;
 import org.kie.dmn.api.core.DMNMessage;
 import org.kie.dmn.api.core.DMNResult;
+import org.kie.server.api.model.KieContainerResource;
+import org.kie.server.api.model.ReleaseId;
 import org.kie.server.api.model.ServiceResponse;
 import org.kie.server.client.DMNServicesClient;
 import org.kie.server.client.KieServicesClient;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,11 +29,11 @@ public class RulesApiImpl implements RulesApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesApiImpl.class);
 
-    private static final String URL = System.getProperty("com.redhat.cop.pam.kieserver_url", "http://localhost:8080/kie-server/services/rest/server");
+    private static final String URL = System.getProperty("com.redhat.cop.pam.kieserver_url");
 
-    private static final String USER = System.getProperty("com.redhat.cop.pam.kieserver_user", "kieServerUser");
+    private static final String USER = System.getProperty("com.redhat.cop.pam.kieserver_user");
 
-    private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password", "kieServerUser1234;");
+    private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password");
 
     private static final String NAMESPACE = "https://pam.cop.redhat.com/dmn-example-1/dmn";
 
@@ -47,7 +50,18 @@ public class RulesApiImpl implements RulesApi {
         extraClasses.add(Customer.class);
         config.addExtraClasses(extraClasses);
         config.setTimeout(100000l);
+        System.out.println("url: " + URL);
+        System.out.println("user: " + USER);
+        System.out.println("password: " + PASSWORD);
         kieServicesClient = KieServicesFactory.newKieServicesClient(config);
+        final String[] gav = CONTAINER_ID.split(":");
+        final KieContainerResource containerResource = new KieContainerResource(CONTAINER_ID, new ReleaseId(gav[0], gav[1], gav[2]));
+        kieServicesClient.createContainer(CONTAINER_ID, containerResource);
+    }
+
+    @PreDestroy
+    public void preDestroy(){
+        kieServicesClient.disposeContainer(CONTAINER_ID);
     }
 
     @Override

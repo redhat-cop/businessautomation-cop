@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: jakarta.xml.bind:jakarta.xml.bind-api:2.3.2.redhat-00001">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2.redhat-00001/jakarta.xml.bind-api-2.3.2.redhat-00001.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2.redhat-00001/jakarta.xml.bind-api-2.3.2.redhat-00001-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2.redhat-00001/jakarta.xml.bind-api-2.3.2.redhat-00001-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

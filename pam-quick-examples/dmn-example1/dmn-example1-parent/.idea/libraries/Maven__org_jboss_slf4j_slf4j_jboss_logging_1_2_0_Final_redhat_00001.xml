@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.jboss.slf4j:slf4j-jboss-logging:1.2.0.Final-redhat-00001">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/slf4j/slf4j-jboss-logging/1.2.0.Final-redhat-00001/slf4j-jboss-logging-1.2.0.Final-redhat-00001.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/slf4j/slf4j-jboss-logging/1.2.0.Final-redhat-00001/slf4j-jboss-logging-1.2.0.Final-redhat-00001-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/slf4j/slf4j-jboss-logging/1.2.0.Final-redhat-00001/slf4j-jboss-logging-1.2.0.Final-redhat-00001-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: jakarta.interceptor:jakarta.interceptor-api:1.2.5.redhat-00002">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/interceptor/jakarta.interceptor-api/1.2.5.redhat-00002/jakarta.interceptor-api-1.2.5.redhat-00002.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/interceptor/jakarta.interceptor-api/1.2.5.redhat-00002/jakarta.interceptor-api-1.2.5.redhat-00002-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/jakarta/interceptor/jakarta.interceptor-api/1.2.5.redhat-00002/jakarta.interceptor-api-1.2.5.redhat-00002-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
