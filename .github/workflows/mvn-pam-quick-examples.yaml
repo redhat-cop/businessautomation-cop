@@ -52,8 +52,8 @@ jobs:
 
       - name: Build pam-quick-examples
         run: |
-          pushd pam-quick-examples/dmn-example1
-          bash build.sh
+          pushd pam-quick-examples/dmn-example1/dmn-example1-parent
+          bash mvn compile
           popd
 
           pushd pam-quick-examples/dmn-example2
