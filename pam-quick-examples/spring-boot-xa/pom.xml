@@ -1,0 +1,120 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.redhat.services</groupId>
+    <artifactId>sboot-kie-xa-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>KIE Spring Boot XA Example Project</name>
+    <description>Collection Projects demonstrating RHPAM XA Transactions w/SBoot</description>
+
+    <properties>
+        <!-- Config -->
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <!-- Product Versions https://access.redhat.com/solutions/3405361 -->
+        <version.rhpam>7.7.1.redhat-00002</version.rhpam>
+        <version.org.kie>7.33.0.Final-redhat-00003</version.org.kie>
+        <version.spring.boot>2.2.2.RELEASE</version.spring.boot>
+
+        <!-- Dependency Versions-->
+        <version.javax.persistence-api>2.2</version.javax.persistence-api>
+        <narayana.version>5.9.0.Final</narayana.version>
+        <fabric8.version>3.5.40</fabric8.version>
+        <lombok.version>1.18.8</lombok.version>
+        <commons.lang.version>3.9</commons.lang.version>
+
+        <!-- Override Spring Version which cases issues -->
+        <version.com.fasterxml.jackson>2.9.8</version.com.fasterxml.jackson>
+
+        <!-- Maven Plugins -->
+        <compiler-plugin.version>3.7.0</compiler-plugin.version>
+        <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    </properties>
+
+    <modules>
+        <module>kjar</module>
+        <module>kie-sboot-xa-db</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-parent</artifactId>
+                <version>${version.spring.boot}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat.ba</groupId>
+                <artifactId>ba-platform-bom</artifactId>
+                <version>${version.rhpam}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <!-- Override Spring Version which cases issues w/jBPM : https://issues.redhat.com/browse/JBPM-8937-->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${version.com.fasterxml.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.com.fasterxml.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${version.com.fasterxml.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${version.com.fasterxml.jackson}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- https://access.redhat.com/maven-repository -->
+    <repositories>
+        <repository>
+            <id>jboss-eap-repository-group</id>
+            <name>JBoss EAP Maven Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jboss-eap-repository-group</id>
+            <name>JBoss EAP Maven Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
