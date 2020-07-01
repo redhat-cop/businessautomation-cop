@@ -53,7 +53,7 @@ jobs:
       - name: Build pam-quick-examples
         run: |
           pushd pam-quick-examples/dmn-example1/dmn-example1-parent
-          bash mvn compile --no-transfer-progress
+          mvn compile --no-transfer-progress
           popd
 
           pushd pam-quick-examples/dmn-example2
