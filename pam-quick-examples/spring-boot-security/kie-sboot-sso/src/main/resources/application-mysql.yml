@@ -1,0 +1,46 @@
+cxf:
+  path: /rest
+jbpm:
+  executor:
+    enabled: false
+kieserver:
+  casemgmt:
+    enabled: true
+  dmn:
+    enabled: true
+  drools:
+    enabled: true
+  jbpm:
+    enabled: true
+  jbpmui:
+    enabled: true
+  location: http://localhost:8090/rest/server
+  serverId: business-application-service
+  serverName: business-application-service
+  h2:
+    console:
+      enabled: true
+spring:
+  banner:
+    location: classpath:banner.txt
+  datasource:
+    driver-class-name: com.mysql.jdbc.jdbc2.optional.MysqlXADataSource
+    password: jbpm
+    url: jdbc:mysql://localhost:3306/jbpm
+    username: jbpm
+  h2:
+    console:
+      enabled: false
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        hbm2ddl:
+          auto: update
+        show_sql: false
+  jta:
+    narayana:
+      transaction-manager-id: 1
