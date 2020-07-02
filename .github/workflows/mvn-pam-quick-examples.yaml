@@ -56,7 +56,7 @@ jobs:
           mvn compile --no-transfer-progress
           popd
 
-          pushd pam-quick-examples/dmn-example2/dmn-example1-parent
+          pushd pam-quick-examples/dmn-example2/dmn-example2-parent
           mvn compile --no-transfer-progress
           popd
 
