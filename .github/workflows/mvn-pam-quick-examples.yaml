@@ -57,7 +57,7 @@ jobs:
           popd
 
           pushd pam-quick-examples/dmn-example2
-          bash build.sh
+          mvn compile --no-transfer-progress
           popd
 
           pushd pam-quick-examples/dmn-example3
