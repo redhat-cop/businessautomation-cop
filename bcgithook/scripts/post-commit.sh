@@ -1,45 +1,16 @@
 #!/usr/bin/env bash
 
 #
-# THE FOLLOWING ENCLOSED IN DASHES SHOULD BE PLACED IN FILE
+# BY DEFAULT CONFIGURATION FILE IS LOCATED AT
 #
 # $HOME/.bcgithook/default.conf
 #
-# UNCOMMENT THE VARIABLES AND REPLACE WITH APPROPRIATE VALUES
-#
-# ------------------------------------------------------------------------------
-#
-# GIT_TYPE      = "azure" for Azure DevOps, blank otherwise
-# GIT_USER_NAME = username for remote git repository
-# GIT_PASSWD    = password to connect to remote git repository
-# GIT_URL       = URL that points to the remote git repository
-#                 examples:
-#                   Git repositories   example URL
-#                   ----------------   --------------------------------
-#                   gitlab             https://gitlab.com/GIT_USER_NAME
-#                   github             https://github.com/GIT_USER_NAME
-#                   gitea (localhost)  http://localhost:3000/GIT_USER_NAME
-#
-# LOG_LOCATION  = were bcgithook log files should be stored, defaults to home directory of user
-#                 executing bcgithook post-commit
-#
-# LOG_SYSTEM_REPOS = [yes|no], set to "yes" to log access to PAM system
-#                              repositories, increases verbosity
-#
-#
-#GIT_USER_NAME='git_user_name'
-#GIT_PASSWD='git_password'
-#GIT_URL='https://gitlab.com/git_user_name'
-#LOG_LOCATION=$HOME
-#
-# ------------------------------------------------------------------------------
-#
-# Gitea cheat sheet: https://docs.gitea.io/en-us/config-cheat-sheet/
+# CHECK DOCUMENTATION FOR CONFIGURATION DETAILS
 #
 # ------------------------------------------------------------------------------
 
 CONFIG_HOME="$HOME/.bcgithook"
-[[ ! -d "$CONFIG_HOME" ]] && mkdir -p "$CONFIG_HOME" 
+[[ ! -d "$CONFIG_HOME" ]] && mkdir -p "$CONFIG_HOME"
 CONFIG_FILE="$CONFIG_HOME/default.conf"
 
 LOG_LOCATION="$HOME"
@@ -50,7 +21,8 @@ PRJ_NAME=null && hwd="$(pwd)" && PRJ_NAME="$(basename ${hwd%%\/hooks} .git)"
 
 PRJ_CONFIG_FILE="$CONFIG_HOME/$PRJ_NAME.conf" && [[ -r "$PRJ_CONFIG_FILE" ]] && CONFIG_FILE="$PRJ_CONFIG_FILE"
 
-randomid="$(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')"
+# fast and reasonably random
+randomid="$(date +%s)_$RANDOM"
 
 debug() {
   timestamp=$(date '+%Y-%m-%d %H:%M:%S')
@@ -88,7 +60,7 @@ a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%linux} &
 [[ "$LINUX_ON" == "yes" ]] && min_bash_version=4
 
 bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
-[[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1 
+[[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1
 
 #
 # end of checks
@@ -97,7 +69,7 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 urlencode() {
   old_lc_collate=$LC_COLLATE
   LC_COLLATE=C
-  
+
   local length="${#1}"
   for (( i = 0; i < length; i++ )); do
       local c="${1:i:1}"
@@ -106,7 +78,7 @@ urlencode() {
           *) printf '%%%02X' "'$c" ;;
       esac
   done
-  
+
   LC_COLLATE=$old_lc_collate
 }
 urldecode() {
@@ -114,13 +86,14 @@ urldecode() {
   printf '%b' "${url_encoded//%/\\x}"
 }
 
-debug "START"
-
 [[ ! -r "$CONFIG_FILE" ]] && LOG_FILE="$ERR_FILE" \
                           && debug "CONFIG FILE $CONFIG_FILE NOT FOUND - ABORTING" \
                           && exit 1
+
 # shellcheck source=/dev/null
 source "$CONFIG_FILE"
+
+debug "START"
 
 [[ ! -d "$LOG_LOCATION" ]] && LOG_LOCATION="$CONFIG_HOME" \
                            && debug "LOG_LOCATION $LOG_LOCATION NOT FOUND - USING $HOME"
@@ -185,10 +158,14 @@ fi
 bruli="$(git branch | colrm 1 2 | awk '{print $1}')"
 
 debug "PUSHING TO $remoteGitUrl"
-# git push -u $BBID --all 
+# git push -u $BBID --all
 for bru in $bruli; do
-  deny=no 
-  [[ -n "$BRANCH_ALLOW" ]] && deny=yes &&  if [ "$BRANCH_ALLOW_IS_REGEX" = true ] ; then [[ "$bru" =~ $BRANCH_ALLOW ]] && deny=no; else for de in ${BRANCH_ALLOW//,/ }; do [[ "$de" == "$bru" ]] && deny=no; done fi
+  deny=no
+  if [[ -n "$BRANCH_ALLOW_REGEX" ]]; then
+    deny=yes && [[ "$bru" =~ $BRANCH_ALLOW_REGEX ]] && deny=no
+  else
+    [[ -n "$BRANCH_ALLOW" ]] && deny=yes && for de in ${BRANCH_ALLOW//,/ }; do [[ "$de" == "$bru" ]] && deny=no; done
+  fi
   for de in ${BRANCH_DENY//,/ }; do [[ "$de" == "$bru" ]] && deny=yes; done
   if [[ "$deny" == "yes" ]]; then
     debug "COMMITS TO BRANCH [$bru] ARE NOT ALLOWED - COMMIT NOT PUSHED TO $remoteGitUrl"
@@ -199,3 +176,8 @@ for bru in $bruli; do
 done
 
 debug "END"
+
+#
+# INSTALLED AT : 2020-07-01 19:04:08
+#
+
