@@ -35,7 +35,7 @@ public class RulesApiImpl implements RulesApi {
 
     private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password");
 
-    private static final String CONTAINER_ID = System.getProperty("remote.kieserver_containerid");
+    private static final String CONTAINER_ID = System.getProperty("com.redhat.cop.pam.kieserver_containerid");
 
     private static final String NAMESPACE = "https://pam.cop.redhat.com/dmn-example-1/dmn";
 

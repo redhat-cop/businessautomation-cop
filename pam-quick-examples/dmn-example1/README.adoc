@@ -83,13 +83,14 @@ a|
 ----
 $ java \
 "-Dcom.redhat.cop.pam.kieserver_url=http://localhost:8080/kie-server/services/rest/server" \
-"-Dcom.redhat.cop.pam.kieserver_user=kieServerUser" "-Dcom.redhat.cop.pam.kieserver_password=kieServerUser1234;" \
+"-Dcom.redhat.cop.pam.kieserver_user=kieServerUser" \
+"-Dcom.redhat.cop.pam.kieserver_password=kieServerUser1234;" \
 "-Dcom.redhat.cop.pam.kieserver_containerid=com.redhat.cop.pam:dmn-example1-kjar:1.0" \
 -jar dmn-example1-quarkus/target/dmn-example1-quarkus-1.0-runner.jar
 ----
 |springboot
 |embedded
-|`$ mvn install -springboot,embedded`
+|`$ mvn install -Pspringboot,embedded`
 a|
 [source,shell]
 ----
@@ -99,7 +100,7 @@ $ mvn spring-boot:run -Pspringboot,embedded
 
 |springboot
 |remote
-|`$ mvn install -springboot,remote`
+|`$ mvn install -Pspringboot,remote`
 a|
 [source,shell]
 ----

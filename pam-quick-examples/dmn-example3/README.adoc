@@ -47,93 +47,88 @@ dmn-example3-kie-api-embedded-impl::
 * Show how invoke a DMN service from a process embed in your application(Implements the methods defined in *dmn-example3-kie-api*)
 dmn-example3-kie-api-remote-impl::
 * Show how invoke a DMN service from a process deployed on a remote kie-server(Implements the methods defined in *dmn-example3-kie-api*)
-
-=== Build
-```bash
-$ cd dmn-example3-parent/
-$ mvn clean install
-```
-
-== Project 'dmn-example3-kjar'
-
-=== Details
+dmn-example3-kjar::
+* Define the DMN used in the example
+* Define the BPMN used in the example
 
 image::images/DMN.png[]
 
 image::images/process.png[]
 
-=== Build
-```bash
-$ cd dmn-example3-kjar/
-$ mvn clean install
-```
-
-== Run it
-
-=== Embedded
-
-==== Quarkus
-```bash
-$ cd dmn-example3-quarkus-embedded/
-$ mvn clean install
-```
-TIP: check all test passed xref:dmn-example3-quarkus-embedded/src/test/java/com/redhat/cop/pam/example3/quarkus/ServiceTest.java[ServiceTest.java]
-```bash
-$ ./mvnw compile quarkus:dev
-```
-
-==== Spring boot
-```bash
-$ cd dmn-example3-springboot-embedded/
-$ mvn clean install
-```
-TIP: check all test passed xref:dmn-example3-springboot-embedded/src/test/java/com/redhat/cop/pam/example3/springboot/ServiceTest.java[ServiceTest.java]
-```bash
-$ ./mvn spring-boot:run
-```
-=== Remote
+== Configure
 IMPORTANT: To try the remote version you need an instance of kie-server up and running.
 For installation and configuration please refer to the https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/[official documentation]
 
-Create a user with role `kie-server` and update the properties in xref:dmn-example3-parent/dmn-example3-kie-api-remote-impl/src/main/java/com/redhat/cop/pam/example3/kie/api/impl/RulesApiImpl.java[RulesApiImpl.java]
-```java
-    private static final String URL = System.getProperty("com.redhat.cop.pam.kieserver_url", "http://localhost:8080/kie-server/services/rest/server");
-    private static final String USER = System.getProperty("com.redhat.cop.pam.kieserver_user", "kieServerUser");
-    private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password", "kieServerUser1234;");
-```
-or define the system property you need to override 
+Create a user with role `kie-server`
 
-* `com.redhat.cop.pam.kieserver_url`
-* `com.redhat.cop.pam.kieserver_user`
-* `com.redhat.cop.pam.kieserver_password`
+[source,shell script]
+----
+# Linux and mac
+$ ./add-user.sh -a --silent=true --user 'kieServerUser' --password 'kieServerUser1234;' --group 'kie-server'
+# Windows
+$ add-user.bat -a --silent=true --user 'kieServerUser' --password 'kieServerUser1234;' --group 'kie-server'
+----
 
-On kie-server deploy the kjar com.redhat.cop.pam:dmn-example3-kjar:1.0
-```xml
-<release-id>
-    <artifact-id>dmn-example3-kjar</artifact-id>
-    <group-id>com.redhat.cop.pam</group-id>
-    <version>1.0</version>
-</release-id>
-```
-==== Quarkus
-```bash
-$ cd dmn-example3-quarkus-remote/
-$ mvn clean install
-```
-TIP: check all test passed xref:dmn-example3-quarkus-remote/src/test/java/com/redhat/cop/pam/example3/quarkus/ServiceTest.java[ServiceTest.java]
-```bash
-$ ./mvnw compile quarkus:dev
-```
+If a different user or password has been used  the system properties in xref:https://github.com/redhat-cop/businessautomation-cop/blob/master/pam-quick-examples/dmn-example-3/dmn-example-3-parent/pom.xml#L174[pom.xml] need to be update
+[source,xml]
+----
+<properties>
+   <remote.kieserver_url>http://localhost:8080/kie-server/services/rest/server</remote.kieserver_url>
+   <remote.kieserver_user>kieServerUser</remote.kieserver_user>
+   <remote.kieserver_password>kieServerUser1234;</remote.kieserver_password>
+   <remote.kieserver_containerid>com.redhat.cop.pam:dmn-example-3-kjar:1.0</remote.kieserver_containerid>
+</properties>
+----
+== Build, Test, Run
+[cols="1,1,3,4", options="header"]
+|===
+|Runtime |Configuration |Build and Test |Run
 
-==== Spring boot
-```bash
-$ cd dmn-example3-springboot-remote/
-$ mvn clean install
-```
-TIP: check all test passed xref:dmn-example3-springboot-remote/src/test/java/com/redhat/cop/pam/example3/springboot/ServiceTest.java[ServiceTest.java]
-```bash
-$ ./mvn spring-boot:run
-```
+|quarkus
+|embedded
+|`$ mvn install -Pquarkus,embedded`
+a|
+[source,shell]
+----
+$ java -jar dmn-example-3-quarkus/target/dmn-example-3-quarkus-1.0-runner.jar
+----
+|quarkus
+|remote
+|`$ mvn install -Pquarkus,remote`
+a|
+[source,shell]
+----
+$ java \
+"-Dcom.redhat.cop.pam.kieserver_url=http://localhost:8080/kie-server/services/rest/server" \
+"-Dcom.redhat.cop.pam.kieserver_user=kieServerUser" \
+"-Dcom.redhat.cop.pam.kieserver_password=kieServerUser1234;" \
+"-Dcom.redhat.cop.pam.kieserver_containerid=com.redhat.cop.pam:dmn-example-3-kjar:1.0" \
+-jar dmn-example-3-quarkus/target/dmn-example-3-quarkus-1.0-runner.jar
+----
+|springboot
+|embedded
+|`$ mvn install -Pspringboot,embedded`
+a|
+[source,shell]
+----
+$ cd dmn-example-3-springboot/
+$ mvn spring-boot:run -Pspringboot,embedded
+----
+
+|springboot
+|remote
+|`$ mvn install -Pspringboot,remote`
+a|
+[source,shell]
+----
+$ cd dmn-example-3-springboot/
+$ mvn spring-boot:run -Pspringboot,remote
+----
+|===
+
+check all test passed::
+* quarkus: xref:dmn-example-3-parent/dmn-example-3-quarkus/src/test/java/com/redhat/cop/pam/example-3/quarkus/ServiceTest.java[ServiceTest.java]
+* spring-boot: xref:dmn-example-3-parent/dmn-example-3-springboot/src/test/java/com/redhat/cop/pam/example-3/springboot/ServiceTest.java[ServiceTest.java]
 
 == Try it
 Using https://www.postman.com/[postman] import xref:postman-collections/dmn-example-3.postman_collection.json[dmn-example-3.postman_collection.json]
@@ -144,25 +139,27 @@ Using https://www.postman.com/[postman] import xref:postman-collections/dmn-exam
 
 |POST
 |http://localhost:8280/dmn-example-3/services/customer
-|
-```json
+a|
+[source,json]
+----
 {
     "name": "Donald",
     "surname" : "Duck",
     "dateOfBirth" : "1870-06-09"
 }
-```
+----
 |ALLOW
 
 |POST
 |http://localhost:8280/dmn-example-3/services/customer
-|
-```json
+a|
+[source,json]
+----
 {
     "name": "Young",
     "surname" : "Rossi",
     "dateOfBirth" : "2020-01-20"
 }
-```
+----
 |NOT_ALLOW
 |===
