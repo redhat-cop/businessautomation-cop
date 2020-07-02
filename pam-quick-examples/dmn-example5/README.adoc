@@ -33,7 +33,7 @@ dmn-example5-kie-api-remote-impl::
 dmn-example5-kjar::
 * Define the DMN used in the example
 
-image::images/DMN.png[]
+image::images/DMN.png[align="center"]
 
 == Configure
 IMPORTANT: To try the remote version you need an instance of kie-server up and running.
@@ -89,8 +89,8 @@ $ mvn spring-boot:run -Pspringboot,remote
 
 check all scenarios defined in xref:dmn-example5-parent/dmn-example5-springboot/src/test/resources/cucumber-steps.feature[cucumber-steps.feature] has been correctly executed
 
-image::images/cucumber-result-log.png[]
+image::images/cucumber-result-log.png[align="center"]
 
 To see the scenario report in a browser open the xref:dmn-example5-parent/dmn-example5-springboot/target/cucumber/index.html[cucumber report]
 
-image::images/cucumber-result.png[]
+image::images/cucumber-result.png[align="center"]
