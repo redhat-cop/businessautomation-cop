@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.redhat.services</groupId>
-    <artifactId>sboot-kie-xa-parent</artifactId>
+    <artifactId>kie-sboot-security-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>KIE Spring Boot XA Example Project</name>
-    <description>Collection Projects demonstrating RHPAM XA Transactions w/SBoot</description>
+    <name>KIE Spring Boot Security Example Projects</name>
+    <description>Collection Projects demonstrating RHPAM Security w/SBoot</description>
 
     <properties>
         <!-- Config -->
@@ -22,6 +22,7 @@
         <version.rhpam>7.7.1.redhat-00002</version.rhpam>
         <version.org.kie>7.33.0.Final-redhat-00003</version.org.kie>
         <version.spring.boot>2.2.2.RELEASE</version.spring.boot>
+        <version.org.keycloak>9.0.3.redhat-00002</version.org.keycloak>
 
         <!-- Dependency Versions-->
         <version.javax.persistence-api>2.2</version.javax.persistence-api>
@@ -41,7 +42,9 @@
 
     <modules>
         <module>kjar</module>
-        <module>kie-sboot-xa-db</module>
+        <module>kie-sboot-unsecure</module>
+	<module>kie-sboot-basic</module>
+        <module>kie-sboot-sso</module>
     </modules>
 
     <dependencyManagement>
@@ -59,6 +62,13 @@
                 <version>${version.rhpam}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak.bom</groupId>
+                <artifactId>keycloak-adapter-bom</artifactId>
+                <version>${version.org.keycloak}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- Override Spring Version which cases issues w/jBPM : https://issues.redhat.com/browse/JBPM-8937-->
