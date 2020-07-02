@@ -14,8 +14,7 @@
 
 |*dmn-example-2*
 |This example shows how to invoke a java function from DMN to check if a customer can open a bank account (is underage or not)
-|xref:dmn-example2/build.sh[build.sh]
-|xref:dmn-example2/run.sh[run.sh]
+2+>|use maven see xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example2#build-test-run[README.adoc]
 
 |*dmn-example-3*
 |This example shows how invoke a DMN from a process
