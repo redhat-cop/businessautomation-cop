@@ -35,11 +35,11 @@ public class RulesApiImpl implements RulesApi {
 
     private static final String PASSWORD = System.getProperty("com.redhat.cop.pam.kieserver_password");
 
+    private static final String CONTAINER_ID = System.getProperty("remote.kieserver_containerid");
+
     private static final String NAMESPACE = "https://pam.cop.redhat.com/dmn-example-1/dmn";
 
     private static final String MODEL_NAME = "customer-can-open-account";
-
-    private static final String CONTAINER_ID = "com.redhat.cop.pam:dmn-example1-kjar:1.0";
 
     private KieServicesClient kieServicesClient;
 
@@ -50,9 +50,6 @@ public class RulesApiImpl implements RulesApi {
         extraClasses.add(Customer.class);
         config.addExtraClasses(extraClasses);
         config.setTimeout(100000l);
-        System.out.println("url: " + URL);
-        System.out.println("user: " + USER);
-        System.out.println("password: " + PASSWORD);
         kieServicesClient = KieServicesFactory.newKieServicesClient(config);
         final String[] gav = CONTAINER_ID.split(":");
         final KieContainerResource containerResource = new KieContainerResource(CONTAINER_ID, new ReleaseId(gav[0], gav[1], gav[2]));
