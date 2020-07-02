@@ -1,0 +1,141 @@
+dn: dc=jboss,dc=org
+objectclass: top
+objectclass: domain
+dc: jboss
+
+dn: ou=People, dc=jboss,dc=org
+objectclass: top
+objectclass: organizationalunit
+ou: People
+
+dn: uid=jack, ou=People, dc=jboss,dc=org
+cn: cpt. Jack Sparrow
+sn: Sparrow
+givenname: Jack
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+ou: Operations
+ou: People
+l: Caribbean
+uid: jack
+mail: jack@jboss.org
+telephonenumber: +44 1234 111112
+userpassword: password
+
+dn: uid=djones, ou=People, dc=jboss,dc=org
+cn: Davy Jones
+sn: Jones
+givenname: Davy
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+ou: Operations
+ou: People
+l: Caribbean
+uid: djones
+mail: d.jones@jboss.org
+telephonenumber: +44 1234 111112
+userpassword: password
+
+dn: uid=shamee, ou=People, dc=jboss,dc=org
+cn: Joshamee Gibbs
+sn: Gibbs
+givenname: Joshamee
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+ou: Operations
+ou: People
+l: Caribbean
+uid: shamee
+mail: j.gibbs@jboss.org
+telephonenumber: +44 1234 111113
+userpassword: password
+
+dn: uid=barbossa, ou=People, dc=jboss,dc=org
+cn: Hector Barbossa
+sn: Barbossa
+givenname: Hector
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+ou: Operations
+ou: People
+l: Caribbean
+uid: barbossa
+mail: h.barbossa@jboss.org
+telephonenumber: +44 1234 111114
+userpassword: password
+
+dn: uid=will, ou=People, dc=jboss,dc=org
+cn: William Turner
+sn: Turner
+givenname: William
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+ou: Operations
+ou: People
+l: Caribbean
+uid: will
+mail: w.turner@jboss.org
+telephonenumber: +44 1234 111115
+userpassword: password
+
+dn: ou=Groups, dc=jboss,dc=org
+objectclass: top
+objectclass: organizationalunit
+ou: Groups
+
+dn: cn=Pirates,ou=Groups,dc=jboss,dc=org
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: Pirates
+ou: Groups
+uniquemember: uid=cptjack, ou=People, dc=jboss,dc=org
+uniquemember: uid=djones, ou=People, dc=jboss,dc=org
+uniquemember: uid=barbossa, ou=People, dc=jboss,dc=org
+uniquemember: uid=shamee, ou=People, dc=jboss,dc=org
+description: Arrrrr!
+
+dn: cn=Captains,ou=Groups,dc=jboss,dc=org
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: Captains
+ou: Groups
+uniquemember: uid=cptjack, ou=People, dc=jboss,dc=org
+uniquemember: uid=djones, ou=People, dc=jboss,dc=org
+uniquemember: uid=barbossa, ou=People, dc=jboss,dc=org
+description: Garrrr!
+
+dn: cn=Sailor,ou=Groups,dc=jboss,dc=org
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: QuarterMaster
+ou: Groups
+uniquemember: uid=shamee, ou=People, dc=jboss,dc=org
+uniquemember: uid=will, ou=People, dc=jboss,dc=org
+description: Yarrrr!
+
+dn: ou=Administrators, dc=jboss,dc=org
+objectclass: top
+objectclass: organizationalunit
+ou: Administrators
+
+dn: uid=idm, ou=Administrators,dc=jboss,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+uid: idm
+cn: IDM Administrator
+sn: IDM Administrator
+description: Special LDAP acccount used by the IDM to access the LDAP data.
+ou: Administrators
+userPassword: password

@@ -1,0 +1,23 @@
+# LDAP guide
+
+#### Important Concepts
+
+String  X.500 AttributeType
+------------------------------
+CN      commonName
+L       localityName
+ST      stateOrProvinceName
+O       organizationName
+OU      organizationalUnitName
+C       countryName
+STREET  streetAddress
+DC      domainComponent
+UID     userid
+------------------------------
+
+Useful Explanation : https://stackoverflow.com/questions/18756688/what-are-cn-ou-dc-in-an-ldap-search
+
+OpenDJ:
+
+Delete Backend -  ./dsconfig delete-backend --port 4444 --hostname localhost --backend-name jboss --bindDN cn=admin
+
