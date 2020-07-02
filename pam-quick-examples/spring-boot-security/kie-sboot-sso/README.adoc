@@ -1,9 +1,6 @@
-= KIE Spring Boot Security App
+= KIE Spring Boot RHSSO App
 
-An few examples of a KIE Spring Boot app demonstrating various Security implementations including: 
-- Unsecure (security completely removed)
-- Basic Auth
-- RHSSO (Opend ID Connect)
+An example of a KIE Spring Boot app demonstrating OIDC SSO Security between an external RHSSO/KeyCloak Server and the jBPM/KIE Runtime.
 
 Available Spring Profiles:
 - Default (H2 in-memory),
