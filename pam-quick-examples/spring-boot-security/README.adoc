@@ -7,6 +7,7 @@ An few examples of a KIE Spring Boot app demonstrating various Security implemen
 - RHSSO (Opend ID Connect)
 
 Available Spring Profiles:
+
 - Default (H2 in-memory),
 - Dev(H2 file based),
 - MySQL (TODO),
