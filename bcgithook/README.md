@@ -24,7 +24,7 @@ This project offers a bash-based implementation for such git hooks.
 |`LOG_LOCATION` | optional | The directory where logs should be written. Defaults to `$HOME` |
 |`LOG_SYSTEM_REPOS` | optional | If set to "yes" will log access to system repositories, can result in some verbosity |
 |`BRANCH_ALLOW`| optional | A comma-separated list, or a regular expession, of branches to allow commits to be pushed to.  When using a comma-separated list of branches, do not leave space between the comma and the branch name or enclose in quotes. |
-|`BRANCH_ALLOW_REGEX`| optional | A regular expression specifying branches to allow commits for. If defined overrides `BRANCH_ALLOW`. Use quotes to specify a regular expression, for example `"^(feature/)|^(hotfix)"` |
+|`BRANCH_ALLOW_REGEX`| optional | A regular expression specifying branches to allow commits for. If defined overrides `BRANCH_ALLOW`. Use quotes to specify a regular expression, for example `"^(feature/)\|^(hotfix)"` |
 |`BRANCH_DENY`| optional | a comma-separated list of branches to deny commits to be pushed to. Do not leave space between the comma and the branch name or enclose in quotes. |
 
 See below for example configurations for various Git repos.
@@ -59,7 +59,7 @@ ALLOW and DENY lists refer to branches that the post-commit git hooks will selec
 
 | Definition | Expected Action
 |-|-|
-|`BRANCH_ALLOW_REGEX="^(hotfix/)|^(feature/)"`| Specifies branches to allow commits for in the form of regular expressions. In this example commits in branches starting with `hotfix/` or `feature/` will be allowed to be pushed to the remote git repo |
+|`BRANCH_ALLOW_REGEX="^(hotfix/)\|^(feature/)"`| Specifies branches to allow commits for in the form of regular expressions. In this example commits in branches starting with `hotfix/` or `feature/` will be allowed to be pushed to the remote git repo |
 |`BRANCH_ALLOW="branch2,feature/fa"`| This variable is overriden by `BRANCH_ALLOW_REGEX` and will be ignored |
 |`BRANCH_DENY=master,release`| Commits in branches "master" and "release" will not be pushed to the remote git repo.|
 
