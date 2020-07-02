@@ -10,7 +10,7 @@
 
 |*dmn-example-1*
 |This example shows how use DMN to check if a customer can open a bank account (is underage or not)
-2+>|use maven see xref:https://github.com/ippul/businessautomation-cop/tree/master/pam-quick-examples/dmn-example1#build-test-run[README.adoc]
+2+>|use maven see xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example1#build-test-run[README.adoc]
 
 |*dmn-example-2*
 |This example shows how to invoke a java function from DMN to check if a customer can open a bank account (is underage or not)

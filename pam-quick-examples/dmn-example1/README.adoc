@@ -49,7 +49,7 @@ $ ./add-user.sh -a --silent=true --user 'kieServerUser' --password 'kieServerUse
 $ add-user.bat -a --silent=true --user 'kieServerUser' --password 'kieServerUser1234;' --group 'kie-server'
 ----
 
-If a diffrent user or password has been used  the system properties in xref:https://github.com/ippul/businessautomation-cop/blob/master/pam-quick-examples/dmn-example1/dmn-example1-parent/pom.xml#L168[pom.xml] need to be update
+If a diffrent user or password has been used  the system properties in xref:https://github.com/redhat-cop/businessautomation-cop/blob/master/pam-quick-examples/dmn-example1/dmn-example1-parent/pom.xml#L168[pom.xml] need to be update
 [source,xml]
 ----
 <properties>
