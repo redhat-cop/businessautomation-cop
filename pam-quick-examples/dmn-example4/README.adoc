@@ -2,7 +2,6 @@
 
 This example show how invoke a DMN from a process defined in separate kjar
 
-
 == Project 'dmn-example4-parent' details
 
 === Details
@@ -51,13 +50,13 @@ dmn-example4-kie-api-remote-impl::
 dmn-example4-dmn-kjar::
 * Define the DMN used in the example
 
-image::images/DMN.png[]
+image::images/DMN.png[align="center"]
 
 
 dmn-example4-process-kjar::
 * Define the BPMN used in the example
 
-image::images/process.png[]
+image::images/process.png[align="center"]
 
 == Configure
 IMPORTANT: To try the remote version you need an instance of kie-server up and running.
