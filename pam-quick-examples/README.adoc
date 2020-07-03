@@ -1,4 +1,4 @@
-![Java CI with Maven for pam-quick-examples](https://github.com/redhat-cop/businessautomation-cop/workflows/Java%20CI%20with%20Maven%20for%20pam-quick-examples/badge.svg)
+image:https://github.com/redhat-cop/businessautomation-cop/workflows/Java%20CI%20with%20Maven%20for%20pam-quick-examples/badge.svg[Java CI with Maven for pam-quick-examples]
 
 = Process Automation Manager Quick Examples
 
