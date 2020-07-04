@@ -20,13 +20,16 @@
 #
 # BRANCH_DENY=master,release
 # BRANCH_ALLOW=br2,feature/fa
+# BRANCH_ALLOW_REGEX="^(hotfix/)|^(feature/)"
 #
 # Optional allow and deny list for branches
-# Specify a comma-separated list of branches
+# Specify a comma-separated list of branches, or a regular-expression. Use quotes when using regular expressions
 #
 #  - if BRANCH_ALLOW exists, only commits in branches in the list will be pushed to the remote repo
+#  - if BRANCH_ALLOW_REGEX exists, it will override BRANCH_ALLOW and
+#    branches will be committed only if they match the regular expression
 #  - if BRANCH_DENY exists, commits in branches in the list will not be pushed to the remote repo
-#  - if both lists exist, BRANCH_DENY takes precedene
+#  - BRANCH_DENY always takes precedene if it exists
 #
 # Example:
 # (a)
@@ -41,6 +44,13 @@
 # Commits in branches "feature/fa" will be pushed to remote repo
 # Commits in branches "master", "release" and "branch2" will not be pushed to remote repo
 #
+# (c)
+# - BRANCH_ALLOW=devel
+# - BRANCH_ALLOW_REGEX="^(hotfix/)|^(feature/)"
+# - BRANCH_DENY=master,release
+# Commits in branches "master" and "release" will not be pused to remote repo
+# Commits in branch "devel" will not be pused to remote repo as BRANCH_ALLOW_REGEX overrides BRANCH_ALLOW
+# Only commits in branches starting with "hotfix/" or "feature/" will be pused to remote repo
 #
 # Uncomment and modify as appropriate
 #
@@ -48,22 +58,22 @@
 # GIT_USER_NAME='bitbucket_id'
 # GIT_PASSWD='passwd'
 # GIT_URL='https://bitbucket_id@bitbucket.org/bitbucket_id'
-# 
+#
 # GIT_TYPE="azure"
 # GIT_USER_NAME='azure_id'
 # GIT_PASSWD='passwd'
 # GIT_URL='https://azure_id@dev.azure.com/azure_id/organisation_or_project/_git'
-# 
+#
 # GIT_TYPE=""
 # GIT_USER_NAME='github_id'
 # GIT_PASSWD='passwd'
 # GIT_URL='https://github.com/github_id'
-# 
+#
 # GIT_TYPE=""
 # GIT_USER_NAME='gitlab_id'
 # GIT_PASSWD='passwd'
 # GIT_URL='https://gitlab.com/gitlab_id'
-# 
+#
 # GIT_TYPE=""
 # GIT_USER_NAME='gitea_id'
 # GIT_PASSWD='passwd'
@@ -71,7 +81,8 @@
 #
 # BRANCH_DENY=master,release
 # BRANCH_ALLOW=br2,feature/fa
-# 
+# BRANCH_ALLOW_REGEX="^(hotfix/)|^(feature)"
+#
 
 LOG_LOCATION=$HOME
 LOG_SYSTEM_REPOS=yes

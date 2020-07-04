@@ -1,0 +1,36 @@
+<kie-server-state>
+  <controllers/>
+  <configuration>
+    <configItems>
+      <config-item>
+        <name>org.kie.server.location</name>
+        <value>http://localhost:8090/rest/server</value>
+        <type>java.lang.String</type>
+      </config-item>
+      <config-item>
+        <name>org.kie.server.id</name>
+        <value>kie-sboot-service</value>
+        <type>java.lang.String</type>
+      </config-item>
+      <config-item>
+        <name>org.kie.server.controller</name>
+        <value></value>
+        <type>java.lang.String</type>
+      </config-item>
+    </configItems>
+  </configuration>
+  <containers>
+    <container>
+      <containerId>kie-sboot-test-kjar-1_0-SNAPSHOT</containerId>
+      <releaseId>
+        <groupId>org.redhat.services</groupId>
+        <artifactId>kjar</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+      </releaseId>
+      <status>STARTED</status>
+      <configItems/>
+      <messages/>
+      <containerAlias>kie-sboot-test-kjar</containerAlias>
+    </container>
+  </containers>
+</kie-server-state>

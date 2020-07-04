@@ -50,18 +50,18 @@ jobs:
       - name: Setup node Build bdd-ui
         uses: actions/setup-node@v1
         with:
-          node-version: 10.x
+          node-version: 12.x
 
       - name: Build bdd-ui/feature-file-helper-front-end
         run: |
           pushd bdd-ui/feature-file-helper-front-end
-          npm install -g @angular/cli --no-audit
-          npm install --no-audit
+          npm install -g @angular/cli
+          npm install
           ng build
           popd
 
       - name: Build bdd-ui/feature-file-helper-back-end
         run: |
           pushd bdd-ui/feature-file-helper-back-end
-          npm install --no-audit
+          npm install
           popd

@@ -1,3 +1,5 @@
+﻿![Build for pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20pam-eap-setup/badge.svg)
+
 # pam-setup
 
 Makes installation of multi-node PAM on non-OCP EAP nodes trivial.
@@ -25,6 +27,7 @@ For details about node configuration check out [Nodes Configuration](#nodes-conf
 
 - [Install location](#install-location)
 - [Enabling DEBUG logging](#enabling-debug-logging)
+- [Additional configuration with pam.config](#additional-configuration)
 - [Configuring an Oracle datasource](#configuring-an-oracle-datasource)
 
 ## Usage Scenarios
@@ -324,6 +327,38 @@ Enabling `debug_logging` will have the effect of placing the following defintion
 This will also log login related events. The combined effect will be quite extensive amount of logging that could have a detrimental effect to performance. It is recommended that for normal operations the logging level is switched to informational level by replacing the `DEBUG` directive above with `INFO`.
 
 
+### Additional Configuration
+
+There are a multitude of properties than can be configured for Business Central and KIE Server. `pam-eap-setup` offers shortcuts for the most common of them, but there are still a lot that are left out. To include any of these extra configuration parameters file `pam.config`can be used to specify parameters that should be included.
+
+Parameters specified in the `pam.config` files are included both in Business Central as well KIE Server deployments. Each component will pick the relevant parameters so the presence of extraneous parameters in the system properties is not a problem.
+
+By default, `pam.config` has the following contents:
+
+```
+#
+# comment
+#
+brokerconfig.maxDiskUsage               95
+
+# return formatted dates in JSON respones instead of seconds
+# org.kie.server.json.format.date       true
+
+# override KIE Server ID
+# org.kie.server.id                     execution_server
+
+# LDAP: check https://access.redhat.com/solutions/5100821 
+# org.jbpm.ht.admin.user                processManager
+
+# Oracle: check https://access.redhat.com/solutions/4460791
+# org.kie.server.persistence.dialect   org.jbpm.persistence.jpa.hibernate.DisabledFollowOnLockOracle10gDialect
+```
+
+Add as many configuration parameters as required separating the parameters from its value by at least a space.
+
+Any parameters specified in `pam.config` will take precedence over ones specified by default in `pam-eap-setup` or through command line options.
+
+
 ### Configuring an Oracle datasource
 
 By specifying the Oracle related parameters an Oracle datasource will be configured. Example invocation:
@@ -362,3 +397,4 @@ It is also advisable to check whether KB4460791 [What is the supported oracle di
 ---
 > Written with [StackEdit](https://stackedit.io/).
 > ASCII charts with the help of [ASCIIFlow](http://asciiflow.com/)
+

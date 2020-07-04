@@ -1,3 +1,5 @@
+![Build for pam-vagrant](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20pam-vagrant/badge.svg)
+
 # pam-vagrant
 
 Will create a vagrant box named "PAM.7.vm" by installing EAP.7.2, RHPAM and Nexus.

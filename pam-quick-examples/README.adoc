@@ -1,41 +1,36 @@
+image:https://github.com/redhat-cop/businessautomation-cop/workflows/Java%20CI%20with%20Maven%20for%20pam-quick-examples/badge.svg[Java CI with Maven for pam-quick-examples]
+
 = Process Automation Manager Quick Examples
 
 === Decision Model and Notation (DMN) Examples
 
-[cols="2,10,2,2", options="header"]
+[cols="2,8,2", options="header"]
 |===
-|name |description |build |run
+|name |description |build test & run
 
-|*dmn-example-1*
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example1[dmn-example-1]
 |This example shows how use DMN to check if a customer can open a bank account (is underage or not)
-|xref:dmn-example1/build.sh[build.sh]
-|xref:dmn-example1/run.sh[run.sh]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example1#build-test-run[README.adoc]
 
-|*dmn-example-2*
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example2[dmn-example-2]
 |This example shows how to invoke a java function from DMN to check if a customer can open a bank account (is underage or not)
-|xref:dmn-example2/build.sh[build.sh]
-|xref:dmn-example2/run.sh[run.sh]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example2#build-test-run[README.adoc]
 
-|*dmn-example-3*
-|This example shows how invoke a DMN from a process
-|xref:dmn-example3/build.sh[build.sh]
-|xref:dmn-example3/run.sh[run.sh]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example3[dmn-example-3]
+|This example shows how invoke a DMN(used in example-2) from a process
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example3#build-test-run[README.adoc]
 
-|*dmn-example-4*
-|This example shows how to invoke a DMN from a process defined in separate `kjar`
-|xref:dmn-example4/build.sh[build.sh]
-|xref:dmn-example4/run.sh[run.sh]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example4[dmn-example-4]
+|This example shows how to invoke a DMN(used in example-2) from a process defined in separate 'kjar'
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example4#build-test-run[README.adoc]
 
-|*dmn-example-5*
-|This example shows how to test a DMN using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
-|xref:dmn-example5/build.sh[build.sh]
-|xref:dmn-example5/run.sh[run.sh]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example5[dmn-example-5]
+|This example shows how to test a DMN(used in example-1) using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example5#build-test-run[README.adoc]
 
-|*dmn-example-6*
-|This example shows how to test a DMN in a process using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
-|xref:dmn-example6/build.sh[build.sh]
-|xref:dmn-example6/run.sh[run.sh]
-
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example6[dmn-example-6]
+|This example shows how to test a DMN(used in example-2) in a process using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example6#build-test-run[README.adoc]
 |===
 
 === BPMN process examples

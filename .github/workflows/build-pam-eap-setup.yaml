@@ -29,7 +29,7 @@ jobs:
         with:
           rh_username: ${{ secrets.RH_USERNAME }}
           rh_password: ${{ secrets.RH_PASSWORD }}
-          download: '[{"file":"/github/workspace/pam-eap-setup/jboss-eap-7.2.0.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=64311"},{"file":"/github/workspace/pam-eap-setup/rhpam-7.7.1-business-central-eap7-deployable.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=82441"},{"file":"/github/workspace/pam-eap-setup/rhpam-7.7.1-kie-server-ee8.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=82291"}]'
+          download: '[{"file":"/github/workspace/pam-eap-setup/jboss-eap-7.2.0.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=64311"},{"file":"/github/workspace/pam-eap-setup/jboss-eap-7.2.8-patch.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=81791"},{"file":"/github/workspace/pam-eap-setup/rhpam-7.7.1-business-central-eap7-deployable.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=82441"},{"file":"/github/workspace/pam-eap-setup/rhpam-7.7.1-kie-server-ee8.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=82291"}]'
 
       - name: Run pam-setup.sh
         if: matrix.os == 'ubuntu-latest'
@@ -41,7 +41,6 @@ jobs:
       - name: Run ShellCheck
         if: matrix.os == 'ubuntu-latest'
         uses: ludeeus/action-shellcheck@master
-        env:
-          SHELLCHECK_OPTS: -e SC2155 -e SC2034 -e SC2145 -e SC2164
         with:
+          severity: error
           ignore: bcgithook bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-quick-examples pam-vagrant

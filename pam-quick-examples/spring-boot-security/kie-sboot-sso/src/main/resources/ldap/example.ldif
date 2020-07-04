@@ -1,0 +1,91 @@
+dn: dc=example,dc=com
+objectclass: top
+objectclass: domain
+dc: example
+
+dn: ou=People, dc=example,dc=com
+objectclass: top
+objectclass: organizationalunit
+ou: People
+aci: (targetattr="*||+")(version 3.0; acl "IDM Access"; allow (all)
+userdn="ldap:///uid=idm,ou=Administrators,dc=example,dc=com";)
+
+dn: uid=cptjack, ou=People, dc=example,dc=com
+cn: cpt. Jack Sparrow
+sn: Sparrow
+givenname: Jack
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+ou: Operations
+ou: People
+l: Caribbean
+uid: cptjack
+mail: jack@example.com
+telephonenumber: +421 910 123456
+facsimiletelephonenumber: +1 408 555 1111
+roomnumber: 666
+userpassword: MyAwesomePassword
+
+dn: uid=djones, ou=People, dc=example,dc=com
+cn: Davy Jones
+sn: Jones
+givenname: Davy
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+ou: Operations
+ou: People
+l: Caribbean
+uid: djones
+mail: d.jones@example.com
+telephonenumber: +421 910 382735
+facsimiletelephonenumber: +1 408 555 1112
+roomnumber: 112
+userpassword: MyAwesomePassword
+
+dn: ou=Groups, dc=example,dc=com
+objectclass: top
+objectclass: organizationalunit
+ou: Groups
+aci: (targetattr="*||+")(version 3.0; acl "IDM Access"; allow (all)
+userdn="ldap:///uid=idm,ou=Administrators,dc=example,dc=com";)
+
+dn: cn=Pirates,ou=Groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: Pirates
+ou: Groups
+uniquemember: uid=cptjack, ou=People, dc=example,dc=com
+uniquemember: uid=djones, ou=People, dc=example,dc=com
+description: Arrrrr!
+
+dn: cn=Catmins,ou=Groups,dc=example,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: Catmins
+ou: Groups
+uniquemember: uid=djones, ou=People, dc=example,dc=com
+description: Purrrr!
+
+dn: ou=Administrators, dc=example,dc=com
+objectclass: top
+objectclass: organizationalunit
+ou: Administrators
+
+dn: uid=idm, ou=Administrators,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+uid: idm
+cn: IDM Administrator
+sn: IDM Administrator
+description: Special LDAP acccount used by the IDM
+to access the LDAP data.
+ou: Administrators
+userPassword: MySecretAdminPassword
+ds-privilege-name: unindexed-search
+ds-privilege-name: password-reset
