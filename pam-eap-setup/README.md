@@ -26,6 +26,7 @@ Supported (i.e. tested) versions:
 For details about node configuration check out [Nodes Configuration](#nodes-configuration) section at the end of this document. Also:
 
 - [Install location](#install-location)
+- [Development vs Production Mode](#development-vs-production-mode)
 - [Enabling DEBUG logging](#enabling-debug-logging)
 - [Additional configuration with pam.config](#additional-configuration)
 - [Configuring an Oracle datasource](#configuring-an-oracle-datasource)
@@ -200,6 +201,11 @@ Invoke with no arguments for usage info:
 
                  - jvm_memory        : Configures the '-Xmx' parameter of JVM. Number is assumed to imply MB.
                                        Example 'jvm_memory=4096' will be '-Xmx4096m'
+                                      
+                 - run_mode          : [ development | production ], defaults to 'development'
+                                        Configure Business Central and KIE Server to run
+                                        in 'development' or 'production' mode.
+                                        Please refer to documentation for more information
 
                 Configuring an Oracle datasource
 
@@ -303,6 +309,21 @@ By default PAM will be installed in a directory named `pam` in the current direc
 Example:
   - `./pam-setup.sh` will install PAM in a directory named `pam` and the startup script will be named `go_pam.sh`
   - `./pam-setup.sh -o install_dir=wick` will install PAM in a directory named `wick` and the startup script will be named `go_wick.sh`
+
+### Development vs Production Mode
+
+RHPAM can be configured in `development` or `production` mode as detailed in [Configuring the environment mode in KIE Server and Business Central](https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/html-single/packaging_and_deploying_a_red_hat_process_automation_manager_project/index#configuring-environment-mode-proc_packaging-deploying)
+
+Setting the run mode will also affect [Duplicate GAV detection in Business Central](https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/html-single/packaging_and_deploying_a_red_hat_process_automation_manager_project/index#project-duplicate-GAV-con_packaging-deploying)
+
+To specify the run mode of Business Central and KIE Server specify the `run_mode` option. Depending on the value specified, the following properties will be configured:
+
+| run_mode value                        | `development` | `production` |
+|:--------------------------------------|:-------------:|:------------:|
+|`org.guvnor.project.gav.check.disabled`| `true`        | `false`      |
+|`org.kie.server.mode`                  | `development` | `production` |
+
+The default `run_mode` for `pam-setup.sh` is `development`.
 
 ### Enabling DEBUG logging
 
