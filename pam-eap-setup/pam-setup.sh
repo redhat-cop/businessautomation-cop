@@ -331,13 +331,7 @@ Options:
          - run_mode          : [ development | production ], defaults to 'development'
                                Configure Business Central and KIE Server to run
                                in 'development' or 'production' mode.
-                               Please refer to https://tinyurl.com/y8lnbaj4 for more information
-                               When set to 'development' the following two system properties will be defined:
-                                 org.guvnor.project.gav.check.disabled=true
-                                 org.kie.server.mode=development
-                               'production' mode will set the properties to
-                                 org.guvnor.project.gav.check.disabled=false
-                                 org.kie.server.mode=production
+                               Please refer to documentation for more information
 
          Configuring an Oracle datasource
 
