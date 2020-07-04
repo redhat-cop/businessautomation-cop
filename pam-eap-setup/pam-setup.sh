@@ -155,7 +155,7 @@ function extractConfiguration() {
 
 function randomid() {
   # longer version, seems overkill
-  #echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
+  # echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
   echo $(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')
 }
 
@@ -268,7 +268,7 @@ function prepareConfigLine() {
 }
 
 function usage() {
-echo "
+echo '
 Will install PAM on a standalone EAP node or an EAP cluster. Execute this script on each
 node that will be part of the cluster.
 
@@ -327,11 +327,22 @@ Options:
 
          - jvm_memory        : Configures the '-Xmx' parameter of JVM. Number is assumed to imply MB.
                                Example 'jvm_memory=4096' will be '-Xmx4096m'
+                               
+         - run_mode          : [ development | production ], defaults to 'development'
+                               Configure Business Central and KIE Server to run
+                               in 'development' or 'production' mode.
+                               Please refer to https://tinyurl.com/y8lnbaj4 for more information
+                               When set to 'development' the following two system properties will be defined:
+                                 org.guvnor.project.gav.check.disabled=true
+                                 org.kie.server.mode=development
+                               'production' mode will set the properties to
+                                 org.guvnor.project.gav.check.disabled=false
+                                 org.kie.server.mode=production
 
          Configuring an Oracle datasource
 
          - ojdbc_location    : location of the Oracle JDBC driver
-                               Example ""$PWD"/oracle_jdbc_driver/ojdbc8.jar"
+                               Example ""$PWD'/oracle_jdbc_driver/ojdbc8.jar"
 
          - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
            oracle_port,        which is of the form
@@ -499,7 +510,13 @@ function modifyConfiguration() {
   prepareConfigLine "org.uberfire.nio.git.dir"              '${jboss.server.base.dir}/git'
   prepareConfigLine "org.uberfire.metadata.index.dir"       '${jboss.server.base.dir}/metaindex'
   prepareConfigLine "org.guvnor.m2repo.dir"                 '${jboss.server.base.dir}/kie'
-  prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'
+  if [[ "${configOptions[run_mode]}" == "development" ]]; then
+    prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'
+    prepareConfigLine "org.kie.server.mode"                   'development'
+  else # production
+    prepareConfigLine "org.guvnor.project.gav.check.disabled" 'false'
+    prepareConfigLine "org.kie.server.mode"                   'production'
+  fi
   # <property name="org.kie.server.domain" value="user_authntication_JAAS_LoginContext_domain_when_using_JMS"/>
   # check for settings.xml and (un)comment accordingly while copying settings.xml in place
   local keyPrefix="COMMENT" && [[ -r settings.xml ]] && cp settings.xml "$EAP_HOME" && keyPrefix=""
@@ -944,6 +961,7 @@ summary "Using Smart Router location :- ${smartRouter:-NOT INSTALLED}"
 #
 declare -A configOptions
 if [[ ! -z "$optO" ]]; then
+  summary "optO :- $optO"
   declare -a multiOptions
   while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
   # NOTE: Special characters in options will result in misconfigurations, quoting the multiOptions will not guard against this
@@ -955,7 +973,10 @@ if [[ ! -z "$optO" ]]; then
     [[ -n "$k" ]] && configOptions["$k"]="${v}"
     unset tmpar
   done
-  unset tmpar multiOptions
+  tmp="${configOptions[run_mode]}"
+  configOptions[run_mode]="development"
+  [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
+  unset tmp tmpar multiOptions
 fi
 #
 [[ ! -r $EAP7_ZIP ]]      && sout "ERROR: Cannot read EAP.7 ZIP file $EAP7_ZIP -- exiting"          && exit 1;
@@ -1042,7 +1063,7 @@ if [ "$skip_install" != "yes" ]; then
       [[ "$node" -gt 1 ]] && [[ "$pamInstall" == "multi" ]] && pamInstall=kie && nodeParam=node${node}
       nodeConfig['pamInstall']=" "
       nodeParam=${nodeParam:-standalone}
-      nodeConfig['nodeName']=${nodeParam}_`randomid`
+      nodeConfig['nodeName']=${nodeParam}_$(randomid)
       nodeConfig['nodeBase']=$nodeParam
       nodeConfig['nodeCounter']=node$node
       nodeCounter=$((node-1)) && [[ "$nodeParam" == "standalone" ]] && nodeCounter=0
