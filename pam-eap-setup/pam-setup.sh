@@ -36,12 +36,14 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 #
 # sanity checks on environment environment
 #
-command -v sed &> /dev/null || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
-command -v java &> /dev/null || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
-command -v unzip &> /dev/null || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
+command -v sed &> /dev/null     || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
+command -v java &> /dev/null    || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
+command -v unzip &> /dev/null   || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
 command -v sqlite3 &> /dev/null || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
+command -v grep &> /dev/null    || { echo >&2 'ERROR: grep not installed. Please install grep to continue - Aborting'; exit 1; }
+command -v awk &> /dev/null     || { echo >&2 'ERROR: awk not installed. Please install awk to continue - Aborting'; exit 1; }
 # required to checkout and built dependencies
-command -v git &> /dev/null || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
+command -v git &> /dev/null     || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
 
 # - check sed version on Mac
 if [[ "$MACOS_ON" == "yes" ]]; then
@@ -332,6 +334,16 @@ Options:
                                Configure Business Central and KIE Server to run
                                in 'development' or 'production' mode.
                                Please refer to documentation for more information
+                               
+         - git_hook          : install named post-commit git hook implementation
+                               Currently only 'bcgithook' is supported which refers
+                               to https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                               
+         - git_hook_location : location of post-commit git hooks implementation
+                               Leave empty or specify the `download` value
+                               If empty, will try to use bcgithook based on 'businessautomation-cop' repository structure.
+                               If bcgithook cannot be found, the 'businessautomation-cop' will be attempted to be
+                               cloned and the bcgithook implementation will be used if found
 
          Configuring an Oracle datasource
 
@@ -809,9 +821,32 @@ function nodeConfigSave() {
   local pi=""
   for pi in ${nodeConfig['pamInstall']}; do
     sql="insert or ignore into pamrc (installId,pamInstall,nodeName,nodeBase,nodeOffset,nodePort,controllerUrl,installDir,pamTarget,startScript,nodeCounter) values ("
-    sql="${sql}'$INSTALL_ID','$pi','${nodeConfig[nodeName]}','${nodeConfig[nodeBase]}','${nodeConfig[nodeOffset]}','${nodeConfig[nodePort]}','${nodeConfig[controllerUrl]}','$EAP_HOME','$target','${nodeConfig[startScript]}','${nodeConfig[nodeCounter]}')"
+    sql="${sql}'$INSTALL_ID','$pi','${nodeConfig[nodeName]}','${nodeConfig[nodeBase]}','${nodeConfig[nodeOffset]}','${nodeConfig[nodePort]}','${nodeConfig[controllerUrl]}','${nodeConfig[eap_location]}','$target','${nodeConfig[startScript]}','${nodeConfig[nodeCounter]}')"
     sqlite3 $CONFIG_DB "${sql};"
   done
+}
+
+function installBCGitHook() {
+  local bcloc=$(sqlite3 -line "$CONFIG_DB" "select pkey,installDir from pamrc where pamInstall='controller'" | grep installDir | awk '{ print $3; }')
+  local githookloc=../bcgithook
+  local ghl=""
+  [[ -z "${configOptions[git_hook_location]}" ]] && [[ -d "$githookloc" ]] && ghl="$githookloc"
+  [[ -z "${configOptions[git_hook_location]}" ]] && configOptions[git_hook_location]="download"
+  pushd "$bcloc" &> /dev/null
+    if [[ "${configOptions[git_hook_location]}" == "download" ]]; then
+      mkdir bcgithook && cd bcgithook
+      git clone https://github.com/redhat-cop/businessautomation-cop.git
+      [[ -d businessautomation-cop ]] && cd businessautomation-cop/bcgithook && ghl="$(pwd)"
+    fi
+    if [[ -n "$ghl" ]]; then
+      pushd "$ghl" &> /dev/null
+        ./install.sh "$bcloc"
+      popd &> /dev/null
+    else
+      sout "WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+      summary "--- WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+    fi
+  popd &> /dev/null
 }
 
 #
@@ -955,7 +990,6 @@ summary "Using Smart Router location :- ${smartRouter:-NOT INSTALLED}"
 #
 declare -A configOptions
 if [[ ! -z "$optO" ]]; then
-  summary "optO :- $optO"
   declare -a multiOptions
   while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
   # NOTE: Special characters in options will result in misconfigurations, quoting the multiOptions will not guard against this
@@ -1110,6 +1144,8 @@ if [ "$skip_install" != "yes" ]; then
     cp -r "$EAP_HOME"/* "$EAP_LOCATION"
     rm -rf "$EAP_HOME"
   fi
+  # install post-commit git hooks
+  [[ "${configOptions[git_hook]}" == "bcgithook" ]]  && installBCGitHook
   # print summary of installation
   summary " "
   prettyPrinter "${summaryAr[@]}"
