@@ -340,10 +340,12 @@ Options:
                                to https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
                                
          - git_hook_location : location of post-commit git hooks implementation
-                               Leave empty or specify the `download` value
+                               Valid values are [ (empty) | download | path-to-bcgithook]
                                If empty, will try to use bcgithook based on 'businessautomation-cop' repository structure.
                                If bcgithook cannot be found, the 'businessautomation-cop' will be attempted to be
-                               cloned and the bcgithook implementation will be used if found
+                               cloned and the bcgithook implementation will be used if found.
+                               If not empty and not filled with 'download' the value will be taken as a path to
+                               the bcgithook implementation.
 
          Configuring an Oracle datasource
 
@@ -384,6 +386,18 @@ Notes:
       controllerUser  kie-server,rest-all
 
     Passwords for these users will be printed at the end of the installation in stdout
+    
+  - Examples for git_hook_location
+  
+      git_hook_location value  | what is means
+      -------------------------+------------------
+           (empty)             | will look for bcgithook based on the 'businessautomation-cop' repository structure
+                               | bcgithook should be in the path '../bcgithook'
+                               | if not found at that path, 'git_hook_location' will switch to 'download'
+      -------------------------+------------------
+           download            | Will download 'businessautomation-cop' repository
+      -------------------------+------------------
+        '/path/to/bcgithook'   | Will use this path and fail if not possible
 "
 }
 
@@ -828,15 +842,23 @@ function nodeConfigSave() {
 
 function installBCGitHook() {
   local bcloc=$(sqlite3 -line "$CONFIG_DB" "select pkey,installDir from pamrc where pamInstall='controller'" | grep installDir | awk '{ print $3; }')
-  local githookloc=../bcgithook
+  local githookloc="$WORKDIR/../bcgithook"
   local ghl=""
-  [[ -z "${configOptions[git_hook_location]}" ]] && [[ -d "$githookloc" ]] && ghl="$githookloc"
-  [[ -z "${configOptions[git_hook_location]}" ]] && configOptions[git_hook_location]="download"
+  [[ "${configOptions[git_hook_location]}" == "1" ]] && configOptions[git_hook_location]=''
+  [[ -z "${configOptions[git_hook_location]}" ]] && [[ -d "$githookloc" ]] && cd "$githookloc" && ghl="$(pwd)" && configOptions[git_hook_location]="$ghl"
+  [[ -z "${configOptions[git_hook_location]}" ]] && configOptions[git_hook_location]="download" && sout "DOWNLOADING POST-COMMIT GIT HOOK"
   pushd "$bcloc" &> /dev/null
     if [[ "${configOptions[git_hook_location]}" == "download" ]]; then
       mkdir bcgithook && cd bcgithook
-      git clone https://github.com/redhat-cop/businessautomation-cop.git
-      [[ -d businessautomation-cop ]] && cd businessautomation-cop/bcgithook && ghl="$(pwd)"
+      # wget https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
+      curl -ks -L -O https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
+      unzip -qq master.zip
+      [[ -d businessautomation-cop-master/bcgithook ]] && cd businessautomation-cop-master/bcgithook && ghl="$(pwd)"
+    fi
+    if [[ -n "${configOptions[git_hook_location]}" ]] && [[ "${configOptions[git_hook_location]}" != "download" ]]; then
+      local tmp="${configOptions[git_hook_location]}"
+      sout "USING POST-COMMIT GIT HOOKS FROM $tmp"
+      [[ -d "$tmp" ]] && [[ -x "$tmp/install.sh" ]] && [[ -r "$tmp/scripts/post-commit.sh" ]] && cd "$tmp" && ghl="$(pwd)"
     fi
     if [[ -n "$ghl" ]]; then
       pushd "$ghl" &> /dev/null
@@ -1162,3 +1184,4 @@ timeElapsed
 #
 # - end of script
 #
+
