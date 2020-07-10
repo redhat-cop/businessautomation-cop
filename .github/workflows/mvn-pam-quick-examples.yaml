@@ -107,3 +107,19 @@ jobs:
           pushd pam-quick-examples/spring-boot-xa
           mvn compile --no-transfer-progress
           popd
+
+          pushd pam-quick-examples/kie-server-extensions/abort-all-instances-extension
+          mvn install --no-transfer-progress
+          popd
+
+          pushd pam-quick-examples/kie-server-extensions/get-case-instances-with-data-extension
+          mvn install --no-transfer-progress
+          popd
+
+          pushd pam-quick-examples/kie-server-extensions/get-instances-by-alias-extension
+          mvn install --no-transfer-progress
+          popd
+
+          pushd pam-quick-examples/kie-server-extensions/process-reopen-extension
+          mvn install --no-transfer-progress
+          popd
