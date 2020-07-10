@@ -67,6 +67,14 @@ jobs:
           pushd pam-quick-examples/dmn-example4/dmn-example4-parent
           mvn compile --no-transfer-progress
           popd
+          
+          pushd pam-quick-examples/dynamic-dropdowns/dynamic-enum
+          mvn install --no-transfer-progress
+          popd
+          
+          pushd pam-quick-examples/dynamic-dropdowns/SampleEnumKjar
+          mvn compile --no-transfer-progress
+          popd
 
           pushd pam-quick-examples/dmn-example5/dmn-example5-parent
           mvn compile --no-transfer-progress
