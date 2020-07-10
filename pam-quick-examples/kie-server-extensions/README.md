@@ -1,0 +1,1 @@
+This module contains couple of kie-server extensions. They are mostly proof of concepts showing flexibility of kie-server. Each extensions contains a separate README with instructions.

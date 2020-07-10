@@ -1,0 +1,19 @@
+# hidden dir
+/.*
+!/.gitignore
+
+
+/bin/
+**/target/
+*.jpage
+**/project.repositories
+*.ucls
+*.backup
+**/TestUtils.java
+*.project
+*.classpath
+*.settings/
+
+
+## Scrap code
+**/Scrap.java
