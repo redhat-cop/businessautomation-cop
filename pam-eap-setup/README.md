@@ -31,6 +31,7 @@ For details about node configuration check out [Nodes Configuration](#nodes-conf
 - [Enabling DEBUG logging](#enabling-debug-logging)
 - [Additional configuration with pam.config](#additional-configuration)
 - [Configuring an Oracle datasource](#configuring-an-oracle-datasource)
+- [Post-commit git hooks integration](#post-commit-git-hooks-integration)
 
 ## Usage Scenarios
 
@@ -461,4 +462,3 @@ Examples for `git_hook_location` values
 ---
 > Written with [StackEdit](https://stackedit.io/).
 > ASCII charts with the help of [ASCIIFlow](http://asciiflow.com/)
-
