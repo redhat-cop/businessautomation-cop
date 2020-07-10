@@ -441,7 +441,7 @@ You can install a post-commit git hook implementation at the same time as instal
 | Option  | Description |
 |:--------|:------------|
 |`git_hook`| name of the git hook implementation to be installed. Currently only `bcgithook` is supported. |
-|`git_hook_location`| the location of the named `git_hook` implementation to be installed. Valid values are `download\|path-to-bcgithook-on-the-local-disk`
+|`git_hook_location`| the location of the named `git_hook` implementation to be installed. Valid values are `[ download\|path-to-bcgithook-on-the-local-disk ]`
 
 Examples for `git_hook_location` values
 
