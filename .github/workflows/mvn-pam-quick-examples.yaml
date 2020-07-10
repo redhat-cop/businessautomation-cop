@@ -75,3 +75,15 @@ jobs:
           pushd pam-quick-examples/dmn-example6/dmn-example6-parent
           mvn compile --no-transfer-progress
           popd
+
+          pushd pam-quick-examples/kie-server-extended-deployment/business-application/business-application-kjar
+          mvn compile --no-transfer-progress
+          popd
+          
+          pushd pam-quick-examples/kie-server-extended-deployment/business-application/business-application-model
+          mvn compile --no-transfer-progress
+          popd
+          
+          pushd pam-quick-examples/kie-server-extended-deployment/business-application/business-application-service
+          mvn compile --no-transfer-progress
+          popd
