@@ -51,7 +51,7 @@ dmn-example2-kie-api-remote-impl::
 dmn-example2-kjar::
 * Define the DMN used in the example
 
-image::images/DMN.png[]
+image::images/DMN.png[align="center"]
 
 
 == Configure

@@ -116,6 +116,8 @@ GIT_URL='https://github.com/<github_id>'
 ```
 replace `github_id` with your GitHub Id. Do not put a trailing `/` in the `GIT_URL`. By not specifying a specific project in `GIT_URL` you can reuse the configuration for multiple projects.
 
+No operation should be performed in the repository after it has been created. For example, do not create a file and delete it afterwards. Even if the repository looks empty the git version would have changed preventing Business Central from synchronizing with it.
+
 ### Gitea
 For a localhost installation of Gitea `ENABLE_PUSH_CREATE_USER` must be set to `true` to allow the corresponding repository to be created at the time the project is created in Business Central.
 Unless otherwise configured the file to be modified is `custom/conf/app.ini`
@@ -143,6 +145,8 @@ GIT_URL='https://<azure_id>@dev.azure.com/<azure_id>/<organisation>/_git'
 `GIT_TYPE` should be set to **azure** for Azure DevOps. Leave blank or empty for all other types of Git repos.
 Replace `azure_id` , `organisation` with the appropriate values. Do not put a trailing `/` in the `GIT_URL`. By not specifying a specific project in `GIT_URL` you can reuse the configuration for multiple projects.
 
+No operation should be performed in the repository after it has been created. For example, do not create a file and delete it afterwards. Even if the repository looks empty the git version would have changed preventing Business Central from synchronizing with it.
+
 ### Bitbucket
 Create the repository to Bitbucket before trying to push to it. The repository should be created empty without README, license or `.gitginore` file. Once the repository is created at Bitbucket a project with the same name can be created at Business Central and it will be pushed to Bitbucket
 
@@ -154,6 +158,8 @@ GIT_PASSWD=passwd
 GIT_URL='https://<bitbucket_id>@bitbucket.org/<bitbucket_id>'
 ```
 replace `bitbucket_id` with your Bitbucket Id. Do not put a trailing `/` in the `GIT_URL`. By not specifying a specific project in `GIT_URL` you can reuse the configuration for multiple projects.
+
+No operation should be performed in the repository after it has been created. For example, do not create a file and delete it afterwards. Even if the repository looks empty the git version would have changed preventing Business Central from synchronizing with it.
 
 ## Compatibility
 **bcgithook** should be compatible with all versions of [RHPAM](https://developers.redhat.com/products/rhpam/overview), [jBPM](https://www.jbpm.org/) and [Drools](https://www.drools.org/) but it had only been tested with the following:

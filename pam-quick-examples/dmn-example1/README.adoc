@@ -33,7 +33,7 @@ dmn-example1-kie-api-remote-impl::
 dmn-example1-kjar::
 * Define the DMN used in the example
 
-image::images/DMN.png[]
+image::images/DMN.png[align="center"]
 
 == Configure
 IMPORTANT: To try the remote version you need an instance of kie-server up and running.
