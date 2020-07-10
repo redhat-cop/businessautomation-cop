@@ -1,4 +1,5 @@
-﻿![Build for pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20pam-eap-setup/badge.svg)
+﻿
+![Build for pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20pam-eap-setup/badge.svg)
 
 # pam-setup
 
@@ -206,6 +207,19 @@ Invoke with no arguments for usage info:
                                         Configure Business Central and KIE Server to run
                                         in 'development' or 'production' mode.
                                         Please refer to documentation for more information
+                               
+                 - git_hook          : install named post-commit git hook implementation
+                                       Currently only 'bcgithook' is supported which refers
+                                       to https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                                       
+                 - git_hook_location : location of post-commit git hooks implementation
+                                       Valid values are [ (empty) | download | path-to-bcgithook]
+                                       If empty, will try to use bcgithook based on 'businessautomation-cop' repository structure.
+                                       If bcgithook cannot be found, the 'businessautomation-cop' will be attempted to be
+                                       cloned and the bcgithook implementation will be used if found.
+                                       If not empty and not filled with 'download' the value will be taken as a path to
+                                       the bcgithook implementation.
+
 
                 Configuring an Oracle datasource
 
@@ -414,6 +428,35 @@ System properties set also include
 - `org.kie.server.persistence.dialect` set to `org.hibernate.dialect.Oracle10gDialect`
 
 It is also advisable to check whether KB4460791 [What is the supported oracle dialect for RHPAM 7?](https://access.redhat.com/solutions/4460791) is applicable in your case. If it is, just uncomment the relevant line in the `pam.config` file and (re)run the installation.
+
+
+### Post-commit git hooks integration
+You can install a post-commit git hook implementation at the same time as installing Business Central with the following options.
+
+**NOTE**
+- At the moment these options support only the [bcgithook](https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook) implementation.
+- Support for other post-commit git hook implementations is under way
+
+| Option  | Description |
+|:--------|:------------|
+|`git_hook`| name of the git hook implementation to be installed. Currently only `bcgithook` is supported. |
+|`git_hook_location`| the location of the named `git_hook` implementation to be installed. Valid values are `download|path-to-bcgithook-on-the-local-disk`
+
+Examples for `git_hook_location` values
+
+      git_hook_location value  | what is means
+      -------------------------+------------------------------------------------------------------------
+           (empty)             | will look for bcgithook on the local disk based on the 
+                               | 'businessautomation-cop' repository structure, which should be 
+                               | at the 'CURRENT_DIR/../bcgithook' directory
+                               | if not found at that path, 'git_hook_location' will switch to 'download'
+      -------------------------+------------------------------------------------------------------------
+           download            | Will try to download 'businessautomation-cop' repository from
+                               | https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
+                               | If succesfull the downloaded file will be uncompressed and used
+      -------------------------+------------------------------------------------------------------------
+         /path/to/bcgithook    | Will use this path and fail if bcgithook cannot be found
+
 
 ---
 > Written with [StackEdit](https://stackedit.io/).
