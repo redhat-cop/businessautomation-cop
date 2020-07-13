@@ -1,0 +1,839 @@
+= KIE Spring Boot Security Demo Apps
+
+This project 3 different projects demonstrating various aspects of Spring Boot Security & the KIE (jBPM, Drools etc.) runtime.
+This guide can be treated as a starter for 10 / faq on Spring security & the KIE runtime.
+
+### Introduction
+
+Adding security to a Spring ecosystem based project comes in the form of the Spring Security library : https://spring.io/projects/spring-security.
+
+###### What is Spring Security?
+Without going into extensive depth, Spring security is essentially a collection of Servlet filters designed to bring both
+
+- Authentication (https://en.wikipedia.org/wiki/Authentication) and
+- Authorization (https://en.wikipedia.org/wiki/Authorization) to your application
+
+_TLDR_:
+- Authentication : application needs to verify if the user is who he claims to be, typically done with a username and password check.
+- Authorisation : defined permissions within the application based off roles.
+
+as well as protect against common exploits such as CSRF (https://en.wikipedia.org/wiki/Cross-site_request_forgery).
+
+1. Cors : https://docs.spring.io/spring-security/site/docs/5.2.1.RELEASE/reference/htmlsingle/#cors
+2. CSRF Cross Site Request Forgery: https://docs.spring.io/spring-security/site/docs/5.2.1.RELEASE/reference/htmlsingle/#csrf
+
+NOTE: A simple Passport control analogy is often used to explain the basic concepts around Authentication & Authorization.
+Once you have arrived at a country and presented your passport, passport control will review and confirm your identity (authenticate) upon which they will authorize your to access the country.
+
+##### Servlet Filters
+
+Spring Web revolves around the 'DispatchServlet' (https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-servlet) to redirect incoming HTTP requests to your underlying java REST resources i.e. @Controllers
+The DispatchServlet is agnostic of elements such as Security and good practice (and efficiency) dictates handling of such implementation details should be handled outside of the business application logic. Spring uses
+filters (https://www.oracle.com/java/technologies/filters.html) to 'filter' HTTP requests prior to routing to the DispatchServlet.
+
+Unfortunately its still not as simple as a single SecurityFilter to perform all of your required Authentication and Authorisation logic, typically a base security implementation would:
+
+1. Extract and decode/decrypt the user credentials from the HTTP request
+2. (Authentication) Validate the credentials against the corporate solutions i.e. database, web-services, enterprise SSO implementation etc..
+3. (Authorisation) Once Authenticated, the application then needs to determine whether it has the corresponding access rights to perform the request
+4. Propagate the request to the DispatchServlet should the above criteria be successfully met.
+
+Thus Spring typically breaks these steps down into individual Filters and chains them together (hence FilterChain) to create an order of steps to
+Authenticate and Authorise. This chaining method provides the flexibility to adhere to almost any IdentityProvider and Security framework.
+The Spring Security fluent API/DSL essentially allows us to define a FilterChain for our application in a programmatic manner.
+
+
+### Spring Security and the KIE Runtime
+The KIE runtime uses the same Spring Security runtime as any other Spring Web App based implementation i.e WebSecurityConfigurerAdapter
+
+NOTE: Since the KIE API is designed to be run as a headless API, we wont consider any implementation details around login/logout forms etc..
+
+
+#### Spring Security Libs
+
+Spring Boot Version: 2.2.2.RELEASE
+Spring (Lib) Security: 5.2.1.RELEASE : https://spring.io/blog/2019/10/16/spring-boot-2-2-0
+
+##### Authenticated with no Authorisation
+
+Lets start with a simple example and review the default Spring Security implementation from a Spring Boot project generated from : https://start.jbpm.org/
+
+[source,java]
+----
+@Configuration("kieServerSecurity")
+@EnableWebSecurity
+public class DefaultWebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override  // (1)
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .cors().and()
+                .csrf().disable()       2
+                .authorizeRequests()    3
+                .antMatchers("/rest/*").authenticated().and()
+                .httpBasic().and()      4
+                .headers().frameOptions().disable();    5
+    }
+----
+
+1. Override the default 'configure(HttpSecurity  http)' method to define our own custom FilterChain using Springs HttpClient fluent API/DSL
+2. Disable common exploit filters for CORS (https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) and CSRF tokens for local testing.
+3. Any requests made to the pattern 'rest/*' will require authentication, but no roles/granted authorities have been defined.
+4. Allow Basic Authentication via. Authorization header e.g. --header 'Authorization: Basic dGVzdF91c2VyOnBhc3N3b3Jk'
+5. Removes 'X-Frame-Options' header from request/response
+
+Thus the above configuration allows any authenticated user to execute the KIE api.
+
+As the default implementation is not integrated into any external identity provider, available users are also defined 'inMemory' in the same DefaultWebSecurityConfg class :
+
+[source,java]
+----
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication().withUser("user").password("user").roles("kie-server");
+        auth.inMemoryAuthentication().withUser("wbadmin").password("wbadmin").roles("admin");
+        auth.inMemoryAuthentication().withUser("kieserver").password("kieserver1!").roles("kie-server");
+    }
+----
+
+##### Authenticated with Authorisation
+
+As suggested in this article, requirements around Authentication and Authorisation are derived from the HTTPSecurity filter chain configuration.
+
+Therefore if we want to be able to protect the REST API for users with a specific role mapping we can use Spring Security's  .authorizeRequests()
+to match which URL's we wish to authorize e.g.
+
+[source,java]
+----
+@Configuration("kieServerSecurity")
+@EnableWebSecurity
+public class DefaultWebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override  // (1)
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .cors().and().csrf().disable()
+            .authorizeRequests() (1)
+               // .antMatchers("/**").hasRole("kie-server") (2)
+                //.antMatchers("/**").hasAnyRole("kie-server", "random") (3)
+                .antMatchers("/**").access("hasRole('kie-server') and hasRole('random')") (4)
+                .anyRequest().authenticated() (5)
+            .and().httpBasic() (6)
+            .and().headers().frameOptions().disable();
+    }
+    ...
+----
+
+1. authorizeRequests indicates authorisation of requests will be required for a given expression
+2. Is an example of using an 'AntMatcher' (https://docs.spring.io/spring-security/site/docs/4.2.x/apidocs/org/springframework/security/config/annotation/web/builders/HttpSecurity.html#antMatcher-java.lang.String-) (authorization configuration applied to a specific URL pattern)
+In this case, the 'GrantedAuthority' (the authenticated user) requires a role of 'kie-server' to execute the request.
+3. An alternative example using 'hasAnyRole', whereby a GrantedAuthority requires one of many roles i.e. 'kie-server' OR 'random'
+4. Another alternative, this time stipulating multiple roles the GrantedAuthority is required to have.
+5. Finally all requests must be sucessfully authenticated
+6. Authentication is performed using BasicAuth
+
+An authenticated user that does not have the correct role mapping will receive a HTTP 403 (Forbidden) should they try to access
+a resource that is protected and they dont have the require role bindings e.g.
+
+[source,json]
+----
+{
+"timestamp": "2020-06-09T15:49:32.072+0000",
+"status": 403,
+"error": "Forbidden",
+"message": "Forbidden",
+"path": "/rest/server/containers/kie-sboot-test-kjar-1_0-SNAPSHOT/processes/SampleProcess/instances"
+}
+----
+
+##### Unauthenticated
+
+Ok, so you've demonstrated Basic Auth with and without some role authorisations layered in, how can we then go the other way and completely open the app to all requests?
+
+Unfortunately you cant just omit the `WebSecurityConfigurerAdapter` security configuration class as the KIE Server is expecting a Security Context, however you
+can easily configure Spring Security to provide the Security Context without authenticating.
+
+[source, java]
+----
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //@formatter:off
+
+                http
+                    .cors().and().csrf().disable() // Disable CORs & CSRF filters
+                    .authorizeRequests()
+                    .antMatchers("/*")
+                        .permitAll() 1
+                    .and().headers().frameOptions().disable();
+
+        // @formatter:on
+    }
+----
+
+1. PermitAll as it suggest will allow any and all requests for the given URL pattern
+
+An example of this configuration can be found in the `kie-sboot-unsecure` project using
+[source, bash]
+----
+$ mvn spring-boot:run
+----
+
+The caveat to this however, is that because no security context has been passed in the HttpServletRequest, Spring then creates an AnonymousAuthenticationToken
+and populating the SecurityContext with the user to `anonymousUser` with no designated roles (other than `ROLE_ANONYMOUS`), which is not going to get you very far i.e. Unable to action group assigned tasks, misleading reporting etc..
+
+##### Preauthenticated
+
+What we can do however, is Pre-Authenticate a user such as a designated 'Service Account' to make the KIE Server more predictable.
+Pre-Authentication can be achieved in a few different ways in Spring Security, but the easiest methods is to implement a custom Filter and add it before the security FilterChain.
+This way we can inject a customised, profile based SecurityContext, control its contents and keep it simple. Spring also allows custom UserDetailsServices, IdentityProviders etc.. so
+its worth spending the time understanding each part of the authentication flow and injecting the required logic if/when necessary.
+
+The `kie-sboot-unsecure` project provides a simple example of overriding the default AnonymousAuthenticationFilter to provide a customised user.
+The code for this filter can be viewed in : `kie-sboot-unsecure/src/main/java/com/redhat/services/filter/AnonymousAuthFilter`
+
+[source, java]
+----
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //@formatter:off
+
+                http
+                    .anonymous().authenticationFilter(new AnonymousAuthFilter()).and() // Override anonymousUser
+                    .cors().and().csrf().disable() // Disable CORs & CSRF filters
+                    .authorizeRequests()
+                    .antMatchers("/*").permitAll()
+                    .and().headers().frameOptions().disable(); // Disable X-Frame header for h2-console
+
+        // @formatter:on
+    }
+----
+
+## External Identity Provider i.e. SSO
+
+Most organisations provide User and Group details through SSO tokens. SSO protocols tend to come in 2 flavors : OIDC (Open ID Connect an extension on OAuth 2) and SAML.
+There are plenty of resources available that explain the differences between these protocols, but for this demo we'll be using RHSSO (Keycloak) who have their own comparisons:
+
+* RHSSO (7.4): https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.4/html/server_administration_guide/sso_protocols
+* Keycloak : https://www.keycloak.org/docs/latest/securing_apps/#openid-connect-vs-saml
+
+
+### RHSSO/KeyCloak Setup:
+
+There are pre-configured realms available in #TODO: Add Preconfigured Realm location#, to skip the Keycloak steps simply import the #JSON# file.
+This guide assumes RHSSO/Keycloak has been installed and configured with the desired databases etc.
+
+#### Realm
+A Realm manages a set of users, credentials, roles, and groups. A user belongs to and logs into a realm. Realms are isolated from one another and can only manage and authenticate the users that they control.
+Realms
+
+. Log Into RHSSO: http://localhost:8080/auth/admin/
+. In the top left, click `Master` dropdown and select `Add realm`
+. Name the realm `local-kie-realm`, click `Create` and the page should redirect to the new `local-kie-realm` configuraton page
+
+image::images/new-realm.png[New RHSSO Realm]
+
+*Alternatively*
+[start=3]
+. On the Create New Realm page, import the file in: `/kie-sboot-sso/src/main/resources/rhsso/local-kie-realm.json`
+
+#### Client
+
+Clients are typically representative of consuming Services/Applications to provide fine grain control i.e. independent mappings etc.
+
+##### Create the Client
+Create a new Client with the following details :
+
+* _Client ID_: `kie-sso-client`
+* _Client Protocol_: openid-connect (leave default)
+* _Root URL_: http://localhost:8090 (KIE Spring Boot URI)
+
+Click save, and again you will be redirected to the created `` client configuration page.
+
+image::images/new-client.png[New RHSSO Client]
+
+##### Configure the Client
+
+To configure the client, we have some basic requirements:
+
+1. (Optional) Make the Client private
+* Configure the following :
+** _Access Type_ : confidential,
+** _Authorization Enabled_ : ON ,
+** _Service Account_ : Enabled
+
+Click save and the `Credentials` tab will appear. You can view the *Client Secret* on this tab, which is used to connect into KeyCloak from Spring Boot.
+
+##### Create the Client Roles
+2. Click on the `Roles` tab. This will contain all of you app/client specific roles.
+* Add the following roles:
+** kie_server
+** group-a
+** group-b
+** group-c
+
+image::images/new-client-roles.png[New RHSSO Client Roles]
+
+#### Create Realm Roles
+Application accessibility is often attributed to a users affiliated roles/groups. However its difficult to manage individuals with thousands of different roles/groups,
+thus roles are typically tiered to provide fine grain control with simpler management overhead.
+
+Click `Roles` in the left side menu.
+* add the following roles:
+** `kie-server-user-role`
+** `kie-server-admin-role`
+
+image::images/new-realm-roles.png[New RHSSO Realm Roles]
+
+. Once created, click on `kie-server-admin-role` & select `Composite Roles` to *on*.
+. Under _Composit Roles_ > _Realm Roles_ > _Available Roles_ add `kie_server_user-role`, this will mean `kie-server-admin-role` inherits all `kie-server-user-role` roles.
+. Under _Composit Roles_ > _Clients Roles_ > _kie-sso-client_ add `Administrators` and `group-c`,
+
+image::images/kie-server-admin-role-mapping.png[kie-server-admin-role Mappings]
+
+Perform the same actions for `kie-server-user-role`
+
+. Once created, click on `kie-server-user-role` & select `Composite Roles` to *on*.
+. Under _Composit Roles_ > _Clients Roles_ > _kie-sso-client_ add `kie-server`, `group-a` and `group-b`,
+
+image::images/kie-server-user-role-after.png[kie-server-user-role Mappings]
+
+
+#### Map Realm Roles to Client Roles
+
+#### Create local Users
+Typically users and group information would be obtains via Active Directory via LDAP or another Identity Provider. In this case we are simply creating a local user
+within KeyCloak without having to chain multiple complex systems together.
+
+Click `Users` in the left side menu
+
+* add the following users:
+** `kie-server-user`
+** `kie-server-admin`
+
+Once created set the following on both accounts:
+
+. Under _Credentials_ > _Temporary_ > *off*
+. Set `Password` and `Password Connfirmation` to something memorable
+. `kie-server-user` : Under _Role Mappings_ > _Available Roles_ > `kie-server-user-role` and add it to `Assigned Roles`
+. `kie-server-admin` : Under _Role Mappings_ > _Available Roles_ > `kie-server-admin-role` and add it to `Assigned Roles`.
+.. You should see `kie-server-user-role` added automatically to the _Effective Roles_ section
+
+image::images/kie-server-admin-effective.png[kie-server-admin-role Effective Roles]
+
+#### Test RHSSO/KeyCloak Token
+
+OIDC Tokens can be obtained using the following URL structure:
+
+```
+http://<HOST>:<PORT>/auth/realms/<REALM>/protocol/openid-connect/token
+```
+
+or
+
+```
+http://localhost:8080/auth/realms/local-kie-realm/protocol/openid-connect/token
+```
+
+Using the *Client ID* mentioned above, we can use a cURL request like so to obtain a token using the following structure:
+
+[source,bash]
+----
+curl --X POST 'http://<HOST>:<PORT>/auth/realms/<REALM>/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=password' \
+--data-urlencode 'client_id=<CLIENT_ID>' \
+--data-urlencode 'username=<USERNAME>' \
+--data-urlencode 'password=<PASSWORD>' \
+--data-urlencode 'client_secret=<CLIENT_SECRET>'
+----
+
+
+[source,bash]
+----
+curl --X POST 'http://localhost:8080/auth/realms/local-kie-realm/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=password' \
+--data-urlencode 'client_id=kie-sso-client' \
+--data-urlencode 'username=kie-server-user' \
+--data-urlencode 'password=password' \
+--data-urlencode 'client_secret=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+----
+
+Once you've obtained a token, you can easily inspect its contents at somewhere like : https://jwt.io/
+
+For example a `kie-server-admin` token resolved like so :
+
+[source,json]
+----
+{
+  "exp": 1593450824, // Expiry
+  "iat": 1593450524, // Issued At Time
+  "jti": "ec2da667-4ed9-4872-8519-33bc66ee53df",
+  "iss": "http://localhost:8080/auth/realms/local-kie-realm",
+  "aud": "account",
+  "sub": "01c94254-a5b6-4e2a-8aa1-49af44c47c60",
+  "typ": "Bearer",
+  "azp": "kie-sso-client",
+  "session_state": "32b20b57-4c64-49f2-9032-789e97581dbc",
+  "acr": "1",
+  "allowed-origins": [
+    "http://localhost:8090"
+  ],
+  "realm_access": {
+    "roles": [
+      "kie-server-admin-role",
+      "kie-server-user-role",
+      "offline_access",
+      "uma_authorization"
+    ]
+  },
+  "resource_access": {
+    "kie-sso-client": {
+      "roles": [
+        "group-c",
+        "group-b",
+        "Administrators",
+        "kie-server",
+        "group-a"
+      ]
+    },
+    "account": {
+      "roles": [
+        "manage-account",
+        "manage-account-links",
+        "view-profile"
+      ]
+    }
+  },
+  "scope": "email profile",
+  "email_verified": true,
+  "name": "Jane Doe",
+  "preferred_username": "kie-server-admin",
+  "given_name": "Jane",
+  "family_name": "Doe",
+  "email": "admin@redhat.com"
+}
+----
+
+### RHSSO/KeyCloak Spring Boot
+
+The `KeycloakWebSecurityConfigurerAdapter` simplifies integrating KeyCloak/RHSSO with Spring Security.
+
+Our parent POM uses the KeyCloak BOM for dependency management:
+
+[source,xml]
+----
+<properties>
+     <version.org.keycloak>9.0.3.redhat-00002</version.org.keycloak>
+</properties>
+
+<dependencyManagement>
+   <dependencies>
+        <dependency>
+            <groupId>org.keycloak.bom</groupId>
+            <artifactId>keycloak-adapter-bom</artifactId>
+            <version>${version.org.keycloak}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        ...
+    </dependencies>
+</dependencyManagement>
+----
+
+Then in our project we can simply use the KeyCloak starter dependency:
+[source,xml]
+----
+
+<dependencies>
+    <!-- SSO - KeyCloak -->
+    <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-spring-boot-starter</artifactId>
+        <exclusions>
+            <exclusion>
+                <artifactId>commons-logging</artifactId>
+                <groupId>commons-logging</groupId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    ...
+</dependencies>
+----
+
+Finally we add the RHSSO/KeyCloak details into our spring properties i.e. `application.[properties/yaml]`. This will allow the `KeycloakWebSecurityConfigurerAdapter` to construct
+the correct URI and params to obtain a token from our RHSSO/KeyCloak instance.
+
+[source,yaml]
+----
+keycloak:
+  auth-server-url: http://localhost:8080/auth
+  realm: local-kie-realm
+  resource: kie-sso-client
+  public-client: true
+  principal-attribute: preferred_username
+  enable-basic-auth: false
+  credentials:
+    secret: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+  use-resource-role-mappings: true
+  bearer-only: true
+----
+
+##### RHSSO/KeyCloak KeycloakWebSecurityConfigurerAdapter implementation
+
+From a code perspective, we our mostly using OOTB, default code. There is minimal amounts required, which can be viewed in the `SSOWebSecurityConfig` in the `kie-sboot-sso` project.
+
+[source,java]
+----
+@Configuration("kieServerSecurity")
+@EnableWebSecurity(debug=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+public class SSOWebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
+
+    @Override
+    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        super.configure(http);
+        // @formatter:off
+        http
+            .csrf().disable()
+            .authorizeRequests()
+            .anyRequest().hasRole("kie-server")
+            .and().headers().frameOptions().disable();
+        // @formatter:on
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
+        SimpleAuthorityMapper mapper = new SimpleAuthorityMapper();
+        keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
+        auth.authenticationProvider(keycloakAuthenticationProvider);
+    }
+
+    @Bean
+    public KeycloakConfigResolver KeycloakConfigResolver() {
+        return new KeycloakSpringBootConfigResolver();
+    }
+
+}
+----
+
+* *SessionAuthenticationStrategy* :
+** Defines the session authentication strategy.
+** Spring Docs: https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/web/authentication/session/SessionAuthenticationStrategy.html
+
+* *configureGlobal*
+** Registers the https://github.com/keycloak/keycloak/blob/master/adapters/oidc/spring-security/src/main/java/org/keycloak/adapters/springsecurity/authentication/KeycloakAuthenticationProvider.java[`KeycloakAuthenticationProvider`] with the authentication manager.
+
+* *KeycloakConfigResolver*
+* By Default, the Spring Security Adapter looks for a keycloak.json configuration file. You can make sure it looks at the configuration provided by the Spring Boot Adapter by adding this bean
+
+* *configure*
+** As with our other authentication methods, here we define the FilterChain for our apps Authentication & Authorisation.
+** The config above simply specifies `Authenticated` users with the role `kie-server` can access the KIE API
+
+##### Test RHSSO/KeyCloak with KIE Server
+
+Ok so RHSSO & Spring boot have been successfully configured to use SSO, now we want to run some tests:
+
+* Test access KIE API with an SSO token with _kie-server_ role
+* Test access to KIE API with an SSO token without _kie-server_ role
+* Test task group Assignments
+
+###### Test RHSSO/KeyCloak `kie-server` Group Access
+
+. Obtain an SSO token for `kie-server-user`
+
+[source,bash]
+----
+curl --X POST 'http://localhost:8080/auth/realms/local-kie-realm/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=password' \
+--data-urlencode 'client_id=kie-sso-client' \
+--data-urlencode 'username=kie-server-user' \
+--data-urlencode 'password=password' \
+--data-urlencode 'client_secret=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+----
+
+[start=2]
+. Send a GET request to get the KIE Server details e.g. /rest/server
+.. With SpringSecurity set to `Debug` @EnableWebSecurity(debug=true), we will see the token exchange in the logs
+.. Ensure you add the SSO token to the request like so: `Authorization: Bearer xxxxx` e.g.
+
+[source,bash]
+----
+curl --location --request GET 'http://localhost:8090/rest/server' \
+--header 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJSbWpXZVdQMm03ZDRkNEhMdXREYmtQcmVmSzJHRG11b3hqZF9mWG9nSmNFIn0.eyJleHAiOjE1OTM1MTY2NTYsImlhdCI6MTU5MzUxNjM1NiwianRpIjoiMThkMjAxNDMtOGYwNy00MmUxLWE5OTItY2Y5ZDMxYjgxOWIzIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2xvY2FsLWtpZS1yZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwMWM5NDI1NC1hNWI2LTRlMmEtOGFhMS00OWFmNDRjNDdjNjAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJraWUtc3NvLWNsaWVudCIsInNlc3Npb25fc3RhdGUiOiI0ZDgyMDVjMi1kN2ZiLTQ1NmUtYmE1My03Y2E0NDE2MzI1MzQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA5MCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsia2llLXNlcnZlci1hZG1pbi1yb2xlIiwia2llLXNlcnZlci11c2VyLXJvbGUiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsia2llLXNzby1jbGllbnQiOnsicm9sZXMiOlsiZ3JvdXAtYyIsImdyb3VwLWIiLCJBZG1pbmlzdHJhdG9ycyIsImtpZS1zZXJ2ZXIiLCJncm91cC1hIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkphbmUgRG9lIiwicHJlZmVycmVkX3VzZXJuYW1lIjoia2llLXNlcnZlci1hZG1pbiIsImdpdmVuX25hbWUiOiJKYW5lIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJlbWFpbCI6ImFkbWluQHJlZGhhdC5jb20ifQ.YAZsn60HLrKC7Fs5NQdJf4g1QAAk_-ZDOq20GaU6IEy_E7im5DIK5tE7ubHHyJpJgk1dyQqijCGqh64vNDrun-MeGl6oTrbVItCu1hL6m7XNGaox4TbL6-DCfD9z5PIgRnZi0q_6BHl8uEwXd-ZK8pY-Lv1h4j2JIwrCZ9uti0OpgL1mPzx1dqN48R1W9TK_ugvdkH6uGG_eKcrKwxYq1qeesWgzUUhDffiCwONQZ_yB359R5qQf8S6IG_R6GPXkge0k8Ye3k1f90N02B0HEASj1LFGcHqIm6F_MXFEWxoOE63ngA16n1QjIjXyXEZPYGg6mMSeI3hprqNMjIPtRhw'
+----
+
+*RESPONSE* :
+
+[source, json]
+----
+{
+  "type": "SUCCESS",
+  "msg": "Kie Server info",
+  "result": {
+    "kie-server-info": {
+      "id": "kie-sboot-service",
+      "version": "7.33.0.Final-redhat-00003",
+      "name": "kie-sboot-service",
+      "location": "http://localhost:8090/rest/server",
+      "capabilities": [
+        "KieServer",
+        "BRM",
+        "BPM",
+        "CaseMgmt",
+        "BPM-UI",
+        "DMN"
+      ],
+      "messages": [
+        {
+          "severity": "INFO",
+          "timestamp": {
+            "java.util.Date": 1593515303593
+          },
+          "content": [
+            "Server KieServerInfo{serverId='kie-sboot-service', version='7.33.0.Final-redhat-00003', name='kie-sboot-service', location='http://localhost:8090/rest/server', capabilities=[KieServer, BRM, BPM, CaseMgmt, BPM-UI, DMN]', messages=null', mode=DEVELOPMENT}started successfully at Tue Jun 30 12:08:23 BST 2020"
+          ]
+        }
+      ],
+      "mode": "DEVELOPMENT"
+    }
+  }
+}
+----
+
+[start=3]
+. Login to RHSSO/KeyCloak
+. Click _locan-kie-realm_ > _Roles_ > 'kie-server-user-role' > _Composite Roles_ > _Client Roles_ > `kie-sso-client` > Remove `kie-server` role from _Associated Roles_.
+. Obtain a new Token for 'kie-server-admin'
+. Attempt to Send a GET request to get the KIE Server details e.g. /rest/server
+. We can confirm RHSSO access control is working as expected, you will receive a HTTP-403 Forbidden response:
+
+[source,json]
+----
+{
+    "timestamp": "2020-06-30T11:31:40.188+0000",
+    "status": 403,
+    "error": "Forbidden",
+    "message": "Forbidden",
+    "path": "/rest/server"
+}
+----
+
+[start=8]
+. Add `kie-server` back to associate roles of `kie-server-user-role`
+..Login to RHSSO/KeyCloak
+.. Click _locan-kie-realm_ > _Roles_ > 'kie-server-user-role' > _Composite Roles_ > _Client Roles_ > `kie-sso-client` > Add `kie-server` role to _Associated Roles_.
+
+###### Test RHSSO/KeyCloak Task Group Access
+
+. Obtain an SSO token for `kie-server-user`
+
+[source,bash]
+----
+curl --X POST 'http://localhost:8080/auth/realms/local-kie-realm/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=password' \
+--data-urlencode 'client_id=kie-sso-client' \
+--data-urlencode 'username=kie-server-user' \
+--data-urlencode 'password=password' \
+--data-urlencode 'client_secret=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+----
+
+[start=2]
+. Send a POST request to the KIE Server
+.. We'll try and create a new Process Instance
+.. With SpringSecurity set to `Debug` @EnableWebSecurity(debug=true), we will see the token exchange in the logs
+.. Ensure you add the SSO token to the request like so: `Authorization: Bearer xxxxx` e.g.
+
+[source,bash]
+----
+curl --X POST 'http://localhost:8090/rest/server/containers/kie-sboot-test-kjar-1_0-SNAPSHOT/processes/SampleProcess/instances' \
+--header 'Content-Type: application/json' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJSbWpXZVdQMm03ZDRkNEhMdXREYmtQcmVmSzJHRG11b3hqZF9mWG9nSmNFIn0.eyJleHAiOjE1OTM0NTE1NDMsImlhdCI6MTU5MzQ1MTI0MywianRpIjoiM2Y4NDZmZTEtMjFlOS00ZGM1LWE1YTMtOTRjOWY0NzE2NmFlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2xvY2FsLWtpZS1yZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwMWM5NDI1NC1hNWI2LTRlMmEtOGFhMS00OWFmNDRjNDdjNjAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJraWUtc3NvLWNsaWVudCIsInNlc3Npb25fc3RhdGUiOiIzZGE2ODI5Yy03MjQ4LTQwY2EtODFiNi1hMzVhM2I3YmU2YTYiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA5MCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsia2llLXNlcnZlci1hZG1pbi1yb2xlIiwia2llLXNlcnZlci11c2VyLXJvbGUiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsia2llLXNzby1jbGllbnQiOnsicm9sZXMiOlsiZ3JvdXAtYyIsImdyb3VwLWIiLCJBZG1pbmlzdHJhdG9ycyIsImtpZS1zZXJ2ZXIiLCJncm91cC1hIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkphbmUgRG9lIiwicHJlZmVycmVkX3VzZXJuYW1lIjoia2llLXNlcnZlci1hZG1pbiIsImdpdmVuX25hbWUiOiJKYW5lIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJlbWFpbCI6ImFkbWluQHJlZGhhdC5jb20ifQ.IpRxNFnUIQqglBASp-4Mf4tyA4tbCARXetYCaaZMLbfO7koATXTAX5AOxvyY8p0YOVB4W4BHlcefb8LybkM02yj1gHnlixA3AV4jX7kRgIHDOkXbGGMLk08uLMrFsZ0JJQ28ENdqxw6xVnOv6qBMk4jGsra-tkLUbRJ5zQQI1Ec-kOtJEsXuRGzKvijTo9TGfCIpWZ4rVSgqMlxUgzNx3wCvkyaCbC3-JQ8USk71WsH8roHizezrJWPQEfqpcp9eSiC_KCXZn7wSG88NS7trjmg3kPJ-ib_r1OKqPLze7lL9l3_XUHL0ORufA8zj4MqMoDeAZo3En4XgLFyMxeY67A' \
+--data-raw ' {
+	"groups" : "group-c"
+ }'
+----
+
+NOTE: A successful request will return and Integer, which is the process instance ID.
+
+. Test Task `Potential-Owners` endpoint we should see *no* Tasks available, since we used `group-c` in the payload.
+
+*REQUEST:*
+[source,bash]
+----
+curl --X GET 'http://localhost:8090/rest/server/queries/tasks/instances/pot-owners' \
+--header 'Authorization: Bearer xxxx' \
+--header 'Accept: application/json'
+----
+
+*RESPONSE:*
+[source,json]
+----
+{
+  "task-summary": []
+}
+----
+
+[start=3]
+. Create a new Process Instance but with the payload:
+[source,json]
+----
+{
+  "groups" : "group-a"
+}
+----
+
+[start=4]
+. Resend the Task `Potential Owners` request, you should now see a *single* task, meaning the KIE Server is resolving groups correctly:
+
+*REQUEST:*
+[source,bash]
+----
+curl --X GET 'http://localhost:8090/rest/server/queries/tasks/instances/pot-owners' \
+--header 'Authorization: Bearer xxxx' \
+--header 'Accept: application/json'
+----
+
+*RESPONSE:*
+[source,json]
+----
+{
+  "task-summary": [
+    {
+      "task-id": 3,
+      "task-name": "Test Task",
+      "task-subject": "",
+      "task-description": "",
+      "task-status": "Ready",
+      "task-priority": 0,
+      "task-is-skipable": false,
+      "task-actual-owner": null,
+      "task-created-by": null,
+      "task-created-on": {
+        "java.util.Date": 1593515846554
+      },
+      "task-activation-time": {
+        "java.util.Date": 1593515846554
+      },
+      "task-expiration-time": null,
+      "task-proc-inst-id": 3,
+      "task-proc-def-id": "SampleProcess",
+      "task-container-id": "kie-sboot-test-kjar-1_0-SNAPSHOT",
+      "task-parent-id": -1
+    }
+  ]
+}
+----
+
+[start=5]
+. Obtain a token as `kie-server-admin`
+. Resend the Task `Potential Owners` request, you should now see a *multiple* tasks, as `kie-server-admin` has the composite role assignments:
+
+*REQUEST:*
+[source,bash]
+----
+curl --X GET 'http://localhost:8090/rest/server/queries/tasks/instances/pot-owners' \
+--header 'Authorization: Bearer xxxx' \
+--header 'Accept: application/json'
+----
+
+*RESPONSE:*
+[source,json]
+----
+{
+  "task-summary": [
+    {
+      "task-id": 3,
+      "task-name": "Test Task",
+      "task-subject": "",
+      "task-description": "",
+      "task-status": "Ready",
+      "task-priority": 0,
+      "task-is-skipable": false,
+      "task-actual-owner": null,
+      "task-created-by": null,
+      "task-created-on": {
+        "java.util.Date": 1593515846554
+      },
+      "task-activation-time": {
+        "java.util.Date": 1593515846554
+      },
+      "task-expiration-time": null,
+      "task-proc-inst-id": 3,
+      "task-proc-def-id": "SampleProcess",
+      "task-container-id": "kie-sboot-test-kjar-1_0-SNAPSHOT",
+      "task-parent-id": -1
+    },
+    {
+      "task-id": 2,
+      "task-name": "Test Task",
+      "task-subject": "",
+      "task-description": "",
+      "task-status": "Ready",
+      "task-priority": 0,
+      "task-is-skipable": false,
+      "task-actual-owner": null,
+      "task-created-by": null,
+      "task-created-on": {
+        "java.util.Date": 1593515839872
+      },
+      "task-activation-time": {
+        "java.util.Date": 1593515839872
+      },
+      "task-expiration-time": null,
+      "task-proc-inst-id": 2,
+      "task-proc-def-id": "SampleProcess",
+      "task-container-id": "kie-sboot-test-kjar-1_0-SNAPSHOT",
+      "task-parent-id": -1
+    },
+    {
+      "task-id": 1,
+      "task-name": "Test Task",
+      "task-subject": "",
+      "task-description": "",
+      "task-status": "Ready",
+      "task-priority": 0,
+      "task-is-skipable": false,
+      "task-actual-owner": null,
+      "task-created-by": null,
+      "task-created-on": {
+        "java.util.Date": 1593515312459
+      },
+      "task-activation-time": {
+        "java.util.Date": 1593515312459
+      },
+      "task-expiration-time": null,
+      "task-proc-inst-id": 1,
+      "task-proc-def-id": "SampleProcess",
+      "task-container-id": "kie-sboot-test-kjar-1_0-SNAPSHOT",
+      "task-parent-id": -1
+    }
+  ]
+}
+----
+
+### Knowledgebase
+
+Excellent explanation of Spring Security : https://www.marcobehler.com/guides/spring-security#security-examples
+
+#### Run a specific test
+----
+$ mvn clean test -Dtest=SampleProcessTest#<TEST_CASE>
+----
+
+### Useful Links:
+- Context Root: &lt;HOST&gt;:8090/rest
+- KIE Server Base : http://localhost:8090/rest/server
+- KIE Server Containers : http://localhost:8090/rest/server/containers
+- Swagger JSON: http://localhost:8090/rest/swagger.json
+- Swagger UI: http://localhost:8090/rest/api-docs?url=http://localhost:8090/rest/swagger.json
