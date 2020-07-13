@@ -36,12 +36,14 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 #
 # sanity checks on environment environment
 #
-command -v sed &> /dev/null || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
-command -v java &> /dev/null || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
-command -v unzip &> /dev/null || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
+command -v sed &> /dev/null     || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
+command -v java &> /dev/null    || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
+command -v unzip &> /dev/null   || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
 command -v sqlite3 &> /dev/null || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
+command -v grep &> /dev/null    || { echo >&2 'ERROR: grep not installed. Please install grep to continue - Aborting'; exit 1; }
+command -v awk &> /dev/null     || { echo >&2 'ERROR: awk not installed. Please install awk to continue - Aborting'; exit 1; }
 # required to checkout and built dependencies
-command -v git &> /dev/null || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
+command -v git &> /dev/null     || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
 
 # - check sed version on Mac
 if [[ "$MACOS_ON" == "yes" ]]; then
@@ -155,7 +157,7 @@ function extractConfiguration() {
 
 function randomid() {
   # longer version, seems overkill
-  #echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
+  # echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
   echo $(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')
 }
 
@@ -268,7 +270,7 @@ function prepareConfigLine() {
 }
 
 function usage() {
-echo "
+echo '
 Will install PAM on a standalone EAP node or an EAP cluster. Execute this script on each
 node that will be part of the cluster.
 
@@ -327,11 +329,28 @@ Options:
 
          - jvm_memory        : Configures the '-Xmx' parameter of JVM. Number is assumed to imply MB.
                                Example 'jvm_memory=4096' will be '-Xmx4096m'
+                               
+         - run_mode          : [ development | production ], defaults to 'development'
+                               Configure Business Central and KIE Server to run
+                               in 'development' or 'production' mode.
+                               Please refer to documentation for more information
+                               
+         - git_hook          : install named post-commit git hook implementation
+                               Currently only 'bcgithook' is supported which refers
+                               to https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                               
+         - git_hook_location : location of post-commit git hooks implementation
+                               Valid values are [ (empty) | download | path-to-bcgithook]
+                               If empty, will try to use bcgithook based on 'businessautomation-cop' repository structure.
+                               If bcgithook cannot be found, the 'businessautomation-cop' will be attempted to be
+                               cloned and the bcgithook implementation will be used if found.
+                               If not empty and not filled with 'download' the value will be taken as a path to
+                               the bcgithook implementation.
 
          Configuring an Oracle datasource
 
          - ojdbc_location    : location of the Oracle JDBC driver
-                               Example ""$PWD"/oracle_jdbc_driver/ojdbc8.jar"
+                               Example ""$PWD'/oracle_jdbc_driver/ojdbc8.jar"
 
          - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
            oracle_port,        which is of the form
@@ -367,6 +386,18 @@ Notes:
       controllerUser  kie-server,rest-all
 
     Passwords for these users will be printed at the end of the installation in stdout
+    
+  - Examples for git_hook_location
+  
+      git_hook_location value  | what is means
+      -------------------------+------------------
+           (empty)             | will look for bcgithook based on the 'businessautomation-cop' repository structure
+                               | bcgithook should be in the path '../bcgithook'
+                               | if not found at that path, 'git_hook_location' will switch to 'download'
+      -------------------------+------------------
+           download            | Will download 'businessautomation-cop' repository
+      -------------------------+------------------
+        '/path/to/bcgithook'   | Will use this path and fail if not possible
 "
 }
 
@@ -499,7 +530,13 @@ function modifyConfiguration() {
   prepareConfigLine "org.uberfire.nio.git.dir"              '${jboss.server.base.dir}/git'
   prepareConfigLine "org.uberfire.metadata.index.dir"       '${jboss.server.base.dir}/metaindex'
   prepareConfigLine "org.guvnor.m2repo.dir"                 '${jboss.server.base.dir}/kie'
-  prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'
+  if [[ "${configOptions[run_mode]}" == "development" ]]; then
+    prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'
+    prepareConfigLine "org.kie.server.mode"                   'development'
+  else # production
+    prepareConfigLine "org.guvnor.project.gav.check.disabled" 'false'
+    prepareConfigLine "org.kie.server.mode"                   'production'
+  fi
   # <property name="org.kie.server.domain" value="user_authntication_JAAS_LoginContext_domain_when_using_JMS"/>
   # check for settings.xml and (un)comment accordingly while copying settings.xml in place
   local keyPrefix="COMMENT" && [[ -r settings.xml ]] && cp settings.xml "$EAP_HOME" && keyPrefix=""
@@ -798,9 +835,40 @@ function nodeConfigSave() {
   local pi=""
   for pi in ${nodeConfig['pamInstall']}; do
     sql="insert or ignore into pamrc (installId,pamInstall,nodeName,nodeBase,nodeOffset,nodePort,controllerUrl,installDir,pamTarget,startScript,nodeCounter) values ("
-    sql="${sql}'$INSTALL_ID','$pi','${nodeConfig[nodeName]}','${nodeConfig[nodeBase]}','${nodeConfig[nodeOffset]}','${nodeConfig[nodePort]}','${nodeConfig[controllerUrl]}','$EAP_HOME','$target','${nodeConfig[startScript]}','${nodeConfig[nodeCounter]}')"
+    sql="${sql}'$INSTALL_ID','$pi','${nodeConfig[nodeName]}','${nodeConfig[nodeBase]}','${nodeConfig[nodeOffset]}','${nodeConfig[nodePort]}','${nodeConfig[controllerUrl]}','${nodeConfig[eap_location]}','$target','${nodeConfig[startScript]}','${nodeConfig[nodeCounter]}')"
     sqlite3 $CONFIG_DB "${sql};"
   done
+}
+
+function installBCGitHook() {
+  local bcloc=$(sqlite3 -line "$CONFIG_DB" "select pkey,installDir from pamrc where pamInstall='controller'" | grep installDir | awk '{ print $3; }')
+  local githookloc="$WORKDIR/../bcgithook"
+  local ghl=""
+  [[ "${configOptions[git_hook_location]}" == "1" ]] && configOptions[git_hook_location]=''
+  [[ -z "${configOptions[git_hook_location]}" ]] && [[ -d "$githookloc" ]] && cd "$githookloc" && ghl="$(pwd)" && configOptions[git_hook_location]="$ghl"
+  [[ -z "${configOptions[git_hook_location]}" ]] && configOptions[git_hook_location]="download" && sout "DOWNLOADING POST-COMMIT GIT HOOK"
+  pushd "$bcloc" &> /dev/null
+    if [[ "${configOptions[git_hook_location]}" == "download" ]]; then
+      mkdir bcgithook && cd bcgithook
+      # wget https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
+      curl -ks -L -O https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
+      unzip -qq master.zip
+      [[ -d businessautomation-cop-master/bcgithook ]] && cd businessautomation-cop-master/bcgithook && ghl="$(pwd)"
+    fi
+    if [[ -n "${configOptions[git_hook_location]}" ]] && [[ "${configOptions[git_hook_location]}" != "download" ]]; then
+      local tmp="${configOptions[git_hook_location]}"
+      sout "USING POST-COMMIT GIT HOOKS FROM $tmp"
+      [[ -d "$tmp" ]] && [[ -x "$tmp/install.sh" ]] && [[ -r "$tmp/scripts/post-commit.sh" ]] && cd "$tmp" && ghl="$(pwd)"
+    fi
+    if [[ -n "$ghl" ]]; then
+      pushd "$ghl" &> /dev/null
+        ./install.sh "$bcloc"
+      popd &> /dev/null
+    else
+      sout "WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+      summary "--- WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+    fi
+  popd &> /dev/null
 }
 
 #
@@ -955,7 +1023,10 @@ if [[ ! -z "$optO" ]]; then
     [[ -n "$k" ]] && configOptions["$k"]="${v}"
     unset tmpar
   done
-  unset tmpar multiOptions
+  tmp="${configOptions[run_mode]}"
+  configOptions[run_mode]="development"
+  [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
+  unset tmp tmpar multiOptions
 fi
 #
 [[ ! -r $EAP7_ZIP ]]      && sout "ERROR: Cannot read EAP.7 ZIP file $EAP7_ZIP -- exiting"          && exit 1;
@@ -1042,7 +1113,7 @@ if [ "$skip_install" != "yes" ]; then
       [[ "$node" -gt 1 ]] && [[ "$pamInstall" == "multi" ]] && pamInstall=kie && nodeParam=node${node}
       nodeConfig['pamInstall']=" "
       nodeParam=${nodeParam:-standalone}
-      nodeConfig['nodeName']=${nodeParam}_`randomid`
+      nodeConfig['nodeName']=${nodeParam}_$(randomid)
       nodeConfig['nodeBase']=$nodeParam
       nodeConfig['nodeCounter']=node$node
       nodeCounter=$((node-1)) && [[ "$nodeParam" == "standalone" ]] && nodeCounter=0
@@ -1095,6 +1166,8 @@ if [ "$skip_install" != "yes" ]; then
     cp -r "$EAP_HOME"/* "$EAP_LOCATION"
     rm -rf "$EAP_HOME"
   fi
+  # install post-commit git hooks
+  [[ "${configOptions[git_hook]}" == "bcgithook" ]]  && installBCGitHook
   # print summary of installation
   summary " "
   prettyPrinter "${summaryAr[@]}"

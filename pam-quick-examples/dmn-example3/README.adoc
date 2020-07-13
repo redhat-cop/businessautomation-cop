@@ -1,6 +1,6 @@
 = DMN Example 3
 
-|This example show how invoke a DMN from a process
+This example show how invoke a DMN from a process
 
 == Project 'dmn-example3-parent' details
 
@@ -49,11 +49,12 @@ dmn-example3-kie-api-remote-impl::
 * Show how invoke a DMN service from a process deployed on a remote kie-server(Implements the methods defined in *dmn-example3-kie-api*)
 dmn-example3-kjar::
 * Define the DMN used in the example
+
+image::images/DMN.png[align="center"]
+
 * Define the BPMN used in the example
 
-image::images/DMN.png[]
-
-image::images/process.png[]
+image::images/process.png[align="center"]
 
 == Configure
 IMPORTANT: To try the remote version you need an instance of kie-server up and running.

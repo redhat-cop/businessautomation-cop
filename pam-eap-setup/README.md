@@ -1,3 +1,4 @@
+﻿
 ![Build for pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20pam-eap-setup/badge.svg)
 
 # pam-setup
@@ -26,8 +27,11 @@ Supported (i.e. tested) versions:
 For details about node configuration check out [Nodes Configuration](#nodes-configuration) section at the end of this document. Also:
 
 - [Install location](#install-location)
+- [Development vs Production Mode](#development-vs-production-mode)
 - [Enabling DEBUG logging](#enabling-debug-logging)
+- [Additional configuration with pam.config](#additional-configuration)
 - [Configuring an Oracle datasource](#configuring-an-oracle-datasource)
+- [Post-commit git hooks integration](#post-commit-git-hooks-integration)
 
 ## Usage Scenarios
 
@@ -199,6 +203,24 @@ Invoke with no arguments for usage info:
 
                  - jvm_memory        : Configures the '-Xmx' parameter of JVM. Number is assumed to imply MB.
                                        Example 'jvm_memory=4096' will be '-Xmx4096m'
+                                      
+                 - run_mode          : [ development | production ], defaults to 'development'
+                                        Configure Business Central and KIE Server to run
+                                        in 'development' or 'production' mode.
+                                        Please refer to documentation for more information
+                               
+                 - git_hook          : install named post-commit git hook implementation
+                                       Currently only 'bcgithook' is supported which refers
+                                       to https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                                       
+                 - git_hook_location : location of post-commit git hooks implementation
+                                       Valid values are [ (empty) | download | path-to-bcgithook]
+                                       If empty, will try to use bcgithook based on 'businessautomation-cop' repository structure.
+                                       If bcgithook cannot be found, the 'businessautomation-cop' will be attempted to be
+                                       cloned and the bcgithook implementation will be used if found.
+                                       If not empty and not filled with 'download' the value will be taken as a path to
+                                       the bcgithook implementation.
+
 
                 Configuring an Oracle datasource
 
@@ -303,6 +325,21 @@ Example:
   - `./pam-setup.sh` will install PAM in a directory named `pam` and the startup script will be named `go_pam.sh`
   - `./pam-setup.sh -o install_dir=wick` will install PAM in a directory named `wick` and the startup script will be named `go_wick.sh`
 
+### Development vs Production Mode
+
+RHPAM can be configured in `development` or `production` mode as detailed in [Configuring the environment mode in KIE Server and Business Central](https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/html-single/packaging_and_deploying_a_red_hat_process_automation_manager_project/index#configuring-environment-mode-proc_packaging-deploying)
+
+Setting the run mode will also affect [Duplicate GAV detection in Business Central](https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.7/html-single/packaging_and_deploying_a_red_hat_process_automation_manager_project/index#project-duplicate-GAV-con_packaging-deploying)
+
+To specify the run mode of Business Central and KIE Server specify the `run_mode` option. Depending on the value specified, the following properties will be configured:
+
+| run_mode value                        | `development` | `production` |
+|:--------------------------------------|:-------------:|:------------:|
+|`org.guvnor.project.gav.check.disabled`| `true`        | `false`      |
+|`org.kie.server.mode`                  | `development` | `production` |
+
+The default `run_mode` for `pam-setup.sh` is `development`.
+
 ### Enabling DEBUG logging
 
 Enabling `debug_logging` will have the effect of placing the following defintions in your `standalone.xml` file.
@@ -324,6 +361,38 @@ Enabling `debug_logging` will have the effect of placing the following defintion
 ```
 
 This will also log login related events. The combined effect will be quite extensive amount of logging that could have a detrimental effect to performance. It is recommended that for normal operations the logging level is switched to informational level by replacing the `DEBUG` directive above with `INFO`.
+
+
+### Additional Configuration
+
+There are a multitude of properties than can be configured for Business Central and KIE Server. `pam-eap-setup` offers shortcuts for the most common of them, but there are still a lot that are left out. To include any of these extra configuration parameters file `pam.config`can be used to specify parameters that should be included.
+
+Parameters specified in the `pam.config` files are included both in Business Central as well KIE Server deployments. Each component will pick the relevant parameters so the presence of extraneous parameters in the system properties is not a problem.
+
+By default, `pam.config` has the following contents:
+
+```
+#
+# comment
+#
+brokerconfig.maxDiskUsage               95
+
+# return formatted dates in JSON respones instead of seconds
+# org.kie.server.json.format.date       true
+
+# override KIE Server ID
+# org.kie.server.id                     execution_server
+
+# LDAP: check https://access.redhat.com/solutions/5100821 
+# org.jbpm.ht.admin.user                processManager
+
+# Oracle: check https://access.redhat.com/solutions/4460791
+# org.kie.server.persistence.dialect   org.jbpm.persistence.jpa.hibernate.DisabledFollowOnLockOracle10gDialect
+```
+
+Add as many configuration parameters as required separating the parameters from its value by at least a space.
+
+Any parameters specified in `pam.config` will take precedence over ones specified by default in `pam-eap-setup` or through command line options.
 
 
 ### Configuring an Oracle datasource
@@ -360,6 +429,35 @@ System properties set also include
 - `org.kie.server.persistence.dialect` set to `org.hibernate.dialect.Oracle10gDialect`
 
 It is also advisable to check whether KB4460791 [What is the supported oracle dialect for RHPAM 7?](https://access.redhat.com/solutions/4460791) is applicable in your case. If it is, just uncomment the relevant line in the `pam.config` file and (re)run the installation.
+
+
+### Post-commit git hooks integration
+You can install a post-commit git hook implementation at the same time as installing Business Central with the following options.
+
+**NOTE**
+- At the moment these options support only the [bcgithook](https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook) implementation.
+- Support for other post-commit git hook implementations is under way
+
+| Option  | Description |
+|:--------|:------------|
+|`git_hook`| name of the git hook implementation to be installed. Currently only `bcgithook` is supported. |
+|`git_hook_location`| the location of the named `git_hook` implementation to be installed. Valid values are `[ download\|path-to-bcgithook-on-the-local-disk ]`
+
+Examples for `git_hook_location` values
+
+      git_hook_location value  | what is means
+      -------------------------+------------------------------------------------------------------------
+           (empty)             | will look for bcgithook on the local disk based on the 
+                               | 'businessautomation-cop' repository structure, which should be 
+                               | at the 'CURRENT_DIR/../bcgithook' directory
+                               | if not found at that path, 'git_hook_location' will switch to 'download'
+      -------------------------+------------------------------------------------------------------------
+           download            | Will try to download 'businessautomation-cop' repository from
+                               | https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
+                               | If succesfull the downloaded file will be uncompressed and used
+      -------------------------+------------------------------------------------------------------------
+         /path/to/bcgithook    | Will use this path and fail if bcgithook cannot be found
+
 
 ---
 > Written with [StackEdit](https://stackedit.io/).
