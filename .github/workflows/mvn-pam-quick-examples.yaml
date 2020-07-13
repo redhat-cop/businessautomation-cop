@@ -84,18 +84,6 @@ jobs:
           mvn compile --no-transfer-progress
           popd
 
-          pushd pam-quick-examples/kie-server-extended-deployment/business-application/business-application-kjar
-          mvn compile --no-transfer-progress
-          popd
-          
-          pushd pam-quick-examples/kie-server-extended-deployment/business-application/business-application-model
-          mvn compile --no-transfer-progress
-          popd
-          
-          pushd pam-quick-examples/kie-server-extended-deployment/business-application/business-application-service
-          mvn compile --no-transfer-progress
-          popd
-
           pushd pam-quick-examples/spring-boot-examples
           mvn compile --no-transfer-progress
           popd
