@@ -96,15 +96,7 @@ jobs:
           mvn compile --no-transfer-progress
           popd
 
-          pushd pam-quick-examples/spring-boot-security
-          mvn compile --no-transfer-progress
-          popd
-
-          pushd pam-quick-examples/spring-boot-seed
-          mvn compile --no-transfer-progress
-          popd
-
-          pushd pam-quick-examples/spring-boot-xa
+          pushd pam-quick-examples/spring-boot-examples
           mvn compile --no-transfer-progress
           popd
 
