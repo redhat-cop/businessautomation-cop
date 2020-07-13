@@ -2,6 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <groupId>org.redhat.services</groupId>
     <artifactId>kie-sboot-examples-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -46,6 +47,7 @@
     <modules>
         <module>kjars/example-process-kjar</module>
         <module>kie-sboot-seed</module>
+        <module>deployments/kie-sboot-deployments-spring-props</module>
         <module>security/kie-sboot-security-unsecure</module>
         <module>security/kie-sboot-security-basic-auth</module>
         <module>security/kie-sboot-security-sso</module>
