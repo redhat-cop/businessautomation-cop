@@ -103,3 +103,7 @@ jobs:
           pushd pam-quick-examples/kie-server-extensions/process-reopen-extension
           mvn install --no-transfer-progress
           popd
+          
+          pushd pam-quick-examples/integration-create-instance
+          mvn install --no-transfer-progress
+          popd
