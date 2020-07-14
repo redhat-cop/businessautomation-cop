@@ -52,6 +52,7 @@
         <module>security/kie-sboot-security-basic-auth</module>
         <module>security/kie-sboot-security-sso</module>
         <module>transactions/kie-sboot-xa-tx-db</module>
+        <module>queries/kie-sboot-advanced-query</module>
     </modules>
 
     <dependencyManagement>

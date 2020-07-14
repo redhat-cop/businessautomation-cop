@@ -1,0 +1,20 @@
+[
+  {
+    "query-name": "getAllTaskInputInstancesWithVariables",
+    "query-source": "${org.kie.server.persistence.ds}",
+    "query-expression": "select ti.*, tv.name tvname, tv.value tvvalue from AuditTaskImpl ti inner join (select tv.taskId, tv.name, tv.value from TaskVariableImpl tv where tv.type = 0 ) tv on (tv.taskId = ti.taskId)",
+    "query-target": "CUSTOM"
+  },
+  {
+    "query-name": "getAllProcessInstancesWithVariables",
+    "query-source": "${org.kie.server.persistence.ds}",
+    "query-expression": "select pil.*, v.variableId, v.value from ProcessInstanceLog pil INNER JOIN (select vil.processInstanceId ,vil.variableId, MAX(vil.ID) maxvilid  FROM VariableInstanceLog vil GROUP BY vil.processInstanceId, vil.variableId ORDER BY vil.processInstanceId)  x ON (v.variableId = x.variableId  AND v.id = x.maxvilid ) INNER JOIN VariableInstanceLog v ON (v.processInstanceId = pil.processInstanceId)",
+    "query-target": "CUSTOM"
+  },
+  {
+    "query-name": "getTasksForProcessInstance",
+    "query-source": "${org.kie.server.persistence.ds}",
+    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription, nil.sla_due_date, nil.slaCompliance from AuditTaskImpl t left join ProcessInstanceLog pil on pil.processInstanceId=t.processInstanceId left join NodeInstanceLog nil on nil.workItemId=t.workItemId",
+    "query-target": "CUSTOM"
+  }
+]
