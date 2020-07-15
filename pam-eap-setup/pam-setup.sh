@@ -46,7 +46,7 @@ command -v basename &> /dev/null || { echo >&2 'ERROR: basename not installed. P
 # required to checkout and built dependencies
 command -v curl &> /dev/null     || { echo >&2 'ERROR: curl not installed. Please install curl to continue - Aborting'; exit 1; }
 command -v git &> /dev/null     || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
-# command -v mvn &> /dev/null     || { echo >&2 'ERROR: MAVEN not installed. Please install MAVEN.3.6.2 (or later) to continue - Aborting'; exit 1; }
+command -v mvn &> /dev/null     || { echo >&2 'ERROR: MAVEN not installed. Please install MAVEN.3.6.2 (or later) to continue - Aborting'; exit 1; }
 
 # - check mvn version
 #mvnVersion=$(mvn -version | head -1 | awk '{print $3}' | tr -d '.')
