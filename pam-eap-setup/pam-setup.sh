@@ -36,14 +36,22 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 #
 # sanity checks on environment environment
 #
-command -v sed &> /dev/null     || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
-command -v java &> /dev/null    || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
-command -v unzip &> /dev/null   || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
-command -v sqlite3 &> /dev/null || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
-command -v grep &> /dev/null    || { echo >&2 'ERROR: grep not installed. Please install grep to continue - Aborting'; exit 1; }
-command -v awk &> /dev/null     || { echo >&2 'ERROR: awk not installed. Please install awk to continue - Aborting'; exit 1; }
+command -v sed &> /dev/null      || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
+command -v java &> /dev/null     || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
+command -v unzip &> /dev/null    || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
+command -v sqlite3 &> /dev/null  || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
+command -v grep &> /dev/null     || { echo >&2 'ERROR: grep not installed. Please install grep to continue - Aborting'; exit 1; }
+command -v awk &> /dev/null      || { echo >&2 'ERROR: awk not installed. Please install awk to continue - Aborting'; exit 1; }
+command -v basename &> /dev/null || { echo >&2 'ERROR: basename not installed. Please install basename to continue - Aborting'; exit 1; }
 # required to checkout and built dependencies
+command -v curl &> /dev/null     || { echo >&2 'ERROR: curl not installed. Please install curl to continue - Aborting'; exit 1; }
 command -v git &> /dev/null     || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
+# command -v mvn &> /dev/null     || { echo >&2 'ERROR: MAVEN not installed. Please install MAVEN.3.6.2 (or later) to continue - Aborting'; exit 1; }
+
+# - check mvn version
+#mvnVersion=$(mvn -version | head -1 | awk '{print $3}' | tr -d '.')
+#[[ "$mvnVersion" -lt "362" ]]     || { echo >&2 "WARNING: MAVEN version($mvnVersion) too old. Please consider upgrading to version 3.6.2 (or later)"; }
+#unset mvnvVersion
 
 # - check sed version on Mac
 if [[ "$MACOS_ON" == "yes" ]]; then
@@ -338,6 +346,8 @@ Options:
          - git_hook          : install named post-commit git hook implementation
                                Currently only 'bcgithook' is supported which refers
                                to https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                               
+                               - 'kiegroup' : the implementation found at https://github.com/kiegroup/bc-git-integration-push
                                
          - git_hook_location : location of post-commit git hooks implementation
                                Valid values are [ (empty) | download | path-to-bcgithook]
@@ -840,6 +850,51 @@ function nodeConfigSave() {
   done
 }
 
+function installKieGroupGitHook() {
+  local bcloc=$(sqlite3 -line "$CONFIG_DB" "select pkey,installDir from pamrc where pamInstall='controller'" | grep installDir | awk '{ print $3; }')
+  local ghl gver gart
+  [[ "${configOptions[git_hook_location]}" == "1" ]] && configOptions[git_hook_location]=''
+  [[ -z "${configOptions[git_hook_location]}" ]] && configOptions[git_hook_location]="download"
+  pushd "$bcloc" &> /dev/null
+    if [[ "${configOptions[git_hook_location]}" == "download" ]]; then
+      mkdir kiegroupgithook && cd kiegroupgithook
+      sout "Downloading post commit git hooks from ${bold}${blue}https://github.com/kiegroup/bc-git-integration-push/archive/master.zip${normal}"
+      curl -ks -L -O https://github.com/kiegroup/bc-git-integration-push/archive/master.zip
+      [[ -f master.zip ]] && unzip -qq master.zip
+      if [[ -d bc-git-integration-push-master ]]; then
+        sout "Building post commit git hooks from ${bold}${blue}"$PWD"${normal}"
+        pushd bc-git-integration-push-master &> /dev/null
+          mvn clean install -q
+          gver=$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)
+          gart=$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          ghl=$(find target -maxdepth 1 -iname "${gart}*${gver}*" -print0)
+          [[ -n "$ghl" ]] && [[ -r "$ghl" ]] && [[ -f "$ghl" ]] && ghl="$(pwd)/$ghl"
+        popd &> /dev/null
+      fi
+    fi
+    if [[ -n "${configOptions[git_hook_location]}" ]] && [[ "${configOptions[git_hook_location]}" != "download" ]]; then
+      local tmp="${configOptions[git_hook_location]}"
+      [[ -r "$tmp" ]] && [[ -f "$tmp" ]] && ghl="$tmp"
+    fi
+    sout "Checking for post-commit git hooks at ${bold}${blue}$ghl${normal}"
+    if [[ -n "$ghl" ]] && [[ -r "$ghl" ]] && [[ -f "$ghl" ]]; then
+      sout "Installing post-commit git hooks from ${bold}${blue}$ghl${normal}"
+      cp "$ghl" "${bcloc}/git-hooks"
+      cat << __GITHOOK > "${bcloc}/git-hooks/post-commit"
+#!/usr/bin/env bash
+
+JARFILE="${bcloc}/git-hooks/$(basename $ghl)"
+java -jar $JARFILE
+__GITHOOK
+      chmod u+x "${bcloc}/git-hooks/post-commit"
+      summary "post-commit git hooks :- ${bcloc}/git-hooks"
+    else
+      sout "WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+      summary "--- WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+    fi
+  popd &> /dev/null
+}
+
 function installBCGitHook() {
   local bcloc=$(sqlite3 -line "$CONFIG_DB" "select pkey,installDir from pamrc where pamInstall='controller'" | grep installDir | awk '{ print $3; }')
   local githookloc="$WORKDIR/../bcgithook"
@@ -850,7 +905,6 @@ function installBCGitHook() {
   pushd "$bcloc" &> /dev/null
     if [[ "${configOptions[git_hook_location]}" == "download" ]]; then
       mkdir bcgithook && cd bcgithook
-      # wget https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
       curl -ks -L -O https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
       unzip -qq master.zip
       [[ -d businessautomation-cop-master/bcgithook ]] && cd businessautomation-cop-master/bcgithook && ghl="$(pwd)"
@@ -1168,6 +1222,7 @@ if [ "$skip_install" != "yes" ]; then
   fi
   # install post-commit git hooks
   [[ "${configOptions[git_hook]}" == "bcgithook" ]]  && installBCGitHook
+  [[ "${configOptions[git_hook]}" == "kiegroup" ]]  && installKieGroupGitHook
   # print summary of installation
   summary " "
   prettyPrinter "${summaryAr[@]}"
