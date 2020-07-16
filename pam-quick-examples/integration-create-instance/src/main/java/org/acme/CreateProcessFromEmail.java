@@ -33,6 +33,12 @@ public class CreateProcessFromEmail extends RouteBuilder {
             .process(this::handleHttpFailure)
             .to("log:ExternalConnectionError?level=ERROR");
 
+         //Starts a case based on the presence on a file within a specified directory. The configuration for the directory location is stored in the application.properties file.
+         from("file://{{test.data.input.dir}}/?recursive=true").autoStartup("{{start.file.poller}}")
+            .to("file://{{test.data.processed.dir}}")
+            .log(LoggingLevel.INFO, "New file read")
+            .to("direct:createBusinessProcess");
+
         //Starts a case based on a timer. Timer value  is specified in the application.properties file.
         from("timer:foo?period={{timer.period}}").autoStartup("{{start.timer.poller}}")
             .log(LoggingLevel.INFO, "Timer event triggered.")

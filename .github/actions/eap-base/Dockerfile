@@ -9,7 +9,7 @@ LABEL "com.github.actions.description"="Action to run Red Hat EAP"
 LABEL "com.github.actions.branding.icon"="monitor"
 LABEL "com.github.actions.branding.color"="purple"
 
-RUN microdnf install --assumeyes --nodocs tar wget git zip java-1.8.0-openjdk sqlite findutils && \
+RUN microdnf install --assumeyes --nodocs tar wget git zip java-1.8.0-openjdk sqlite findutils curl maven && \
     microdnf clean all
 
 ADD entrypoint.sh /entrypoint.sh
