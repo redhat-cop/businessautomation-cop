@@ -6,6 +6,7 @@
         <groupId>org.redhat.services</groupId>
         <artifactId>kie-sboot-examples-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>bpms-example-model</artifactId>
