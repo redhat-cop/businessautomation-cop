@@ -64,3 +64,12 @@ spring:
   jta:
     narayana:
       transaction-manager-id: 1
+
+narayana:
+  dbcp:
+    enabled: true
+    maxTotal: 20
+
+logging:
+  level:
+    org.kie.server.client: DEBUG

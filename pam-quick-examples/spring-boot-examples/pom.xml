@@ -45,6 +45,7 @@
     </properties>
 
     <modules>
+        <module>utils/bpms-example-model</module>
         <module>kjars/example-process-kjar</module>
         <module>kie-sboot-seed</module>
         <module>deployments/kie-sboot-deployments-spring-props</module>

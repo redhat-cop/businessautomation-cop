@@ -38,6 +38,20 @@ public class TestWorkflowConstant {
         String SAMPLE_PROCESS_ID = "SampleProcess";
     }
 
+    public interface PROCESS_STATE {
+        static int STATE_ABORTED = 3;
+        static int	STATE_ACTIVE = 1;
+        static int	STATE_COMPLETED = 2;
+        static int	STATE_PENDING = 0;
+        static int	STATE_SUSPENDED = 4;
+    }
+
+    public interface QUERIES {
+        String ALL_TASKS_WITH_INPUT_VARS = "getAllTaskInputInstancesWithVariables";
+        String ALL_PROCESSES_WITH_VARS = "getAllProcessInstancesWithVariables";
+        String ALL_TASKS_PID = "getTasksForProcessInstance";
+    }
+
     /**
      * Signals to Test
      */
