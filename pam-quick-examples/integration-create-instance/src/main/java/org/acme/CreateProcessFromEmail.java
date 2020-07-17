@@ -44,6 +44,12 @@ public class CreateProcessFromEmail extends RouteBuilder {
             .log(LoggingLevel.INFO, "Timer event triggered.")
             .setBody().simple("resource:classpath:default-payload.json")
             .to("direct:createBusinessProcess");
+        
+        //Starts a case based on the reciept on an email. The email configuration settings are stored in the application.properties file.
+        from("imaps://{{email.imap.address}}?username={{email.username}}&password={{email.password}}" + "&delete=false&unseen=true").autoStartup(false)
+            .log(LoggingLevel.INFO, "Email Recieved: ${body}")
+            .setBody().simple("")
+            .to("direct:createBusinessProcess");
 
         //Simple route that creates either a process or case using the kie-server rest api.
         from("direct:createBusinessProcess")
