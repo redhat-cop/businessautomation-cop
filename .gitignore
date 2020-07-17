@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/git,java,maven,eclipse,intellij,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=git,java,maven,eclipse,intellij,visualstudiocode
 
@@ -225,3 +224,6 @@ buildNumber.properties
 .history
 
 # End of https://www.gitignore.io/api/git,java,maven,eclipse,intellij,visualstudiocode
+
+# macOS
+.DS_Store
