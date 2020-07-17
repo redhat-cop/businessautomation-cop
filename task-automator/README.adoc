@@ -1,0 +1,39 @@
+### Environment variables
+|===
+|Variable|Default|Description
+
+|`PAM_BASE_URL`
+|`http://127.0.0.1:8080/kie-server/services/rest/server`
+|The Kie Server REST interface
+
+|`PAM_CONTAINER_ID`
+|`kafka-jbpm-process_1.0.18-SNAPSHOT`
+|The container ID of the process
+
+|`BATCH_SIZE`
+|`20`
+|The amount of tasks to approve per run
+
+|`JBPM_USERNAME`
+|`wbadmin`
+|The username with permissions to access the server using the REST interface
+
+|`JBPM_PASSWORD`
+|`wbadmin`
+|The password of the user
+
+|`RESPONSE_WAIT`
+|`5000`
+|The time to wait, is ms, between steps "claiming tasks", "starting tasks" and "completing tasks"
+|===
+
+### Command-line usage example:
+```
+export PAM_BASE_URL=http://127.0.0.1:8080/kie-server/services/rest/server
+export PAM_CONTAINER_ID=kafka-jbpm-process_1.0.Final
+export BATCH_SIZE=20
+export JBPM_USERNAME=wbadmin
+export JBPM_PASSWORD=wbadmin
+export RESPONSE_WAIT=5000
+java -jar task-automator-with-dependencies.jar
+```
