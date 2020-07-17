@@ -1,4 +1,7 @@
 ﻿
+
+
+
 ![Build for pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20pam-eap-setup/badge.svg)
 
 # pam-setup
@@ -32,6 +35,8 @@ For details about node configuration check out [Nodes Configuration](#nodes-conf
 - [Additional configuration with pam.config](#additional-configuration)
 - [Configuring an Oracle datasource](#configuring-an-oracle-datasource)
 - [Post-commit git hooks integration](#post-commit-git-hooks-integration)
+	- [for bcgithook](#for-bcgithook)
+	- [for kiegroup](#for-kiegroup)
 
 ## Usage Scenarios
 
@@ -210,16 +215,14 @@ Invoke with no arguments for usage info:
                                         Please refer to documentation for more information
                                
                  - git_hook          : install named post-commit git hook implementation
-                                       Currently only 'bcgithook' is supported which refers
-                                       to https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                                      Supported implementations are:
+                                       - 'bcgithook' : from https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                                       - 'kiegroup'  : from https://github.com/kiegroup/bc-git-integration-push
                                        
                  - git_hook_location : location of post-commit git hooks implementation
-                                       Valid values are [ (empty) | download | path-to-bcgithook]
-                                       If empty, will try to use bcgithook based on 'businessautomation-cop' repository structure.
-                                       If bcgithook cannot be found, the 'businessautomation-cop' will be attempted to be
-                                       cloned and the bcgithook implementation will be used if found.
-                                       If not empty and not filled with 'download' the value will be taken as a path to
-                                       the bcgithook implementation.
+                                       Valid values are [ (empty) | download | path-to-githook]
+                                       Please refer to the documentation for valid values
+                                       'git_hook_location' is only taken into account if 'git_hook' has a valid value
 
 
                 Configuring an Oracle datasource
@@ -434,16 +437,23 @@ It is also advisable to check whether KB4460791 [What is the supported oracle di
 ### Post-commit git hooks integration
 You can install a post-commit git hook implementation at the same time as installing Business Central with the following options.
 
-**NOTE**
-- At the moment these options support only the [bcgithook](https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook) implementation.
-- Support for other post-commit git hook implementations is under way
+The following post-commit git hook implementation are supported:
+- [bcgithook](https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook)
+- [kiegroup](https://github.com/kiegroup/bc-git-integration-push)
+
+> **IMPORTANT**
+> Additional configuration is required after installing a git hook. Please refer to the respective documentation for configuring the installed post-commit git gooks.
+>  
+>  Installation of the post-commit git hooks is attempted after finishing the RHPAM installation. In case the git hook integration fails RHPAM would still be fully functional, albeit without post-commit git hooks. 
 
 | Option  | Description |
 |:--------|:------------|
-|`git_hook`| name of the git hook implementation to be installed. Currently only `bcgithook` is supported. |
-|`git_hook_location`| the location of the named `git_hook` implementation to be installed. Valid values are `[ download\|path-to-bcgithook-on-the-local-disk ]`
+|`git_hook`| name of the git hook implementation to be installed, either `bcgithook` or `kiegroup`. |
+|`git_hook_location`| the location of the named `git_hook` implementation to be installed.<br>Valid values are `[ download\|path-on-the-local-disk ]`. <br>`git_hook_location` is only taken into account if `git_hook` location has a valid value |
 
 Examples for `git_hook_location` values
+
+#### for bcgithook
 
       git_hook_location value  | what is means
       -------------------------+------------------------------------------------------------------------
@@ -457,6 +467,25 @@ Examples for `git_hook_location` values
                                | If succesfull the downloaded file will be uncompressed and used
       -------------------------+------------------------------------------------------------------------
          /path/to/bcgithook    | Will use this path and fail if bcgithook cannot be found
+
+#### for kiegroup
+
+* It is recommended that the kiegroup implementation is downloaded and built beforehand as pam-eap-setup cannot recover a built process if it does not work for whatever reason or the artefact cannot be located.
+
+
+      git_hook_location value   | what is means
+      --------------------------+------------------------------------------------------------------------
+           (empty)              | same as 'download' 
+      --------------------------+------------------------------------------------------------------------
+           download             | Will try to download the implementation repository from
+                                | https://github.com/kiegroup/bc-git-integration-push/archive/master.zip
+                                | If succesfull the downloaded file will be uncompressed, built through 
+                                | maven and used.
+      --------------------------+------------------------------------------------------------------------
+         /path/to/kiegroup .JAR | The path where the binary artefact of the implementation can be found
+                                | The path should point at the .JAR that results from builting the kiegroup
+                                | implementation
+
 
 
 ---
