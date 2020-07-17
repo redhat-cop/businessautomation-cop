@@ -1,0 +1,35 @@
+### Environment variables
+|===
+|Variable|Default|Description
+
+|`PAM_BASE_URL`
+|`http://127.0.0.1:8080/kie-server/services/rest/server`
+|The Kie Server REST interface
+
+|`PAM_CONTAINER_ID`
+|`kafka-jbpm-process_1.0.18-SNAPSHOT`
+|The container ID of the process
+
+|`PAM_PROCESS_INSTANCE_ID`
+|`kafka-jbpm-process.claimfund-process`
+|The instance ID of the process
+
+|`JBPM_USERNAME`
+|`wbadmin`
+|The username with permissions to access the server using the REST interface
+
+|`JBPM_PASSWORD`
+|`wbadmin`
+|The password of the user
+|===
+
+### Command-line usage example:
+Default number of items: `10`
+```
+export PAM_BASE_URL=http://127.0.0.1:8080/kie-server/services/rest/server
+export PAM_CONTAINER_ID=kafka-jbpm-process_1.0.Final
+export PAM_PROCESS_INSTANCE_ID=kafka-jbpm-process.claimfund-process
+export JBPM_USERNAME=wbadmin
+export JBPM_PASSWORD=wbadmin
+java -jar data-generator-with-dependencies.jar [number of items]
+```
