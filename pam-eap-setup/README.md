@@ -36,6 +36,7 @@ For details about node configuration check out [Nodes Configuration](#nodes-conf
 - [Configuring an Oracle datasource](#configuring-an-oracle-datasource)
 - [Post-commit git hooks integration](#post-commit-git-hooks-integration)
 	- [for bcgithook](#for-bcgithook)
+	- [for kiegroup](#for-kiegroup)
 
 ## Usage Scenarios
 
