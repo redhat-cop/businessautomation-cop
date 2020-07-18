@@ -344,18 +344,14 @@ Options:
                                Please refer to documentation for more information
                                
          - git_hook          : install named post-commit git hook implementation
-                               Currently only 'bcgithook' is supported which refers
-                               to https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
-                               
-                               - 'kiegroup' : the implementation found at https://github.com/kiegroup/bc-git-integration-push
+                              Supported implementations are:
+                               - 'bcgithook' : from https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                               - 'kiegroup'  : from https://github.com/kiegroup/bc-git-integration-push
                                
          - git_hook_location : location of post-commit git hooks implementation
-                               Valid values are [ (empty) | download | path-to-bcgithook]
-                               If empty, will try to use bcgithook based on 'businessautomation-cop' repository structure.
-                               If bcgithook cannot be found, the 'businessautomation-cop' will be attempted to be
-                               cloned and the bcgithook implementation will be used if found.
-                               If not empty and not filled with 'download' the value will be taken as a path to
-                               the bcgithook implementation.
+                               Valid values are [ (empty) | download | path-to-githook]
+                               Please refer to the documentation for valid values
+                               'git_hook_location' is only taken into account if 'git_hook' has a valid value
 
          Configuring an Oracle datasource
 

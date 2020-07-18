@@ -1,0 +1,28 @@
+[
+        [
+            "name" : "KafkaPublish",
+            "displayName" : "KafkaPublish",
+            "category" : "kafka-workitem",
+            "description" : "",
+            "defaultHandler" : "mvel: new org.jbpm.process.workitem.kafka.KafkaWorkItemHandler(\"bootstrapServers\", \"clientId\", \"keySerializerClass\", \"valueSerializerClass\")",
+            "documentation" : "kafka-workitem/index.html",
+
+            "parameters" : [
+                                "Value" : new StringDataType()
+                ,"Topic" : new StringDataType()
+                ,"Key" : new StringDataType()
+
+            ],
+            "results" : [
+                                "Result" : new StringDataType()
+
+            ],
+            "mavenDependencies" : [
+                                 "org.jbpm.contrib:kafka-workitem:7.20.0-SNAPSHOT"
+
+            ],
+            "icon" : "KafkaPublish.png"
+
+        ]
+
+]
