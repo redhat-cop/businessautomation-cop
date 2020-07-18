@@ -30,6 +30,7 @@ kieserver:
   swagger:
     enabled: true
 
+
 # KJars to deploy
 deployment:
   kjars:
@@ -56,6 +57,7 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
+      entity-scan-packages: org.redhat.services.model,org.drools.persistence.jpa.marshaller
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         hbm2ddl:

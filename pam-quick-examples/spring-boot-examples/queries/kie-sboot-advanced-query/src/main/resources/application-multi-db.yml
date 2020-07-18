@@ -1,0 +1,42 @@
+# Second / Custom Datasource Config
+kie:
+  spring:
+    secondary:
+      datasource:
+        pu-name: org.jbpm.audit.persistence.jpa
+        driver-class-name: org.h2.Driver
+        password: sa
+        username: sa
+        url: jdbc:h2:mem:audit-jbpm
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.H2Dialect
+            show_sql: true
+            max_fetch_depth: 3
+            jdbc:
+              fetch_size: 3
+            ddl-auto: update
+            id:
+              new_generator_mappings: false
+
+# Spring Container Config
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    password: sa
+    username: sa
+    url: jdbc:h2:mem:kieserver
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+ #     entity-scan-packages: com.company.model,org.drools.persistence.jpa.marshaller
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        hbm2ddl:
+          auto: update
+        show_sql: false

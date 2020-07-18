@@ -36,6 +36,7 @@ public class TestWorkflowConstant {
      */
     public interface PROCESS_ID {
         String SAMPLE_PROCESS_ID = "SampleProcess";
+        String PVP_PROCESS_ID = "VariablePersistenceProcess";
     }
 
     public interface PROCESS_STATE {
@@ -50,6 +51,7 @@ public class TestWorkflowConstant {
         String ALL_TASKS_WITH_INPUT_VARS = "getAllTaskInputInstancesWithVariables";
         String ALL_PROCESSES_WITH_VARS = "getAllProcessInstancesWithVariables";
         String ALL_TASKS_PID = "getTasksForProcessInstance";
+        String ALL_TASKS_WITH_PERSON_VAR = "getAllTaskInstancesWithPersonVariables";
     }
 
     /**
@@ -68,6 +70,7 @@ public class TestWorkflowConstant {
     public static List<String> getDefinitions() {
         definitions = new ArrayList<>();
         definitions.add(PROCESS_ID.SAMPLE_PROCESS_ID);
+        definitions.add(PROCESS_ID.PVP_PROCESS_ID);
         return definitions;
     }
 

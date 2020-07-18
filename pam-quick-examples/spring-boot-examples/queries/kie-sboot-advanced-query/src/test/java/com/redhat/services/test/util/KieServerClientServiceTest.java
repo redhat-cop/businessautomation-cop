@@ -7,6 +7,7 @@ import org.kie.server.api.marshalling.MarshallingFormat;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.KieServicesConfiguration;
 import org.kie.server.client.KieServicesFactory;
+import org.redhat.services.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -59,7 +60,7 @@ public class KieServerClientServiceTest {
         configuration.setCapabilities(capabilities);
 
         Set<Class<?>> classes = new HashSet<>();
-        //classes.add(Task.class);
+        classes.add(Person.class);
         configuration.addExtraClasses(classes);
 
         return KieServicesFactory.newKieServicesClient(configuration);

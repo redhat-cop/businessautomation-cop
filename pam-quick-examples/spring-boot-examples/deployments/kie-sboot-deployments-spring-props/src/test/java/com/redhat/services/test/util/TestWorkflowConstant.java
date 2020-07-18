@@ -36,6 +36,7 @@ public class TestWorkflowConstant {
      */
     public interface PROCESS_ID {
         String SAMPLE_PROCESS_ID = "SampleProcess";
+        String PVP_PROCESS_ID = "VariablePersistenceProcess";
     }
 
     /**
@@ -54,6 +55,7 @@ public class TestWorkflowConstant {
     public static List<String> getDefinitions() {
         definitions = new ArrayList<>();
         definitions.add(PROCESS_ID.SAMPLE_PROCESS_ID);
+        definitions.add(PROCESS_ID.PVP_PROCESS_ID);
         return definitions;
     }
 

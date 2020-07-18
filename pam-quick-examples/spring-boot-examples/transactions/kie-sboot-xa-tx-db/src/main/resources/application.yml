@@ -31,11 +31,11 @@ kieserver:
   swagger:
     enabled: true
 
-# KJars to deploy
+# Define KJARs to deploy here
 deployment:
   kjars:
     - alias: kie-sboot-test-kjar
-      artifactId: kjar
+      artifactId: example-process-kjar
       containerId: kie-sboot-test-kjar-1_0-SNAPSHOT
       groupId: org.redhat.services
       version: 0.0.1-SNAPSHOT
@@ -91,6 +91,6 @@ spring:
           auto: update
         show_sql: false
   jta:
-#   log-dir: Narayana 'Transacted-Logs' DIR, default is project root
+    #   log-dir: Narayana 'Transacted-Logs' DIR, default is project root
     narayana:
       transaction-manager-id: 1
