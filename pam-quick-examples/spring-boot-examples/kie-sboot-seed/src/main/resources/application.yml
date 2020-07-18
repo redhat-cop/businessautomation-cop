@@ -25,32 +25,17 @@ kieserver:
   jbpmui:
     enabled: true
   location: http://localhost:8090/rest/server
-  serverId: kie-sboot-service
-  serverName: kie-sboot-service
-  swagger:
-    enabled: true
+  serverId: business-application-service
+  serverName: business-application-service
 
-# KJars to deploy
-deployment:
-  kjars:
-    - alias: kie-sboot-test-kjar
-      artifactId: kjar
-      containerId: kie-sboot-test-kjar-1_0-SNAPSHOT
-      groupId: org.redhat.services
-      version: 0.0.1-SNAPSHOT
-
-# Spring Container Config
 spring:
   banner:
     location: classpath:banner.txt
   datasource:
     driver-class-name: org.h2.Driver
     password: sa
+    url: jdbc:h2:./target/spring-boot-jbpm
     username: sa
-    url: jdbc:h2:mem:kieserver
-  h2:
-    console:
-      enabled: true
   jpa:
     hibernate:
       naming:
@@ -64,3 +49,12 @@ spring:
   jta:
     narayana:
       transaction-manager-id: 1
+
+# Define KJARs to deploy here
+deployment:
+  kjars:
+    - alias: kie-sboot-test-kjar
+      artifactId: example-process-kjar
+      containerId: kie-sboot-test-kjar-1_0-SNAPSHOT
+      groupId: org.redhat.services
+      version: 0.0.1-SNAPSHOT

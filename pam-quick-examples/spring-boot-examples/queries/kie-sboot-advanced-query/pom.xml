@@ -17,6 +17,13 @@
     <description>Example KIE Spring Boot Project using Advanced Queries</description>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.redhat.services</groupId>
+            <artifactId>bpms-example-model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-server-spring-boot-starter</artifactId>
@@ -29,9 +36,16 @@
             </exclusions>
         </dependency>
 
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>${version.com.fasterxml.jackson}</version>
         </dependency>
 
         <!-- Swagger -->
@@ -91,11 +105,16 @@
             </exclusions>
         </dependency>
 
-        <!-- JSON -->
         <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${version.com.fasterxml.jackson}</version>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-persistence-jpa</artifactId>
+            <version>${version.org.kie}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

@@ -11,7 +11,7 @@
     <artifactId>example-process-kjar</artifactId>
     <packaging>kjar</packaging>
 
-    <name> KJAR :: Example Process KJAR</name>
+    <name>KIE KJAR :: Example Process KJAR</name>
     <description>Basic Process KJAR for Testing/Examples</description>
 
     <properties>
@@ -26,8 +26,7 @@
         <dependency>
             <groupId>org.redhat.services</groupId>
             <artifactId>bpms-example-model</artifactId>
-            <version>${org.redhat.services.version}</version>
-            <scope>compile</scope>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

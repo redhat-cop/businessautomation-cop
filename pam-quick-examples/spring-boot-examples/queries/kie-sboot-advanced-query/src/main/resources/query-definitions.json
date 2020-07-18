@@ -16,5 +16,13 @@
     "query-source": "${org.kie.server.persistence.ds}",
     "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription, nil.sla_due_date, nil.slaCompliance from AuditTaskImpl t left join ProcessInstanceLog pil on pil.processInstanceId=t.processInstanceId left join NodeInstanceLog nil on nil.workItemId=t.workItemId",
     "query-target": "CUSTOM"
+  },
+  {
+    "query-name": "getAllTaskInstancesWithPersonVariables",
+    "query-source": "${org.kie.server.persistence.ds}",
+    "query-expression": "select ti.*, p.age as person_age, p.name as person_name, p.surname as person_surname from AuditTaskImpl ti inner join (select mv.map_var_id, mv.taskid from MappedVariable mv) mv  on (mv.taskid = ti.taskId) inner join Person p on (p.id = mv.map_var_id)",
+    "query-target": "CUSTOM"
   }
 ]
+
+

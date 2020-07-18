@@ -10,9 +10,17 @@
     </parent>
 
     <artifactId>bpms-example-model</artifactId>
-    <name>bpms-example-model</name>
+    <name>KIE Model :: Demo/Test Domain Object Model</name>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
@@ -37,10 +45,5 @@
             <scope>provided</scope>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.jboss.resteasy</groupId>-->
-<!--            <artifactId>resteasy-jackson-provider</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
     </dependencies>
 </project>

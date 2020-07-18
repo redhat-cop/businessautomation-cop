@@ -1,4 +1,4 @@
-package org.redhat.services.model;
+    package org.redhat.services.model;
 
 import java.io.Serializable;
 

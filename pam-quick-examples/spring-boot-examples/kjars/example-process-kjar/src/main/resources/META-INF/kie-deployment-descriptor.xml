@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<deployment-descriptor xsi:schemaLocation="http://www.jboss.org/jbpm deployment-descriptor.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <persistence-unit>org.jbpm.domain</persistence-unit>
-  <audit-persistence-unit>org.jbpm.domain</audit-persistence-unit>
-  <audit-mode>JPA</audit-mode>
-  <persistence-mode>JPA</persistence-mode>
-  <runtime-strategy>PER_PROCESS_INSTANCE</runtime-strategy>
-  <marshalling-strategies/>
-  <event-listeners/>
-  <task-event-listeners/>
-  <globals/>
-  <work-item-handlers/>
-  <environment-entries/>
-  <configurations/>
-  <required-roles/>
-  <remoteable-classes/>
-  <limit-serialization-classes>true</limit-serialization-classes>
+<deployment-descriptor xsi:schemaLocation="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <persistence-unit>org.jbpm.domain</persistence-unit>
+    <audit-persistence-unit>org.jbpm.domain</audit-persistence-unit>
+    <audit-mode>JPA</audit-mode>
+    <persistence-mode>JPA</persistence-mode>
+    <runtime-strategy>PER_PROCESS_INSTANCE</runtime-strategy>
+    <marshalling-strategies>
+
+        <!-- Need method to Qualify which entityManagerFactory to use -->
+        <marshalling-strategy>
+            <resolver>mvel</resolver>
+            <identifier>new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy(entityManagerFactory)
+            </identifier>
+            <parameters/>
+        </marshalling-strategy>
+
+        <!-- Attempt to get 2nd Datasource working via PU Name == No Persistence provider for EntityManager named org.jbpm.audit.persistence.jpa -->
+        <!--                <marshalling-strategy>-->
+        <!--                    <resolver>mvel</resolver>-->
+        <!--                    <identifier>new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy("org.jbpm.audit.persistence.jpa", classLoader)</identifier>-->
+        <!--                    <parameters/>-->
+        <!--                </marshalling-strategy>-->
+    </marshalling-strategies>
+    <event-listeners/>
+    <task-event-listeners/>
+    <globals/>
+    <work-item-handlers/>
+    <environment-entries/>
+    <configurations/>
+    <required-roles/>
+    <remoteable-classes/>
+    <limit-serialization-classes>true</limit-serialization-classes>
 </deployment-descriptor>

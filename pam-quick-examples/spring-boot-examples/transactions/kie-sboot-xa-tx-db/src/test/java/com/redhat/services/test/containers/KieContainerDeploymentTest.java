@@ -32,7 +32,7 @@ public class KieContainerDeploymentTest extends KieTestUtilsIT {
     public void testDeployedProcessDefinitions() {
         List<ProcessDefinition> definitions = queryServicesClient.findProcesses(0, 100);
         assertNotNull(definitions);
-        assertEquals(1, definitions.size());
+        assertEquals(2, definitions.size());
 
         definitions.stream().forEach(d -> {
             assertTrue(TestWorkflowConstant.definitions.contains(d.getId()));
