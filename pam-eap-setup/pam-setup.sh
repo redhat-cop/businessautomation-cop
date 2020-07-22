@@ -329,6 +329,9 @@ Options:
          - nodeX_config=file : declare file with additional commands to be applied by
                                EAPs jboss-cli tool for each node installed
                                X stands for the number of each node, e.g. node1_config, node2_config, etc
+                               If the default configuration for a file is present in the addons directory
+                               and a file is specified with this option both files will be applied
+                               sequentially with the default applied first
 
          - debug_logging     : if present will set logging level to DEBUG
 
