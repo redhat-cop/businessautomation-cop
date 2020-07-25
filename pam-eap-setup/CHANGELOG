@@ -1,6 +1,10 @@
 
 # CHANGELOG
 
+-- RELEASE: 25 JULY 2020
+
+PAM: Added post-commit git hooks integration
+PAM: Updated documentation
 
 -- RELEASE: 28 MAY 2020 --
 
