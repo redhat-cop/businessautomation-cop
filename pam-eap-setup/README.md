@@ -2,6 +2,7 @@
 
 
 
+
 ![Build for pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20pam-eap-setup/badge.svg)
 
 # pam-setup
@@ -37,6 +38,7 @@ For details about node configuration check out [Nodes Configuration](#nodes-conf
 - [Post-commit git hooks integration](#post-commit-git-hooks-integration)
 	- [for bcgithook](#for-bcgithook)
 	- [for kiegroup](#for-kiegroup)
+- [Configuring EAP](#configuring-eap)
 
 ## Usage Scenarios
 
@@ -145,7 +147,7 @@ Depending on PAM version the following files are required:
 
 ## Usage
 
-Invoke with no arguments for usage info:
+Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
 
         Will install PAM on a standalone EAP node or an EAP cluster. Execute this script on each
         node that will be part of the cluster.
@@ -190,9 +192,12 @@ Invoke with no arguments for usage info:
 
                  Supported options are:
 
-                 - nodeX_config=file : declare file with additional commands to be applied by
+                 - nodeX_config=file : declare file any additional commands to be applied by
                                        EAPs jboss-cli tool for each node installed
                                        X stands for the number of each node, e.g. node1_config, node2_config, etc
+                                       If the default configuration for a file is present in the addons directory
+                                       and a file is specified with this option both files will be applied
+                                       sequentially with the default applied first
 
                  - debug_logging     : if present will set logging level to DEBUG
 
@@ -486,6 +491,24 @@ Examples for `git_hook_location` values
                                 | The path should point at the .JAR that results from builting the kiegroup
                                 | implementation
 
+
+### Configuring EAP
+`pam-eap-stup` will install RHPAM modules into a local EAP installation. Often additional configuration of EAP is required, such as installing a JDBC module or setting up LDAP authentication, etc. `pam-eap-setup` is able to configure EAP using command files you provide in the `addons` directory. These files should contain [JBoss CLI](https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.2/html-single/management_cli_guide/index) commands and will be executed while running EAP in [embedded mode](https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.2/html-single/management_cli_guide/index#running_embedded_server).
+
+By default `pam-ep-setup` will look for files named after the node it is setting up. For example, while setting up `node1` (aka `standalone`) the file `addons/node1_config` will be executed if found, `addons/node2_config` for `node2` and so on.
+
+Files containing JBoss CLI commands can also be specified with the `-nodeX_config` parameter substituting `X` for the corresponding node number. So for example:
+
+- `node1_config=ldap_configi.cli` will execute file `ldap_config.cli` while setting up `node1` (aka `standalone`)
+- `node2_config=jdbc_datasource.cli` will execute file `jdbc_datasource.cli` while setting up `node2`
+
+If both a file in the `addons` directory corresponding to a node is found and an additional file is specified with the `-nodeX_config` option, then the file in the `addons` directory will be executed first followed by the file specified in the `-nodeX_config` option. For example, if
+
+- a file named `addons/node1_config` is present, **and**
+- a file is specified with `-node1_config=jdbc_datasource.cli`
+- **then** the file `addons/node1_config` will be executed first followed by `jdbc_datasource.cli`
+
+Same for subsequent nodes by specifying `node2` for node 2, `node3` for node 3 and so on.
 
 
 ---
