@@ -44,9 +44,9 @@ command -v grep &> /dev/null     || { echo >&2 'ERROR: grep not installed. Pleas
 command -v awk &> /dev/null      || { echo >&2 'ERROR: awk not installed. Please install awk to continue - Aborting'; exit 1; }
 command -v basename &> /dev/null || { echo >&2 'ERROR: basename not installed. Please install basename to continue - Aborting'; exit 1; }
 # required to checkout and built dependencies
-command -v curl &> /dev/null     || { echo >&2 'ERROR: curl not installed. Please install curl to continue - Aborting'; exit 1; }
-command -v git &> /dev/null     || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
-command -v mvn &> /dev/null     || { echo >&2 'ERROR: MAVEN not installed. Please install MAVEN.3.6.2 (or later) to continue - Aborting'; exit 1; }
+# command -v curl &> /dev/null     || { echo >&2 'ERROR: curl not installed. Please install curl to continue - Aborting'; exit 1; }
+# command -v git &> /dev/null     || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
+# command -v mvn &> /dev/null     || { echo >&2 'ERROR: MAVEN not installed. Please install MAVEN.3.6.2 (or later) to continue - Aborting'; exit 1; }
 
 # - check mvn version
 #mvnVersion=$(mvn -version | head -1 | awk '{print $3}' | tr -d '.')
@@ -197,6 +197,13 @@ function waitForKey() {
   echo
 }
 
+function checkEnv() {
+  local sw="$1"
+  [[ "$sw" == "curl" ]] && ( command -v curl &> /dev/null || { echo >&2 'ERROR: curl not installed. Please install curl to continue - Aborting'; exit 1; } )
+  [[ "$sw" == "git" ]]  && ( command -v git &> /dev/null  || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; } )
+  [[ "$sw" == "mvn" ]]  && ( command -v mvn &> /dev/null  || { echo >&2 'ERROR: MAVEN not installed. Please install MAVEN.3.6.2 (or later) to continue - Aborting'; exit 1; } )
+}
+
 declare -a summaryAr
 function summary() {
   declare -a arr=("$@")
@@ -322,6 +329,9 @@ Options:
          - nodeX_config=file : declare file with additional commands to be applied by
                                EAPs jboss-cli tool for each node installed
                                X stands for the number of each node, e.g. node1_config, node2_config, etc
+                               If the default configuration for a file is present in the addons directory
+                               and a file is specified with this option both files will be applied
+                               sequentially with the default applied first
 
          - debug_logging     : if present will set logging level to DEBUG
 
@@ -1077,6 +1087,8 @@ if [[ ! -z "$optO" ]]; then
   configOptions[run_mode]="development"
   [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
   unset tmp tmpar multiOptions
+  [[ "${configOptions[git_hook]}" == "bcgithook" ]] && checkEnv git && checkEnv curl
+  [[ "${configOptions[git_hook]}" == "kiegroup" ]] && checkEnv git && checkEnv curl && checkEnv mvn
 fi
 #
 [[ ! -r $EAP7_ZIP ]]      && sout "ERROR: Cannot read EAP.7 ZIP file $EAP7_ZIP -- exiting"          && exit 1;
