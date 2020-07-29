@@ -53,6 +53,7 @@
         <module>security/kie-sboot-security-basic-auth</module>
         <module>security/kie-sboot-security-sso</module>
         <module>transactions/kie-sboot-xa-tx-db</module>
+        <module>persistence/kie-sboot-pvp</module>
         <module>queries/kie-sboot-advanced-query</module>
     </modules>
 
