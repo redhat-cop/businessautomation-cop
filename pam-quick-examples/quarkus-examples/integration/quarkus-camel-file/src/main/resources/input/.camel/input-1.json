@@ -1,0 +1,34 @@
+{
+    "case-data" : {
+      "activity" : {
+        "com.demo.SuspiciousActivity" : {
+          "riskRanking" : 2,
+          "transactions" : [ {
+            "com.demo.Transaction" : {
+              "amount" : 250.0,
+              "dateTimeExec" : "2020-04-08T03:49:47.927+0000",
+              "authCode" : "543",
+              "merchantName" : "Hotel BestPlace",
+              "merchantCode" : "456-654-1234",
+              "location" : "635 Sutter Street, Union Square, San Francisco, CA 94102, USA",
+              "cardType" : "secured credit"
+            }
+          }, {
+            "com.demo.Transaction" : {
+              "amount" : 550.0,
+              "dateTimeExec" : "2020-04-08T03:49:47.927+0000",
+              "authCode" : "567",
+              "merchantName" : "Hotel BestPlace",
+              "merchantCode" : "456-654-1234",
+              "location" : "635 Sutter Street, Union Square, San Francisco, CA 94102, USA",
+              "cardType" : "secured credit"
+            }
+          } ]
+        }
+      }
+    },
+    "case-user-assignments" : { },
+    "case-group-assignments" : { },
+    "case-data-restrictions" : { }
+  }
+  
