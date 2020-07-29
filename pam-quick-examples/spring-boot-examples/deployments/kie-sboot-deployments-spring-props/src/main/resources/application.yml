@@ -50,3 +50,7 @@ deployment:
       containerId: kie-sboot-test-kjar-1_0-SNAPSHOT
       groupId: org.redhat.services
       version: 0.0.1-SNAPSHOT
+
+logging:
+  level:
+    org.eclipse: TRACE
