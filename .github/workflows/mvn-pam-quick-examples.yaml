@@ -104,6 +104,6 @@ jobs:
           mvn install --no-transfer-progress
           popd
           
-          pushd pam-quick-examples/integration-create-instance
+          pushd pam-quick-examples/quarkus-examples
           mvn install --no-transfer-progress
           popd
