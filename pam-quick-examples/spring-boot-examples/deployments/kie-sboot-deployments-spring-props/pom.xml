@@ -96,13 +96,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- JSON -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${version.com.fasterxml.jackson}</version>
-        </dependency>
     </dependencies>
 
     <build>

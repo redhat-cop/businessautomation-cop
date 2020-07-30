@@ -20,8 +20,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- Product Version Mappings https://access.redhat.com/solutions/3405361 -->
-        <version.rhpam>7.7.1.redhat-00002</version.rhpam>
-        <version.org.kie>7.33.0.Final-redhat-00003</version.org.kie>
+        <version.rhpam>7.8.0.redhat-00002</version.rhpam>
+        <version.org.kie>7.39.0.Final-redhat-00005</version.org.kie>
         <version.spring.boot>2.2.2.RELEASE</version.spring.boot>
         <version.org.keycloak>9.0.3.redhat-00002</version.org.keycloak>
 
@@ -34,9 +34,6 @@
         <version.io.swagger>1.5.15</version.io.swagger>
         <version.org.webjars>3.25.0</version.org.webjars>
         <version.org.lombok>1.18.8</version.org.lombok>
-
-        <!-- Override Spring Version which cases issues -->
-        <version.com.fasterxml.jackson>2.9.8</version.com.fasterxml.jackson>
 
         <!-- Maven Plugins -->
         <compiler-plugin.version>3.7.0</compiler-plugin.version>
@@ -79,28 +76,6 @@
                 <version>${version.org.keycloak}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-
-            <!-- Override Spring Version which cases issues w/jBPM : https://issues.redhat.com/browse/JBPM-8937-->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${version.com.fasterxml.jackson}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${version.com.fasterxml.jackson}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${version.com.fasterxml.jackson}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${version.com.fasterxml.jackson}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
