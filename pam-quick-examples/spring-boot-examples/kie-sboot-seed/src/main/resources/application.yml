@@ -24,6 +24,8 @@ kieserver:
     enabled: true
   jbpmui:
     enabled: true
+  swagger:
+    enabled: true
   location: http://localhost:8090/rest/server
   serverId: business-application-service
   serverName: business-application-service
