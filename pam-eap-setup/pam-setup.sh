@@ -135,6 +135,7 @@ MASTER_CONFIG=master.conf
 # versions supported
 #
 cat << "__CONFIG" > $MASTER_CONFIG
+PAM780 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.8.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
 PAM771 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
 PAM770 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
 DM771  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.7.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.7.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
@@ -294,7 +295,7 @@ usage: $(basename "$0") [-h help]
                      -b [kie|controller|both|multi=2...], defaults to 'both'
                      [-c ip1:port1,ip2:port2,...]
                      [-s smart_router_ip:port]
-                     [-o additional_options ], specify additional options
+                     [-o additional_options[:additional_options...] ], specify additional options
 
 example: $(basename "$0") -n localhost
 
@@ -1119,7 +1120,9 @@ skip_install=no && [[ -d $INSTALL_DIR ]]  && sout "INFO: Installation detected a
 if [[ ! -z "$EAP_LOCATION" ]]; then
   eap_location_created=no
   # EAP_LOCATION="$WORKDIR/$EAP_LOCATION"
-  EAP_LOCATION=$(readlink -mn "$EAP_LOCATION")
+  # readlink coomand does nothing here as the $EAP_LOCATION does not exists at this point!
+  # do you really need '-m' option here? It does not exists on Mac...
+  #EAP_LOCATION=$(readlink -mn "$EAP_LOCATION")
   mkdir -p "$EAP_LOCATION"&>/dev/null && eap_location_created=yes
   [[ "$eap_location_created" == "no" ]] && sout "ERROR: $EAP_LOCATION CANNOT BE CREATED - ABORTING" && exit 1
 fi
