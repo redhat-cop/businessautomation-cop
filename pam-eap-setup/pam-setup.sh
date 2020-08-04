@@ -367,7 +367,7 @@ Options:
          Configuring an Oracle datasource
 
          - ojdbc_location    : location of the Oracle JDBC driver
-                               Example ""$PWD'/oracle_jdbc_driver/ojdbc8.jar"
+                               Example "$PWD'/oracle_jdbc_driver/ojdbc8.jar"
 
          - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
            oracle_port,        which is of the form
@@ -377,8 +377,20 @@ Options:
 
          - oracle_pass       : The password for the Oracle user
 
+         Configuring an PostgreSQL datasource
+
+         - ojdbc_location    : location of the Oracle JDBC driver
+                               Example "$PWD/oracle_jdbc_driver/ojdbc8.jar"
+
+         - postgresql_host,      : These variables are used for bulding the PostgreSQL JDBC connection URL
+           postgresql_port,        which is of the form
+           postgresql_sid             jdbc:postgresql://POSTGRESQL_HOST:POSTGRESQL_PORT/POSTGRESQL_SID
+
+         - postgresql_user       : The user name to be used for connecting to PostgreSQL DB
+
+         - postgresql_pass       : The password for the PostgreSQL user         
          WARNING
-         To properly configure an Oracle datasource all Oracle related
+         To properly configure a datasource all Database related
          parameters need to be specified
 
     -h : print this message
