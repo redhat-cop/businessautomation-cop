@@ -793,6 +793,21 @@ function applyAdditionalNodeConfig() {
      ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=DEBUG)' )
      ncfg+=( '/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=DEBUG)' )
   fi
+
+  if [[ ! -z "${configOptions[oracle_host]}" ]]; then
+    createOraDS
+  fi
+
+  if [[ ! -z "${configOptions[postgresql_host]}" ]]; then
+    createPgDS
+  fi
+
+  ncfg+=( "run-batch" )
+  printf '%s\n' "${ncfg[@]}"  >> "$ADDITIONAL_NODE_CONFIG"
+ }
+
+function createOraDS() {
+  sout "CREATE ${bold}${yellow}OracleDS${normal} "
   local oracle_keys="ojdbc_location oracle_host oracle_port oracle_sid oracle_user oracle_pass"
   local osum=""
   for okey in $oracle_keys; do
@@ -822,10 +837,40 @@ function applyAdditionalNodeConfig() {
     ncfg+=( "$o2" )
     ncfg+=( "$o3" )
   fi
-  ncfg+=( "run-batch" )
-  printf '%s\n' "${ncfg[@]}"  >> "$ADDITIONAL_NODE_CONFIG"
- }
+}
 
+function createPgDS() {
+  sout "CREATE ${bold}${yellow}PostgresqlDS${normal} "
+  local postgresql_keys="ojdbc_location postgresql_host postgresql_port postgresql_sid postgresql_user postgresql_pass"
+  local osum=""
+  for okey in $postgresql_keys; do
+    local tmp="${configOptions[$okey]}"
+    [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]] && osum="$osum $tmp"
+  done
+  osum="${osum//\ /}"
+  if [[ -n "$osum" ]]; then
+    local o1='module add --name=com.postgresql --resources="@@OJDBC_LOCATION@@" --dependencies=javax.api,javax.transaction.api'
+    local o2='/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=com.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)'
+    local o3='data-source add --name=PostgresqlDS --jndi-name=java:jboss/PostgresqlDS --driver-name=postgresql --connection-url=jdbc:postgresql://@@POSTGRESQL_HOST@@:@@POSTGRESQL_PORT@@/@@POSTGRESQL_SID@@ --user-name=@@POSTGRESQL_USER@@ --password=@@POSTGRESQL_PASS@@ --jta=true --use-ccm=true --use-java-context=true --enabled=true --max-pool-size=10 --min-pool-size=5 --flush-strategy="FailingConnectionOnly" --validate-on-match=true --background-validation=false --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter'
+    pamConfigAr[hibernate.hbm2ddl.auto]="none"
+    pamConfigAr[org.kie.server.persistence.ds]="java:jboss/PostgresqlDS"
+    pamConfigAr[org.kie.server.persistence.dialect]="org.hibernate.dialect.PostgreSQLDialect"
+    for okey in $postgresql_keys; do
+      local tmp="${configOptions[$okey]}"
+      if [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]]; then
+        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | sed 's]\\]\\\\]g')
+        # when mac is going to get a proper bash?
+        local skey='@@'`echo $okey | awk '{ print toupper($0); }'`'@@'
+        o1=$(echo "$o1" | sed --expression="s]$skey]$tmp]g")
+        o2=$(echo "$o2" | sed --expression="s]$skey]$tmp]g")
+        o3=$(echo "$o3" | sed --expression="s]$skey]$tmp]g")
+      fi
+    done
+    [[ "$nodedir" == "standalone" ]] && ncfg+=( "$o1" )
+    ncfg+=( "$o2" )
+    ncfg+=( "$o3" )
+  fi    
+}
 
 function prepareConfigDB() {
   sqlite3 $CONFIG_DB "drop table if exists pamrc"
