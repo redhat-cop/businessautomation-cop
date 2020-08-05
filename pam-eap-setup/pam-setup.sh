@@ -295,7 +295,7 @@ usage: $(basename "$0") [-h help]
                      -b [kie|controller|both|multi=2...], defaults to 'both'
                      [-c ip1:port1,ip2:port2,...]
                      [-s smart_router_ip:port]
-                     [-o additional_options[:additional_options...] ], specify additional options
+                     [-o option1=value1[:option2=value2...]], specify additional options
 
 example: $(basename "$0") -n localhost
 
@@ -382,13 +382,13 @@ Options:
          - ojdbc_location    : location of the Oracle JDBC driver
                                Example "$PWD/oracle_jdbc_driver/ojdbc8.jar"
 
-         - postgresql_host,      : These variables are used for bulding the PostgreSQL JDBC connection URL
-           postgresql_port,        which is of the form
-           postgresql_sid             jdbc:postgresql://POSTGRESQL_HOST:POSTGRESQL_PORT/POSTGRESQL_SID
+         - postgresql_host,  : These variables are used for bulding the PostgreSQL JDBC connection URL
+           postgresql_port,    which is of the form
+           postgresql_sid         jdbc:postgresql://POSTGRESQL_HOST:POSTGRESQL_PORT/POSTGRESQL_SID
 
-         - postgresql_user       : The user name to be used for connecting to PostgreSQL DB
+         - postgresql_user   : The user name to be used for connecting to PostgreSQL DB
 
-         - postgresql_pass       : The password for the PostgreSQL user         
+         - postgresql_pass   : The password for the PostgreSQL user         
          WARNING
          To properly configure a datasource all Database related
          parameters need to be specified

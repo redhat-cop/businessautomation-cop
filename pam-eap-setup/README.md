@@ -25,8 +25,10 @@ Supported (i.e. tested) versions:
   - patch level 7.2.1 supported for PAM.7.3.1
   - patch level 7.2.2 supported for PAM.7.4
   - patch level 7.2.x onwards supported for 7.5 and later
-- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1
-- DM version 7.3.1, 7.4.1, 7.6.0
+ - EAP 7.3
+	 - patch level 7.3.1 supported for PAM.7.8
+- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8
+- DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8
 
 For details about node configuration check out [Nodes Configuration](#nodes-configuration) section at the end of this document. Also:
 
@@ -137,6 +139,7 @@ Depending on PAM version the following files are required:
         | 7.6.0     | rhpam-7.6.0-business-central-eap7-deployable.zip, rhpam-7.6.0-kie-server-ee8.zip  |
         | 7.7.0     | rhpam-7.7.0-business-central-eap7-deployable.zip, rhpam-7.7.0-kie-server-ee8.zip  |
         | 7.7.1     | rhpam-7.7.1-business-central-eap7-deployable.zip, rhpam-7.7.1-kie-server-ee8.zip  |
+        | 7.8       | rhpam-7.8.0-business-central-eap7-deployable.zip, rhpam-7.8.0-kie-server-ee8.zip  |
 
         |DM Version| Files                                                                           |
         |----------|---------------------------------------------------------------------------------|
@@ -246,6 +249,22 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                                        WARNING
                                        To properly configure an Oracle datasource all Oracle related
                                        parameters need to be specified
+
+                Configuring an PostgreSQL datasource
+
+                 - ojdbc_location    : location of the Oracle JDBC driver
+                                       Example "$PWD/oracle_jdbc_driver/ojdbc8.jar"
+
+                 - postgresql_host,  : These variables are used for bulding the PostgreSQL JDBC connection URL
+                   postgresql_port,    which is of the form
+                   postgresql_sid        jdbc:postgresql://POSTGRESQL_HOST:POSTGRESQL_PORT/POSTGRESQL_SID
+
+                 - postgresql_user   : The user name to be used for connecting to PostgreSQL DB
+
+                 - postgresql_pass   : The password for the PostgreSQL user         
+         WARNING
+         To properly configure a datasource all Database related
+         parameters need to be specified
 
             -h : print this message
 
