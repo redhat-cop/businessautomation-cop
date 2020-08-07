@@ -135,6 +135,7 @@ MASTER_CONFIG=master.conf
 # versions supported
 #
 cat << "__CONFIG" > $MASTER_CONFIG
+PAM780 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.8.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
 PAM771 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
 PAM770 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
 DM771  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.7.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.7.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
@@ -294,7 +295,7 @@ usage: $(basename "$0") [-h help]
                      -b [kie|controller|both|multi=2...], defaults to 'both'
                      [-c ip1:port1,ip2:port2,...]
                      [-s smart_router_ip:port]
-                     [-o additional_options ], specify additional options
+                     [-o option1=value1[:option2=value2...]], specify additional options
 
 example: $(basename "$0") -n localhost
 
@@ -366,7 +367,7 @@ Options:
          Configuring an Oracle datasource
 
          - ojdbc_location    : location of the Oracle JDBC driver
-                               Example ""$PWD'/oracle_jdbc_driver/ojdbc8.jar"
+                               Example "$PWD'/oracle_jdbc_driver/ojdbc8.jar"
 
          - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
            oracle_port,        which is of the form
@@ -376,8 +377,20 @@ Options:
 
          - oracle_pass       : The password for the Oracle user
 
+         Configuring an PostgreSQL datasource
+
+         - ojdbc_location    : location of the Oracle JDBC driver
+                               Example "$PWD/oracle_jdbc_driver/ojdbc8.jar"
+
+         - postgresql_host,  : These variables are used for bulding the PostgreSQL JDBC connection URL
+           postgresql_port,    which is of the form
+           postgresql_sid         jdbc:postgresql://POSTGRESQL_HOST:POSTGRESQL_PORT/POSTGRESQL_SID
+
+         - postgresql_user   : The user name to be used for connecting to PostgreSQL DB
+
+         - postgresql_pass   : The password for the PostgreSQL user         
          WARNING
-         To properly configure an Oracle datasource all Oracle related
+         To properly configure a datasource all Database related
          parameters need to be specified
 
     -h : print this message
@@ -792,6 +805,21 @@ function applyAdditionalNodeConfig() {
      ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=DEBUG)' )
      ncfg+=( '/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=DEBUG)' )
   fi
+
+  if [[ ! -z "${configOptions[oracle_host]}" ]]; then
+    createOraDS
+  fi
+
+  if [[ ! -z "${configOptions[postgresql_host]}" ]]; then
+    createPgDS
+  fi
+
+  ncfg+=( "run-batch" )
+  printf '%s\n' "${ncfg[@]}"  >> "$ADDITIONAL_NODE_CONFIG"
+ }
+
+function createOraDS() {
+  sout "CREATE ${bold}${yellow}OracleDS${normal} "
   local oracle_keys="ojdbc_location oracle_host oracle_port oracle_sid oracle_user oracle_pass"
   local osum=""
   for okey in $oracle_keys; do
@@ -821,10 +849,40 @@ function applyAdditionalNodeConfig() {
     ncfg+=( "$o2" )
     ncfg+=( "$o3" )
   fi
-  ncfg+=( "run-batch" )
-  printf '%s\n' "${ncfg[@]}"  >> "$ADDITIONAL_NODE_CONFIG"
- }
+}
 
+function createPgDS() {
+  sout "CREATE ${bold}${yellow}PostgresqlDS${normal} "
+  local postgresql_keys="ojdbc_location postgresql_host postgresql_port postgresql_sid postgresql_user postgresql_pass"
+  local osum=""
+  for okey in $postgresql_keys; do
+    local tmp="${configOptions[$okey]}"
+    [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]] && osum="$osum $tmp"
+  done
+  osum="${osum//\ /}"
+  if [[ -n "$osum" ]]; then
+    local o1='module add --name=com.postgresql --resources="@@OJDBC_LOCATION@@" --dependencies=javax.api,javax.transaction.api'
+    local o2='/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=com.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)'
+    local o3='data-source add --name=PostgresqlDS --jndi-name=java:jboss/PostgresqlDS --driver-name=postgresql --connection-url=jdbc:postgresql://@@POSTGRESQL_HOST@@:@@POSTGRESQL_PORT@@/@@POSTGRESQL_SID@@ --user-name=@@POSTGRESQL_USER@@ --password=@@POSTGRESQL_PASS@@ --jta=true --use-ccm=true --use-java-context=true --enabled=true --max-pool-size=10 --min-pool-size=5 --flush-strategy="FailingConnectionOnly" --validate-on-match=true --background-validation=false --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter'
+    pamConfigAr[hibernate.hbm2ddl.auto]="none"
+    pamConfigAr[org.kie.server.persistence.ds]="java:jboss/PostgresqlDS"
+    pamConfigAr[org.kie.server.persistence.dialect]="org.hibernate.dialect.PostgreSQLDialect"
+    for okey in $postgresql_keys; do
+      local tmp="${configOptions[$okey]}"
+      if [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]]; then
+        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | sed 's]\\]\\\\]g')
+        # when mac is going to get a proper bash?
+        local skey='@@'`echo $okey | awk '{ print toupper($0); }'`'@@'
+        o1=$(echo "$o1" | sed --expression="s]$skey]$tmp]g")
+        o2=$(echo "$o2" | sed --expression="s]$skey]$tmp]g")
+        o3=$(echo "$o3" | sed --expression="s]$skey]$tmp]g")
+      fi
+    done
+    [[ "$nodedir" == "standalone" ]] && ncfg+=( "$o1" )
+    ncfg+=( "$o2" )
+    ncfg+=( "$o3" )
+  fi    
+}
 
 function prepareConfigDB() {
   sqlite3 $CONFIG_DB "drop table if exists pamrc"
@@ -1118,8 +1176,9 @@ skip_install=no && [[ -d $INSTALL_DIR ]]  && sout "INFO: Installation detected a
 
 if [[ ! -z "$EAP_LOCATION" ]]; then
   eap_location_created=no
-  # EAP_LOCATION="$WORKDIR/$EAP_LOCATION"
-  EAP_LOCATION=$(readlink -mn "$EAP_LOCATION")
+  EAP_LOCATION="$WORKDIR/$EAP_LOCATION"
+  # '-m' option does not exists on Mac...
+  # EAP_LOCATION=$(readlink -mn "$EAP_LOCATION")
   mkdir -p "$EAP_LOCATION"&>/dev/null && eap_location_created=yes
   [[ "$eap_location_created" == "no" ]] && sout "ERROR: $EAP_LOCATION CANNOT BE CREATED - ABORTING" && exit 1
 fi
