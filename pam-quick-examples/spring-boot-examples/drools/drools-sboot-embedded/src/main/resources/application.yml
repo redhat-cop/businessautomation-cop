@@ -1,0 +1,96 @@
+server:
+  port: 8090
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: dev
+  jpa:
+    show-sql: true
+    format_sql: true
+    use_sql_comments: true
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+  h2:
+    console:
+      enabled: true
+      # path:
+
+camel:
+  springboot:
+    name: Drools Example Service
+  component:
+    servlet:
+      mapping:
+        context-path: /api/*
+  rest:
+    binding-mode: json
+    #    component: servlet
+    #    enable-cors: true
+    #    data-format-property:
+    #      prettyPrint: true
+    #    api-context-path: /api-doc
+    #    api-context-route-id:
+    #    api-property:
+    #      base:
+    #        path: /api
+    #      api:
+    #        title: "Trigger Engine Core REST API"
+    #        version: v1
+
+management:
+  endpoint:
+    health:
+      show-details: always
+    camelroutes:
+      enabled: true
+      read-only: true
+  endpoints:
+    web:
+      exposure:
+        include: info,health,camelroutes
+  info:
+    camel:
+      enabled: true
+      verbose: true
+
+#KJars to Load via Scanner
+rules:
+  #  mavenSettings: "/app/settings.xml"
+  demo.project: true
+  kjars:
+#    - groupId: org.redhat.services
+#      artifactId: drools-example-helloworld
+#      version: 0.0.1-SNAPSHOT
+#      scanningInterval: 600000 # 10 minutes
+#    - groupId: org.redhat.services
+#      artifactId: drools-example-mortgage
+#      version: 0.0.1-SNAPSHOT
+#      scanningInterval: 600000 # 10 minutes
+
+logging:
+  # path: /app/logs
+  level:
+    org.redhat.services: DEBUG
+    org.kie: INFO
+    org.drools: INFO
+    org.apache.http: INFO     #change to TRACE to debug KieContainer loading issues
+    org.eclipse.aether: INFO  #change to TRACE to debug KieContainer loading issues
+    org.hibernate.type: INFO  #change to TRACE to display SQL parameter values
+    org.hibernate.SQL: INFO   #change to DEBUG to view raw SQL
+    org.hibernate.engine.jdbc.env.internal: WARN
+
+drools:
+  datasource:
+    jdbcUrl: jdbc:h2:mem:droolsdb;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: sa
+    sql-script-encoding: UTF-8
+    initialize: true
+    show_sql: true
+    format_sql: true
+    usq_sql_comments: true
+  hbm2ddl: update
+  dialect: org.hibernate.dialect.H2Dialect

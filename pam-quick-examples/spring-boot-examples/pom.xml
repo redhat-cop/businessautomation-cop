@@ -52,6 +52,7 @@
         <module>transactions/kie-sboot-xa-tx-db</module>
         <module>persistence/kie-sboot-pvp</module>
         <module>queries/kie-sboot-advanced-query</module>
+        <module>drools/drools-sboot-seed</module>
     </modules>
 
     <dependencyManagement>
