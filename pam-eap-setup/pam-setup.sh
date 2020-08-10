@@ -333,6 +333,8 @@ Options:
                                If the default configuration for a file is present in the addons directory
                                and a file is specified with this option both files will be applied
                                sequentially with the default applied first
+                               Multiple files can be specified using comma(,) to separate them,
+                               eg. node1_config=fileA,fileB
 
          - debug_logging     : if present will set logging level to DEBUG
 
@@ -790,10 +792,16 @@ function applyAdditionalNodeConfig() {
   #
   [[ -r "$default_config" ]] && cat "$default_config" >> "$ADDITIONAL_NODE_CONFIG"
   #
-  if [[ -r "${configOptions[$k]}" ]]; then
-     sout "Applying additional configuration for ${nodeConfig[nodeCounter]} based on ${configOptions[$k]}"
-     cat "${configOptions[$k]}" >> "$ADDITIONAL_NODE_CONFIG"
-  fi
+  # nodeX_config=fileA,fileB,...
+  local -a ndcfg
+  while read -rd,; do ndcfg+=("$REPLY"); done <<<"${configOptions[$k]},"
+  for mndx in "${!ndcfg[@]}"; do
+    if [[ -r "${ndcfg[$mndx]}" ]]; then
+      sout "Applying additional configuration for ${nodeConfig[nodeCounter]} based on ${ndcfg[$mndx]}"
+      cat "${ndcfg[$mndx]}" >> "$ADDITIONAL_NODE_CONFIG"
+    fi
+  done
+
   if [[ ! -z "${configOptions[dump_requests]}" ]]; then
      ncfg+=( '/subsystem=undertow/configuration=filter/expression-filter=requestDumperExpression:add(expression="dump-request")' )
      ncfg+=( "/subsystem=undertow/server=default-server/host=default-host/filter-ref=requestDumperExpression:add" )
