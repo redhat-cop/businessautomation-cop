@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class RuleResponse implements Serializable {
 
     private int rulesFired;
-    private String message;
+    private String executionReference;
+    private Object payload;
 
 }

@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.AbstractMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.redhat.services.config.KJARRepositoryConfig.demoContainerId;
@@ -42,6 +44,7 @@ public class RuleExecutorImpl implements RuleExecutor {
 
         //@formatter:off
         sessionUtils.createNewKieSession
+        .andThen( kSession -> sessionUtils.setKieSessionGlobal.apply(kSession, new AbstractMap.SimpleEntry<>("reference", executionReference())))
         .andThen( kSession -> sessionUtils.fireAgendaGroupRules.apply( kSession, AGENDA_GROUPS.DEMO_HELLO )) // Fire Rules
         .andThen( kSession -> queryUtils.getRuleResponse.apply( kSession, atomicReferenceRuleResponse ))
         .andThen( kSession -> sessionUtils.tearDown.apply(kSession))
@@ -60,6 +63,7 @@ public class RuleExecutorImpl implements RuleExecutor {
 
         //@formatter:off
         sessionUtils.createNewKieSession
+        .andThen( kSession -> sessionUtils.setKieSessionGlobal.apply(kSession, new AbstractMap.SimpleEntry<>("reference", executionReference())))
         .andThen( kSession -> sessionUtils.insertFact.apply(kSession, name )) // Insert Data into Session
         .andThen( kSession -> sessionUtils.fireAgendaGroupRules.apply( kSession, AGENDA_GROUPS.DEMO_GOODBYE )) // Fire Rules
         .andThen( kSession -> queryUtils.getRuleResponse.apply( kSession, atomicReferenceRuleResponse ))
@@ -68,6 +72,10 @@ public class RuleExecutorImpl implements RuleExecutor {
         // @formatter:on
 
         return atomicReferenceRuleResponse.get().get(0);
+    }
+
+    public String executionReference(){
+        return UUID.randomUUID().toString();
     }
 
 }
