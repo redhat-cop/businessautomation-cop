@@ -6,9 +6,9 @@
 
     <parent>
         <groupId>org.redhat.services</groupId>
-        <artifactId>kie-sboot-examples-parent</artifactId>
+        <artifactId>kie-sboot-examples-drools-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>drools-sboot-embedded</artifactId>
@@ -114,10 +114,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>com.h2database</groupId>-->
-        <!--            <artifactId>h2</artifactId>-->
-        <!--        </dependency>-->
 
         <!-- Utils -->
         <dependency>

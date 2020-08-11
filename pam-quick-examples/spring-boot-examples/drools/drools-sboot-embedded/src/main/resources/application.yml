@@ -61,12 +61,12 @@ rules:
   #  mavenSettings: "/app/settings.xml"
   demo.project: true
   kjars:
+    - groupId: org.redhat.services
+      artifactId: mortgages
+      version: 1.0.0-SNAPSHOT
+      scanningInterval: 600000 # 10 minutes
 #    - groupId: org.redhat.services
 #      artifactId: drools-example-helloworld
-#      version: 0.0.1-SNAPSHOT
-#      scanningInterval: 600000 # 10 minutes
-#    - groupId: org.redhat.services
-#      artifactId: drools-example-mortgage
 #      version: 0.0.1-SNAPSHOT
 #      scanningInterval: 600000 # 10 minutes
 

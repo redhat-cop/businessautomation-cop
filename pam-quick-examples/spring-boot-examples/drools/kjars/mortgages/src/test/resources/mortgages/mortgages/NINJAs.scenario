@@ -1,0 +1,43 @@
+<scenario>
+  <maxRuleFirings>100000</maxRuleFirings>
+  <globals/>
+  <fixtures>
+    <fact-data>
+      <type>LoanApplication</type>
+      <name>app</name>
+      <fieldData/>
+      <isModify>false</isModify>
+    </fact-data>
+    <fact-data>
+      <type>Applicant</type>
+      <name>applicant</name>
+      <fieldData/>
+      <isModify>false</isModify>
+    </fact-data>
+    <execution-trace>
+      <executionTimeResult>0</executionTimeResult>
+      <numberOfRulesFired>1</numberOfRulesFired>
+    </execution-trace>
+    <expect-fact>
+      <fieldValues>
+        <expect-field>
+          <fieldName>approved</fieldName>
+          <expected>false</expected>
+          <successResult>true</successResult>
+          <explanation>[app] field [approved] was [false].</explanation>
+          <operator>==</operator>
+          <nature>0</nature>
+        </expect-field>
+      </fieldValues>
+      <name>app</name>
+      <anonymous>false</anonymous>
+    </expect-fact>
+  </fixtures>
+  <lastRunResult>2008-10-01 20:47:29.730 EEST</lastRunResult>
+  <rules/>
+  <inclusive>false</inclusive>
+  <packageName>mortgages.mortgages</packageName>
+  <imports>
+    <imports/>
+  </imports>
+</scenario>
