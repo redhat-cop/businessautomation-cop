@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.redhat.services</groupId>
+    <artifactId>dmn-examples-parent</artifactId>
+    <name>DMN Examples Parent</name>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>1.8</maven.compiler.release>
+        <ba.bom.version>7.7.0.redhat-00002</ba.bom.version>
+        <cucumber.version>1.2.4</cucumber.version>
+    </properties>
+
+    <modules>
+        <module>dmn-open-account-example/project</module>
+        <module>dmn-open-account-java-func-example/project</module>
+        <module>dmn-jbpm-example/project</module>
+        <module>dmn-jbpm-ext-kjar-example/project</module>
+        <module>dmn-open-account-bdd-example/project</module>
+        <module>dmn-open-account-java-func-bdd-example/project</module>
+    </modules>
+
+    <dependencyManagement/>
+
+</project>
