@@ -45,7 +45,7 @@ public class ServiceRoutingAPI extends RouteBuilder {
         // Dedicated HelloWorld API Endpoint
         rest().get(API.DEMO_RULES_HELLOWORLD)
         	.produces( MediaType.APPLICATION_JSON )
-        	.id(ROUTE_ID.DEMO_API_ROUTE_HELLO)
+            .route().routeId(ROUTE_ID.DEMO_API_ROUTE_HELLO)
         	.to(CORE.HELLO_RULES);
 
         // Dedicated Goodbye World API Endpoint
@@ -57,7 +57,7 @@ public class ServiceRoutingAPI extends RouteBuilder {
                 .dataType( "string" )
                 .required( true )
             .endParam()
-        	.id(ROUTE_ID.DEMO_API_ROUTE_GOODBYE)
+            .route().routeId(ROUTE_ID.DEMO_API_ROUTE_GOODBYE)
         	.to(CORE.GOODBYE_RULES);
 
         rest().get(API.AUDIT_LOG_BY_REFERENCE + "/{reference}")
@@ -68,7 +68,7 @@ public class ServiceRoutingAPI extends RouteBuilder {
                 .dataType( "string" )
                 .required( true )
             .endParam()
-        	.id(ROUTE_ID.AUDIT_API_ROUTE_BYREF)
+            .route().routeId(ROUTE_ID.AUDIT_API_ROUTE_BYREF)
         	.to(AUDIT.FIND_BY_REF);
 
         // Update Country KIE Base / KJAR

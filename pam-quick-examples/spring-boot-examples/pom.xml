@@ -21,6 +21,7 @@
 
         <!-- Product Version Mappings https://access.redhat.com/solutions/3405361 -->
         <version.rhpam>7.8.0.redhat-00002</version.rhpam>
+        <!-- NOTE: Versions on Example KJAR projects maintain local versions to keep BC happy -->
         <version.org.kie>7.39.0.Final-redhat-00005</version.org.kie>
         <version.spring.boot>2.2.2.RELEASE</version.spring.boot>
         <version.org.keycloak>9.0.3.redhat-00002</version.org.keycloak>
@@ -52,7 +53,7 @@
         <module>transactions/kie-sboot-xa-tx-db</module>
         <module>persistence/kie-sboot-pvp</module>
         <module>queries/kie-sboot-advanced-query</module>
-        <module>drools/drools-sboot-embedded</module>
+        <module>drools</module>
     </modules>
 
     <dependencyManagement>

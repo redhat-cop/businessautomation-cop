@@ -15,7 +15,7 @@
     <description>Basic Process KJAR for Testing/Examples</description>
 
     <properties>
-        <version.org.kie>7.33.0.Final-redhat-00002</version.org.kie>
+        <version.org.kie>7.39.0.Final-redhat-00005</version.org.kie>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
