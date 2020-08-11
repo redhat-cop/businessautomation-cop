@@ -94,3 +94,4 @@ drools:
     usq_sql_comments: true
   hbm2ddl: update
   dialect: org.hibernate.dialect.H2Dialect
+  persist.payload: true

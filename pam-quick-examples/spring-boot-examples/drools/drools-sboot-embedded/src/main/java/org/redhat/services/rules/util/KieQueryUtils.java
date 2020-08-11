@@ -16,17 +16,6 @@ import java.util.function.BiFunction;
 @Component
 public class KieQueryUtils {
 
-//	public BiFunction<KieSession, AtomicReference<SuggestionTypes>, KieSession> getSuggestionTypes = (kieSession, suggestionTypes) -> {
-//		QueryResults results = kieSession.getQueryResults("getTriggerSuggestionTypes");
-//		if (results != null && results.size() > 0) {
-//			QueryResultsRow row = Iterables.get(results, 0);
-//			if (row.get("$SuggestionTypes") != null) {
-//				suggestionTypes.set((SuggestionTypes) row.get("$SuggestionTypes"));
-//			}
-//		}
-//		return kieSession;s
-//	};
-
     @SuppressWarnings("unchecked")
     public BiFunction<KieSession, AtomicReference<List<RuleResponse>>, KieSession> getRuleResponse = (kieSession, ruleResponses) -> {
 

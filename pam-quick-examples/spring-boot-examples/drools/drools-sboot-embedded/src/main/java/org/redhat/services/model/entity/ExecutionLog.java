@@ -1,15 +1,22 @@
 package org.redhat.services.model.entity;
 
+import lombok.*;
 import org.redhat.services.model.type.ExecutionStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+
 @Entity
 @Table(name = "EXECUTION_LOG")
 //@NamedNativeQueries({@NamedNativeQuery(name = "ExecutionLog.findByCountryCode", query = EXECUTION_LOG_BY_COUNTRY_CODE, resultClass = ExecutionLog.class),
 //        @NamedNativeQuery(name = "ExecutionLog.findMaxExecutionDatePerCountryScenario", query = EXECUTION_LOG_MAX_EXECUTION_DATE, resultClass = ExecutionLog.class)})
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExecutionLog implements Serializable {
 
     private static final long serialVersionUID = -2771996276955706645L;
@@ -31,11 +38,14 @@ public class ExecutionLog implements Serializable {
     @Column(name = "REQUEST_STOP", columnDefinition = "TIMESTAMP")
     private LocalDateTime executionStop;
 
-    @Column(name = "RULE_EXECUTION_DURATION", columnDefinition = "TIMESTAMP")
-    private LocalDateTime rulesExecutionDuration;
+    @Column(name = "RULE_EXECUTION_DURATION_MS")
+    private long rulesExecutionDuration;
 
     @Column(name = "PAYLOAD")
     private String payload;
+
+    @Column(name = "AGENDA_GROUP")
+    private String agendaGroup;
 
     @Column(name = "EXECUTION_STATUS")
     @Enumerated(EnumType.STRING)
@@ -46,22 +56,5 @@ public class ExecutionLog implements Serializable {
 
     @Column(name = "RULES_FIRED")
     private String rulesFired;
-
-
-    // @formatter:off
-	@Override
-	public String toString() {
-		return "ExecutionLog ["
-				+ " id=" + id 
-				+ ", executionStart=" + executionStart 
-				+ ", executionStop=" + executionStop
-//				+ ", executionTarget=" + executionTarget
-//				+ ", executionTrigger=" + executionTrigger
-//				+ ", executionCountryCode=" + executionCountryCode
-				+ ", status=" + status 
-//				+ ", invocationStatus=" + invocationStatus
-				+ "]";
-	// @formatter:on
-    }
 
 }

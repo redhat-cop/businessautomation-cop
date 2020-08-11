@@ -3,6 +3,7 @@ business-application-service.xml
 /target/
 /transaction-logs/
 .idea/
+kie-sboot-service.xml
 
 # Created by https://www.gitignore.io/api/git,java,maven,intellij
 # Edit at https://www.gitignore.io/?templates=git,java,maven,intellij
