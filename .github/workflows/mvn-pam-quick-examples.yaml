@@ -64,14 +64,6 @@ jobs:
           mvn compile --no-transfer-progress
           popd
 
-          pushd pam-quick-examples/dmn-example5/dmn-example5-parent
-          mvn compile --no-transfer-progress
-          popd
-
-          pushd pam-quick-examples/dmn-example6/dmn-example6-parent
-          mvn compile --no-transfer-progress
-          popd
-
           pushd pam-quick-examples/spring-boot-examples
           mvn compile --no-transfer-progress
           popd
