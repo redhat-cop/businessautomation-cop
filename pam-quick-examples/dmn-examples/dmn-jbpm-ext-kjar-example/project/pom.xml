@@ -3,20 +3,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.redhat.cop.pam</groupId>
+    <parent>
+        <groupId>com.redhat.cop.pam</groupId>
+        <artifactId>dmn-examples-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
     <artifactId>dmn-jbpm-ext-kjar-parent</artifactId>
     <name>${project.artifactId}-${project.version}</name>
     <version>1.0</version>
-
     <packaging>pom</packaging>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.release>1.8</maven.compiler.release>
-        <ba.bom.version>7.7.0.redhat-00002</ba.bom.version>
-    </properties>
 
     <modules>
         <module>model</module>
@@ -65,13 +62,6 @@
                 <artifactId>dmn-jbpm-ext-kjar-functions</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.redhat.ba</groupId>
-                <artifactId>ba-platform-bom</artifactId>
-                <version>${ba.bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -88,13 +78,6 @@
             </modules>
             <dependencyManagement>
                 <dependencies>
-                    <dependency>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-bom</artifactId>
-                        <version>${quarkus.bom.version}</version>
-                        <type>pom</type>
-                        <scope>import</scope>
-                    </dependency>
                     <dependency>
                         <groupId>com.redhat.cop.pam</groupId>
                         <artifactId>dmn-jbpm-ext-kjar-quarkus</artifactId>
@@ -145,13 +128,6 @@
             </modules>
             <dependencyManagement>
                 <dependencies>
-                    <dependency>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-parent</artifactId>
-                        <version>2.2.2.RELEASE</version>
-                        <type>pom</type>
-                        <scope>import</scope>
-                    </dependency>
                     <dependency>
                         <groupId>com.redhat.cop.pam</groupId>
                         <artifactId>dmn-jbpm-ext-kjar-springboot</artifactId>
