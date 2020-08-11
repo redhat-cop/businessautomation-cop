@@ -52,22 +52,10 @@ jobs:
 
       - name: Build pam-quick-examples
         run: |
-          pushd pam-quick-examples/dmn-example1/dmn-example1-parent
+          pushd pam-quick-examples/dmn-examples
           mvn compile --no-transfer-progress
           popd
 
-          pushd pam-quick-examples/dmn-example2/dmn-example2-parent
-          mvn compile --no-transfer-progress
-          popd
-
-          pushd pam-quick-examples/dmn-example3/dmn-example3-parent
-          mvn compile --no-transfer-progress
-          popd
-
-          pushd pam-quick-examples/dmn-example4/dmn-example4-parent
-          mvn compile --no-transfer-progress
-          popd
-          
           pushd pam-quick-examples/dynamic-dropdowns/dynamic-enum
           mvn install --no-transfer-progress
           popd
