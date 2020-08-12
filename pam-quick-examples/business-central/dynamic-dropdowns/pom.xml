@@ -15,7 +15,7 @@
 
     <modules>
         <module>dynamic-enum</module>
-        <module>SampleEnumKJAR</module>
+        <module>kjar</module>
     </modules>
 
 </project>
