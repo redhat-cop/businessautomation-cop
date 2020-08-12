@@ -57,7 +57,7 @@ jobs:
           popd
 
           pushd pam-quick-examples/business-central
-          mvn install --no-transfer-progress
+          mvn install
           popd
           
           pushd pam-quick-examples/spring-boot-examples
