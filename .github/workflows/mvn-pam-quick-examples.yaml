@@ -56,14 +56,10 @@ jobs:
           mvn compile --no-transfer-progress
           popd
 
-          pushd pam-quick-examples/dynamic-dropdowns/dynamic-enum
+          pushd pam-quick-examples/business-central
           mvn install --no-transfer-progress
           popd
           
-          pushd pam-quick-examples/dynamic-dropdowns/SampleEnumKjar
-          mvn compile --no-transfer-progress
-          popd
-
           pushd pam-quick-examples/spring-boot-examples
           mvn compile --no-transfer-progress
           popd
