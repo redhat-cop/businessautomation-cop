@@ -6,6 +6,7 @@
 	<artifactId>enum-loader</artifactId>
 	<version>1</version>
 
+	<name>Dynamic Dropdowns : Enum Loader</name>
 	<dependencies>
 
 <!-- replace to whatever JDBC driver needed -->

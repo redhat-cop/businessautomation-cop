@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jbpm.services.api.RuntimeDataService;
+import org.jbpm.services.api.AdvanceRuntimeDataService;
 import org.kie.server.services.api.KieServerApplicationComponentsService;
 import org.kie.server.services.api.KieServerRegistry;
 import org.kie.server.services.api.SupportedTransports;
@@ -28,12 +29,16 @@ public class CustomJbpmKieServerAppComponentService implements KieServerApplicat
 		logger.debug("Creating custom kie server extension CustomJbpmKieServerAppComponentService");
 
 		RuntimeDataService runtimeDataService = null;
+		AdvanceRuntimeDataService advanceRuntimeDataService = null;
 		KieServerRegistry context = null;
 
 		for (Object object : services) {
 			if (RuntimeDataService.class.isAssignableFrom(object.getClass())) {
 				runtimeDataService = (RuntimeDataService) object;
 				continue;
+			} else if (AdvanceRuntimeDataService.class.isAssignableFrom(object.getClass())) {
+					advanceRuntimeDataService = (AdvanceRuntimeDataService) object;
+				  continue;
 			} else if (KieServerRegistry.class.isAssignableFrom(object.getClass())) {
 
 				context = (KieServerRegistry) object;
@@ -43,7 +48,7 @@ public class CustomJbpmKieServerAppComponentService implements KieServerApplicat
 
 		List<Object> components = new ArrayList<Object>(1);
 		if (SupportedTransports.REST.equals(type)) {
-			RuntimeDataServiceBase runtimeDataServiceBase = new RuntimeDataServiceBase(runtimeDataService, context);
+			RuntimeDataServiceBase runtimeDataServiceBase = new RuntimeDataServiceBase(runtimeDataService, advanceRuntimeDataService, context);
 
 			components.add(new CustomResource(runtimeDataServiceBase, context));
 		}
