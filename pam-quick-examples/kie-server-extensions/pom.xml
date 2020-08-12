@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.redhat.services</groupId>
+    <artifactId>kie-extensions-examples-parent</artifactId>
+    <name>Business Central Examples Parent</name>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <!-- Config -->
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>1.8</maven.compiler.release>
+
+        <!-- Product Version Mappings https://access.redhat.com/solutions/3405361 -->
+        <version.rhpam>7.8.0.redhat-00002</version.rhpam>
+        <!-- NOTE: Versions on Example KJAR projects maintain local versions to keep BC happy -->
+        <version.org.kie>7.39.0.Final-redhat-00005</version.org.kie>
+
+        <!-- dependencies -->
+        <version.org.slf4j>1.7.25.redhat-00001</version.org.slf4j>
+        <version.org.spring-tx>2.5.4</version.org.spring-tx>
+
+        <!-- Maven Plugins -->
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    </properties>
+
+    <modules>
+        <module>abort-all-instances-extension</module>
+        <module>get-case-instances-with-data-extension</module>
+        <module>get-instances-by-alias-extension</module>
+        <module>process-reopen-extension</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.redhat.ba</groupId>
+                <artifactId>ba-platform-bom</artifactId>
+                <version>${version.rhpam}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>slf4j-api</artifactId>
+              <version>${version.org.slf4j}</version>
+              <scope>provided</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>slf4j-simple</artifactId>
+              <version>${version.org.slf4j}</version>
+              <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- https://access.redhat.com/maven-repository -->
+    <repositories>
+        <repository>
+            <id>jboss-eap-repository-group</id>
+            <name>JBoss EAP Maven Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <!-- jbpm-kafka uses upstream Kafka WorkItem Handler -->
+        <repository>
+           <id>jboss-nexus</id>
+           <name>JBoss Nexus Repository</name>
+           <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+           <layout>default</layout>
+           <releases>
+              <enabled>true</enabled>
+              <updatePolicy>never</updatePolicy>
+           </releases>
+           <snapshots>
+              <enabled>true</enabled>
+              <updatePolicy>never</updatePolicy>
+           </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jboss-eap-repository-group</id>
+            <name>JBoss EAP Maven Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
