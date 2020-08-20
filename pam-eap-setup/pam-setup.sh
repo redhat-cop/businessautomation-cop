@@ -1183,12 +1183,13 @@ skip_install=no && [[ -d $INSTALL_DIR ]]  && sout "INFO: Installation detected a
 [[ "$skip_install" == "no" ]] && [[ -d $EAP_HOME ]] && sout "INFO: Installation detected at $EAP_HOME -- skipping installation" && skip_install=yes
 
 if [[ ! -z "$EAP_LOCATION" ]]; then
-  eap_location_created=no
-  EAP_LOCATION="$WORKDIR/$EAP_LOCATION"
-  # '-m' option does not exists on Mac...
-  # EAP_LOCATION=$(readlink -mn "$EAP_LOCATION")
-  mkdir -p "$EAP_LOCATION"&>/dev/null && eap_location_created=yes
+  eap_location_created=no && mkdir -p "$EAP_LOCATION" &> /dev/null && eap_location_created=yes 
   [[ "$eap_location_created" == "no" ]] && sout "ERROR: $EAP_LOCATION CANNOT BE CREATED - ABORTING" && exit 1
+  if [[ "$eap_location_created" == "yes" ]]; then
+    pushd "$EAP_LOCATION" &> /dev/null
+      EAP_LOCATION=$(pwd)
+    popd &> /dev/null
+  fi
 fi
 
 if [ "$skip_install" != "yes" ]; then
