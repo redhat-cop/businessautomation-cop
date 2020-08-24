@@ -3,14 +3,14 @@
 # Business Automation Community of Practice
 Business Automation or Red Hat Process Automation Manager is a portifolio which includes a web tool for authoring, rules management application and build business process (Workbench/Business Central).
 
-This repository is meant to help bootstrap users of the Red Hat Process Automation Manager Portifolio to get started in building and using Red Hat Process Automation Manager (PAM) and Red Hat Decision Manager (DM) to build applications to run in different runtimes such as jboss enterprise platform, spring boot and cloud native using Kogito(Quarkus implementation for jbpm and drools).
+This repository is meant to help bootstrap users of the Red Hat Process Automation Manager Portfolio to get started in building and using Red Hat Process Automation Manager (PAM) and Red Hat Decision Manager (DM) to build applications to run in different runtimes such as jboss enterprise platform, spring boot and cloud native using Kogito(Quarkus implementation for jbpm and drools).
 
 # Red Hat Process Automation Manager (PAM)
-PAM is a platform for developing business process management (BPM)
-business rules management (BRM), Decision Model and Notation (DMN), and business resource optimization and complex event processing (CEP)
+PAM is a platform for developing business process management (BPM),
+business rules management (BRM), Decision Model and Notation (DMN), and business resource optimization and complex event processing (CEP).
 
 # Red Hat Decision Manager (DM)
-DM is a platform to developing and authoring business rules management (BRM), and business resource optimization and complex event processing (CEP)
+DM is a platform to developing and authoring business rules management (BRM), and business resource optimization and complex event processing (CEP).
 
 ## Business Process Management (BPM)
 It's a tool to help model, analyze, measure, improve, automate business processes and decisions based on jbpm framework.
