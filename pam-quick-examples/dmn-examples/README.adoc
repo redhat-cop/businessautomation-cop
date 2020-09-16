@@ -8,13 +8,13 @@ image:https://github.com/redhat-cop/businessautomation-cop/workflows/Java%20CI%2
 |===
 |name |description |build test & run
 
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example1[dmn-example-1]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-open-account-example[dmn-open-account-example]
 |This example shows how use DMN to check if a customer can open a bank account (is underage or not)
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example1#build-test-run[README.adoc]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-open-account-example#build-test-run[README.adoc]
 
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example2[dmn-example-2]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-open-account-java-func-example[dmn-open-account-java-func-example]
 |This example shows how to invoke a java function from DMN to check if a customer can open a bank account (is underage or not)
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example2#build-test-run[README.adoc]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-open-account-java-func-example#build-test-run[README.adoc]
 
 |xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-jbpm-example[dmn-jbpm-example]
 |This example shows how invoke a DMN(used in example-2) from a process
@@ -24,13 +24,13 @@ image:https://github.com/redhat-cop/businessautomation-cop/workflows/Java%20CI%2
 |This example shows how to invoke a DMN(used in example-2) from a process defined in separate 'kjar'
 |xref:https://github.com/redhat-cop/businessautomation-cop/blob/master/pam-quick-examples/dmn-examples/dmn-jbpm-ext-kjar-example/README.adoc#build-test-run[README.adoc]
 
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example5[dmn-example-5]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-open-account-bdd-example[dmn-open-account-bdd-example]
 |This example shows how to test a DMN(used in example-1) using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example5#build-test-run[README.adoc]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-open-account-bdd-example#build-test-run[README.adoc]
 
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example6[dmn-example-6]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-open-account-java-func-bdd-example[dmn-open-account-java-func-bdd-example]
 |This example shows how to test a DMN(used in example-2) in a process using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example6#build-test-run[README.adoc]
+|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-open-account-java-func-bdd-example#build-test-run[README.adoc]
 |===
 
 === BPMN process examples
