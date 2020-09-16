@@ -22,7 +22,7 @@ image:https://github.com/redhat-cop/businessautomation-cop/workflows/Java%20CI%2
 
 |xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-jbpm-ext-kjar-example[dmn-jbpm-ext-kjar-example]
 |This example shows how to invoke a DMN(used in example-2) from a process defined in separate 'kjar'
-|xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-examples/dmn-jbpm-ext-kjar-example#build-test-run[README.adoc]
+|xref:https://github.com/redhat-cop/businessautomation-cop/blob/master/pam-quick-examples/dmn-examples/dmn-jbpm-ext-kjar-example/README.adoc#build-test-run[README.adoc]
 
 |xref:https://github.com/redhat-cop/businessautomation-cop/tree/master/pam-quick-examples/dmn-example5[dmn-example-5]
 |This example shows how to test a DMN(used in example-1) using https://cucumber.io/[Cucumber] and https://spring.io/[Spring Boot]
