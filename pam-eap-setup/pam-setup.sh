@@ -135,6 +135,7 @@ MASTER_CONFIG=master.conf
 # versions supported
 #
 cat << "__CONFIG" > $MASTER_CONFIG
+DM781  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.8.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.8.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
 PAM781 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.8.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
 PAM780 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.8.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
 PAM771 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
@@ -156,6 +157,10 @@ __CONFIG
 #
 # define helper functions
 #
+function timestamp() {
+  echo $(date '+%Y-%m-%d %H:%M:%S')
+}
+
 function extractHeaders() {
   grep -v '^#' $MASTER_CONFIG | awk -F'|' '{ if (NF>0) printf "\t"$1"\n"; }'
 }
@@ -181,10 +186,17 @@ function bigString() {
   echo "$o"
 }
 
+function log() {
+  # printf "%s\n" "$@" | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g" >> "pam-setup.log"
+  printf "%s\n" "$@" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' >> "$LOGFILE"
+}
 function sout() {
   declare -a arr=("$@")
   for i in "${arr[@]}"; do
     echo ':: '"$i"
+    if [[ -n "$LOGFILE" ]]; then
+      log "$(timestamp) $i"
+    fi
   done
 }
 
@@ -228,9 +240,10 @@ function prettyPrinter() {
     local r=$(echo "$i" | awk -F':-' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i; }')
     local rprefix=""
     local rsuffix=""
-    [[ "$r" == "" ]] && r=$i && rprefix="${bold}${white}"
-    [[ "$r" != "$i" ]] && echo -n " ${h: -$maxlen}:" && rprefix=" [${bold}${blue}" && rsuffix=" ]"
-    echo "${rprefix}${r}${normal}${rsuffix}"
+    local o=""
+    [[ "$r" == "" ]] && r="$i" && rprefix="${bold}${white}"
+    [[ "$r" != "$i" ]] && o=" ${h: -$maxlen}:" && rprefix=" [${bold}${blue}" && rsuffix=" ]"
+    sout "${o}${rprefix}${r}${normal}${rsuffix}"
   done
 }
 
@@ -258,7 +271,7 @@ function timeElapsed() {
     tstr="$tstr $SEC secs."
    fi
   fi
-  echo "$tstr"
+  sout "$tstr"
 }
 
 #
@@ -287,7 +300,7 @@ function prepareConfigLine() {
 }
 
 function usage() {
-echo '
+echo "
 Will install PAM on a standalone EAP node or an EAP cluster. Execute this script on each
 node that will be part of the cluster.
 
@@ -366,11 +379,14 @@ Options:
                                Valid values are [ (empty) | download | path-to-githook]
                                Please refer to the documentation for valid values
                                'git_hook_location' is only taken into account if 'git_hook' has a valid value
+                               
+         - logfile=file       : create a log file of the installation.
+                                If 'file' is missing defaults to 'pam-setup.log'.
 
          Configuring an Oracle datasource
 
          - ojdbc_location    : location of the Oracle JDBC driver
-                               Example "$PWD'/oracle_jdbc_driver/ojdbc8.jar"
+                               Example '$PWD'/oracle_jdbc_driver/ojdbc8.jar
 
          - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
            oracle_port,        which is of the form
@@ -1020,6 +1036,67 @@ WORKDIR=$PWD
 
 CONFIG_DB="$WORKDIR"/pam-config.db
 
+nodeIP=''
+optB=''
+optC=''
+optS=''
+optO=''
+optL=''
+multiNode=1
+while getopts ":n:b:c:s:o:h" option; do
+  case $option in
+  	n ) nodeIP=$OPTARG;;
+    b ) optB=$OPTARG;;
+    c ) optC=$OPTARG;;
+    s ) optS=$OPTARG;;
+    o ) optO=$OPTARG;;
+  	h ) usage; exit 1;;
+  	: ) echo "No argument given"; opt=1; exit 1;;
+  	* ) echo "Unknown option"; usage; opt=1; exit 1;;
+  esac
+done
+
+
+#
+# - get extra options
+#   option1=value1:option2=value2:
+#
+declare -A configOptions
+if [[ ! -z "$optO" ]]; then
+  declare -a multiOptions
+  while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
+  # NOTE: Special characters in options will result in misconfigurations, quoting the multiOptions will not guard against this
+  # shellcheck disable=SC2068
+  for ondx in ${!multiOptions[@]}; do
+    while read -rd=; do tmpar+=("$REPLY"); done <<<"${multiOptions[$ondx]}="
+    k="${tmpar[0]}"
+    v="${tmpar[1]}" && v="${v:-1}"
+    [[ -n "$k" ]] && configOptions["$k"]="${v}"
+    unset tmpar
+  done
+  tmp="${configOptions[run_mode]}"
+  configOptions[run_mode]="development"
+  [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
+  unset tmp tmpar multiOptions
+  [[ "${configOptions[git_hook]}" == "bcgithook" ]] && checkEnv git && checkEnv curl
+  [[ "${configOptions[git_hook]}" == "kiegroup" ]] && checkEnv git && checkEnv curl && checkEnv mvn
+fi
+
+# check logfile option
+[ ${configOptions[logfile]+xxx} ] && LOGFILE="${configOptions[logfile]}" && [[ "$LOGFILE" == "1" ]] && LOGFILE="pam-setup.log"
+if [[ -n "$LOGFILE" ]]; then
+  if touch "$LOGFILE" &> /dev/null; then
+    loglog="USING LOG FILE : $LOGFILE"
+  else
+    loglog="LOG FILE $LOGFILE CANNOT BE ACCESSED - SKIPPING LOGGING"
+    LOGFILE=""
+  fi
+fi
+
+sout "PAM-SETUP - START"
+[[ -n "$loglog" ]] && sout "$loglog"
+unset loglog
+
 pamTargets=`extractHeaders`
 TARGET_CONFIG=target.conf
 goon=no
@@ -1041,33 +1118,15 @@ done
 if [[ "$goon" == "yes" ]]; then
   sout "PROCEEDING WITH ${bold}${yellow}$target${normal} "
 else
-  echo "NO BINARIES FOR PAM INSTALLATION FOUND - ABORTING"
+  sout "NO BINARIES FOR PAM INSTALLATION FOUND - ABORTING"
   exit 1
 fi
 
 rm -f $MASTER_CONFIG $TARGET_CONFIG
 
-nodeIP=''
-optB=''
-optC=''
-optS=''
-optO=''
-multiNode=1
-while getopts ":n:b:c:s:o:h" option; do
-  case $option in
-  	n ) nodeIP=$OPTARG;;
-    b ) optB=$OPTARG;;
-    c ) optC=$OPTARG;;
-    s ) optS=$OPTARG;;
-    o ) optO=$OPTARG;;
-  	h ) usage; exit 1;;
-  	: ) echo "No argument given"; opt=1; exit 1;;
-  	* ) echo "Unknown option"; usage; opt=1; exit 1;;
-  esac
-done
-
 prepareConfigDB
 
+summary " "
 summary "--- $target Installation Summary ---" " "
 
 # - check nodeIP values - default to localhost:8080
@@ -1133,30 +1192,6 @@ if [ "$pamInstall" == "kie" ] && [ ${#controllerListAr[@]} -lt 1 ]; then
 fi
 smartRouter="$optS"
 summary "Using Smart Router location :- ${smartRouter:-NOT INSTALLED}"
-#
-# - get extra options
-#   option1=value1:option2=value2:
-#
-declare -A configOptions
-if [[ ! -z "$optO" ]]; then
-  declare -a multiOptions
-  while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
-  # NOTE: Special characters in options will result in misconfigurations, quoting the multiOptions will not guard against this
-  # shellcheck disable=SC2068
-  for ondx in ${!multiOptions[@]}; do
-    while read -rd=; do tmpar+=("$REPLY"); done <<<"${multiOptions[$ondx]}="
-    k="${tmpar[0]}"
-    v="${tmpar[1]}" && v="${v:-1}"
-    [[ -n "$k" ]] && configOptions["$k"]="${v}"
-    unset tmpar
-  done
-  tmp="${configOptions[run_mode]}"
-  configOptions[run_mode]="development"
-  [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
-  unset tmp tmpar multiOptions
-  [[ "${configOptions[git_hook]}" == "bcgithook" ]] && checkEnv git && checkEnv curl
-  [[ "${configOptions[git_hook]}" == "kiegroup" ]] && checkEnv git && checkEnv curl && checkEnv mvn
-fi
 #
 [[ ! -r $EAP7_ZIP ]]      && sout "ERROR: Cannot read EAP.7 ZIP file $EAP7_ZIP -- exiting"          && exit 1;
 patchEAP=yes
@@ -1312,6 +1347,7 @@ rm -f $TMP_FILE
 # set -e
 
 timeElapsed
+sout "PAM-SETUP - END RUN"
 
 #
 # - end of script
