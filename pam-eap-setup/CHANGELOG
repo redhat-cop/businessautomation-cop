@@ -1,6 +1,11 @@
 
 # CHANGELOG
 
+-- RELEASE : 24 SEP 2020
+
+PAM: Updated for PAM.7.8.1
+PAM: Added installation log option
+
 -- RELEASE: 5 AUGUST 2020
 
 PAM: Updated for PAM.7.8
