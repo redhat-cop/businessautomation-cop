@@ -252,7 +252,7 @@ function prettyPrinter() {
 #
 function timeElapsed() {
   local diff=$SECONDS
-  local tstr="$0 runtime : "
+  local tstr="$0 installation time : "
   local HRS=$((diff / 3600))
   local MIN=$((diff % 3600 / 60))
   local SEC=$((diff % 3600 % 60))
@@ -380,8 +380,8 @@ Options:
                                Please refer to the documentation for valid values
                                'git_hook_location' is only taken into account if 'git_hook' has a valid value
                                
-         - logfile=file       : create a log file of the installation.
-                                If 'file' is missing defaults to 'pam-setup.log'.
+         - logfile=file      : create a log file of the installation.
+                               If 'file' is missing defaults to 'pam-setup.log'.
 
          Configuring an Oracle datasource
 

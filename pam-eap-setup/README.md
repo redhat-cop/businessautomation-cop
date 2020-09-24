@@ -3,6 +3,7 @@
 
 
 
+
 ![Build for pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20pam-eap-setup/badge.svg)
 
 # pam-setup
@@ -32,7 +33,7 @@ Supported (i.e. tested) versions:
 
 For details about node configuration check out [Nodes Configuration](#nodes-configuration) section at the end of this document. Also:
 
-- [Install location](#install-location)
+- [Install location - Installation log](#install-location---installation-log)
 - [Development vs Production Mode](#development-vs-production-mode)
 - [Enabling DEBUG logging](#enabling-debug-logging)
 - [Additional configuration with pam.config](#additional-configuration)
@@ -233,6 +234,8 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                                        Please refer to the documentation for valid values
                                        'git_hook_location' is only taken into account if 'git_hook' has a valid value
 
+                 - logfile=file      : create a log file of the installation.
+                                       If 'file' is missing defaults to 'pam-setup.log'.
 
                 Configuring an Oracle datasource
 
@@ -345,13 +348,51 @@ BC or KIE nodes will be created using the same EAP base installation, as per <ht
 - ActiveMQ Artemis disk threshold increased as per <https://access.redhat.com/solutions/4390511> to better handle near full disks
 - Enable CORS for first four nodes of KIE Server as per <https://access.redhat.com/solutions/4036301> and <https://access.redhat.com/solutions/3713131>
 
-### Install location
+### Install location - Installation log
 
 By default PAM will be installed in a directory named `pam` in the current directory. `pam` will be created if it does not exist.  Installation location can be overriden by the `install_dir` option. The startup script will be named after the installation location with a `go_` prefix.
 
 Example:
   - `./pam-setup.sh` will install PAM in a directory named `pam` and the startup script will be named `go_pam.sh`
   - `./pam-setup.sh -o install_dir=wick` will install PAM in a directory named `wick` and the startup script will be named `go_wick.sh`
+
+An installation log can be obtained by specifying the `-o logfile=file` option. `file` is optional and will default to `pam-setup.log` if not specified. An installation log will not overwrite existing contents of the `file` .
+
+An installation log would look similar to the following:
+
+```
+2020-09-23 05:22:32 PAM-SETUP - END RUN
+2020-09-23 05:23:15 PAM-SETUP - START
+2020-09-23 05:23:15 USING LOG FILE : /tmp/pam7.log
+2020-09-23 05:23:15 PROCEEDING WITH PAM781 
+2020-09-23 05:23:15 PAM Installation mode : both
+2020-09-23 05:23:15 Installing EAP at /tmp/p7 using jboss-eap-7.3.0.zip
+2020-09-23 05:23:16 Patching EAP with jboss-eap-7.3.2-patch.zip
+2020-09-23 05:23:26 Installing node1 as standalone_42253d670efe
+2020-09-23 05:23:54  
+2020-09-23 05:23:54 --- PAM781 Installation Summary ---
+2020-09-23 05:23:54  
+2020-09-23 05:23:54        PAM Installation mode : [ both ]
+2020-09-23 05:23:54        Using Controller List : [ http://localhost:8080 ]
+2020-09-23 05:23:54  Using Smart Router location : [ NOT INSTALLED ]
+2020-09-23 05:23:54          Installed EAP using : [ jboss-eap-7.3.0.zip ]
+2020-09-23 05:23:54         EAP install location : [ /tmp/p7 ]
+2020-09-23 05:23:54             Patched EAP with : [ jboss-eap-7.3.2-patch.zip ]
+2020-09-23 05:23:54 --- Node instalation node1 as standalone : standalone_42253d670efe
+2020-09-23 05:23:54          Installed PAM using : [ rhpam-7.8.1-business-central-eap7-deployable.zip ]
+2020-09-23 05:23:54         Installed KIE SERVER : [ rhpam-7.8.1-kie-server-ee8.zip ]
+2020-09-23 05:23:54         Added EAP admin user : [ admin / S3cr3tK3y# ]
+2020-09-23 05:23:54               Added PAM user : [ pamAdmin / S3cr3tK3y# / kie-server,rest-all,admin,analyst,kiemgmt,manager,user,developer,process-admin ]
+2020-09-23 05:23:54               Added PAM user : [ pamAnalyst / r3dh4t456^ / rest-all,analyst ]
+2020-09-23 05:23:54               Added PAM user : [ pamDeveloper / r3dh4t456^ / rest-all,developer ]
+2020-09-23 05:23:54               Added PAM user : [ pamUser / r3dh4t456^ / rest-all,user ]
+2020-09-23 05:23:54               Added PAM user : [ kieServerUser / kieServerUser1234; / kie-server,rest-all ]
+2020-09-23 05:23:54               Added PAM user : [ controllerUser / controllerUser1234; / kie-server,rest-all ]
+2020-09-23 05:23:54               Startup script : [ go_p7.sh ]
+2020-09-23 05:23:54  
+2020-09-23 05:23:54 ./pam-setup.sh installation time :  39 secs.
+2020-09-23 05:23:54 PAM-SETUP - END RUN
+```
 
 ### Development vs Production Mode
 
