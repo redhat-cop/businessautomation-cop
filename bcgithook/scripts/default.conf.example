@@ -95,7 +95,8 @@
 # BRANCH_ALLOW=br2,feature/fa
 # BRANCH_ALLOW_REGEX="^(hotfix/)|^(feature)"
 #
-# BRACH_MAP=""
+
+BRACH_MAP="damon:phintias,frodo:sam,earth:moon"
 
 LOG_LOCATION=$HOME
 LOG_SYSTEM_REPOS=yes
