@@ -108,7 +108,7 @@ while read -rd,; do
 done <<<"$BRANCH_MAP,"
 
 declare -A bmapper
-for ndx in ${!list[@]}; do
+for ndx in "${!list[@]}"; do
   while read -rd:; do tmpar+=("$REPLY"); done <<<"${list[$ndx]}:"
   # k="${tmpar[0]}" && k="$(echo -e "${k}" | tr -d '[:space:]')"
   # get from array, tirm leading and trailing whitespace
