@@ -102,6 +102,22 @@ debug "START"
                           && debug "USER NAME, PASSWORD OR GIT URL IS MISSING - ABORTING" \
                           && exit 2
 
+# prepare any branch mappings
+while read -rd,; do
+  list+=("$REPLY");
+done <<<"$BRANCH_MAP,"
+
+declare -A bmapper
+for ndx in "${!list[@]}"; do
+  while read -rd:; do tmpar+=("$REPLY"); done <<<"${list[$ndx]}:"
+  # k="${tmpar[0]}" && k="$(echo -e "${k}" | tr -d '[:space:]')"
+  # get from array, tirm leading and trailing whitespace
+  k="${tmpar[0]}" && k="${k#"${k%%[![:space:]]*}"}" && k="${k%"${k##*[![:space:]]}"}"
+  v="${tmpar[1]}" && v="${v#"${v%%[![:space:]]*}"}" && v="${v%"${v##*[![:space:]]}"}"
+  [[ -n "$k" ]] && [[ -n "$v" ]] && bmapper["$k"]="${v}"
+  unset tmpar
+done
+
 gitUserName="$GIT_USER_NAME"
 gitPasswd="$GIT_PASSWD"
 
@@ -170,14 +186,12 @@ for bru in $bruli; do
   if [[ "$deny" == "yes" ]]; then
     debug "COMMITS TO BRANCH [$bru] ARE NOT ALLOWED - COMMIT NOT PUSHED TO $remoteGitUrl"
   else
-    debug "PUSHING BRANCH [$bru] TO $remoteGitUrl"
-    git push -u "$BBID" "$bru":"$bru"
+    source="$bru"
+    target="$bru"
+    [ ${bmapper[$source]+xxx} ] && target="${bmapper[$source]}"
+    debug "PUSHING BRANCH [$source:$target] TO $remoteGitUrl"
+    git push -u "$BBID" "$source":"$target"
   fi
 done
 
 debug "END"
-
-#
-# INSTALLED AT : 2020-07-01 19:04:08
-#
-

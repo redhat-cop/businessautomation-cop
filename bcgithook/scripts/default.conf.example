@@ -18,6 +18,8 @@
 # LOG_SYSTEM_REPOS = [yes|no], set to "yes" to log access to PAM system
 #                              repositories, increases verbosity
 #
+# --- Selectively allow/deny pushing commits to remote repo
+#
 # BRANCH_DENY=master,release
 # BRANCH_ALLOW=br2,feature/fa
 # BRANCH_ALLOW_REGEX="^(hotfix/)|^(feature/)"
@@ -52,6 +54,16 @@
 # Commits in branch "devel" will not be pused to remote repo as BRANCH_ALLOW_REGEX overrides BRANCH_ALLOW
 # Only commits in branches starting with "hotfix/" or "feature/" will be pused to remote repo
 #
+#
+# --- Branch Mapping : Map one or more branches to different branches in remote repo
+# 
+# A comma-separated list of "SOURCE:TARGET" pairs that would map the source
+# branch SOURCE to branch TARGET on the remote repo.
+# Spaces between commas(,) or semi-colons(:) are trimmed.
+#
+# BRANCH_MAP="SOURCE1:TARGET1,SOURCE2:TARGET2,...."
+#
+#
 # Uncomment and modify as appropriate
 #
 # GIT_TYPE=""
@@ -83,6 +95,8 @@
 # BRANCH_ALLOW=br2,feature/fa
 # BRANCH_ALLOW_REGEX="^(hotfix/)|^(feature)"
 #
+
+BRANCH_MAP="damon:phintias,frodo:sam,earth:moon"
 
 LOG_LOCATION=$HOME
 LOG_SYSTEM_REPOS=yes
