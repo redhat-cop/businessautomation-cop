@@ -7,12 +7,13 @@ INSTALL_DIR=/opt
 #
 groupadd -r jboss
 useradd -r -g jboss -d ${INSTALL_DIR}/jboss -s /sbin/nologin jboss
-mv jboss-eap-7.2 ${INSTALL_DIR}
-echo 'JAVA_OPTS="$JAVA_OPTS -Xmx2048m "' >> ${INSTALL_DIR}/jboss-eap-7.2/bin/standalone.conf
-ln -s ${INSTALL_DIR}/jboss-eap-7.2 ${INSTALL_DIR}/jboss
-cp ${INSTALL_DIR}/jboss-eap-7.2/settings.xml /etc/maven/settings.xml
+src_dir=jboss-eap-7.2 && [[ -d pam ]] && src_dir=pam
+mv "$src_dir" "${INSTALL_DIR}"
+echo 'JAVA_OPTS="$JAVA_OPTS -Xmx2048m "' >> ${INSTALL_DIR}/"${src_dir}"/bin/standalone.conf
+ln -s ${INSTALL_DIR}/"${src_dir}" ${INSTALL_DIR}/jboss
+cp ${INSTALL_DIR}/"${src_dir}"/settings.xml /etc/maven/settings.xml
 chown -R jboss:jboss ${INSTALL_DIR}/jboss
-chown -R jboss:jboss ${INSTALL_DIR}/jboss-eap-7.2
+chown -R jboss:jboss ${INSTALL_DIR}/"${src_dir}"
 mkdir /etc/jboss
 
 cat << __JBOSS > /etc/jboss/jboss.conf
@@ -69,3 +70,4 @@ chown jboss:jboss /var/log/jboss
 systemctl daemon-reload
 systemctl enable jboss.service
 systemctl start jboss.service
+

@@ -1,9 +1,75 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 # - setup a local environment with BusinessCentral and one KIE Server
 #   installed in a single EAP node
 #
+
+#
+# sanity environment check
+#
+CYGWIN_ON=no
+MACOS_ON=no
+LINUX_ON=no
+min_bash_version=4
+
+# - try to detect CYGWIN
+# a=`uname -a` && al=${a,,} && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+# use awk to workaround MacOS bash version
+a=$(uname -a) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
+if [[ "$CYGWIN_ON" == "yes" ]]; then
+  echo "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
+  min_bash_version=4
+fi
+
+# - try to detect MacOS
+a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%darwin} && [[ "$al" != "$ac" ]] && MACOS_ON=yes
+[[ "$MACOS_ON" == "yes" ]] && min_bash_version=5 && echo "macOS DETECTED"
+
+# - try to detect Linux
+a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%linux} && [[ "$al" != "$ac" ]] && LINUX_ON=yes
+[[ "$LINUX_ON" == "yes" ]] && min_bash_version=4
+
+bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
+[[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1 
+
+#
+# sanity checks on environment environment
+#
+command -v sed &> /dev/null      || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
+command -v java &> /dev/null     || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
+command -v unzip &> /dev/null    || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
+command -v sqlite3 &> /dev/null  || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
+command -v grep &> /dev/null     || { echo >&2 'ERROR: grep not installed. Please install grep to continue - Aborting'; exit 1; }
+command -v awk &> /dev/null      || { echo >&2 'ERROR: awk not installed. Please install awk to continue - Aborting'; exit 1; }
+command -v basename &> /dev/null || { echo >&2 'ERROR: basename not installed. Please install basename to continue - Aborting'; exit 1; }
+# required to checkout and built dependencies
+# command -v curl &> /dev/null     || { echo >&2 'ERROR: curl not installed. Please install curl to continue - Aborting'; exit 1; }
+# command -v git &> /dev/null     || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
+# command -v mvn &> /dev/null     || { echo >&2 'ERROR: MAVEN not installed. Please install MAVEN.3.6.2 (or later) to continue - Aborting'; exit 1; }
+
+# - check mvn version
+#mvnVersion=$(mvn -version | head -1 | awk '{print $3}' | tr -d '.')
+#[[ "$mvnVersion" -lt "362" ]]     || { echo >&2 "WARNING: MAVEN version($mvnVersion) too old. Please consider upgrading to version 3.6.2 (or later)"; }
+#unset mvnvVersion
+
+# - check sed version on Mac
+if [[ "$MACOS_ON" == "yes" ]]; then
+  macsed=no
+  macstatus=256
+  sed --version &> sed.out; macstatus=$?
+  if [[ "$macstatus" -eq 0 ]]; then
+    maxv=$(sed --version | head -1 | awk '{print $NF}' | cut -d'.' -f 1)
+    minv=$(sed --version | head -1 | awk '{print $NF}' | cut -d'.' -f 2)
+    [[ "$maxv" -ge "4" ]] && [[ "$minv" -ge "8" ]] && macsed=yes
+    unset maxv minv
+  else
+    macsed=no
+  fi
+  [[ "$macsed" == "yes" ]] || { echo >&2 'ERROR: GNU sed not found. Please install GNU sed.4.8 (or latest) to continue - Aborting'; exit 2; }
+  unset macsed macstatus
+  rm -f sed.out
+fi
 
 #
 # === ENVIRONMENT DIVISION - CONFIGURATION SECTION ===
@@ -41,17 +107,6 @@ serverId='remote-kieserver'
 # -- No need to configure anything beyond this point
 #
 
-#
-# sanity checks on environment environment
-#
-command -v java &> /dev/null || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
-command -v unzip &> /dev/null || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
-command -v curl &> /dev/null || { echo >&2 'ERROR: CURL not installed. Please install CURL to continue - Aborting'; exit 1; }
-command -v sqlite3 &> /dev/null || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
-# required to checkout and built dependencies
-command -v mvn &> /dev/null || { echo >&2 'ERROR: Maven not installed. Please install Maven.3.3.9 (or later) to continue - Aborting'; exit 1; }
-command -v git &> /dev/null || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; }
-
 # check if stdout is a terminal...
 if test -t 1; then
 
@@ -79,10 +134,13 @@ MASTER_CONFIG=master.conf
 #
 # versions supported
 #
-cat << "__CONFIG" > "$MASTER_CONFIG"
+cat << "__CONFIG" > $MASTER_CONFIG
+DM781  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.8.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.8.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
+PAM781 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.8.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
+PAM780 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.8.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
 PAM771 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-DM771  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.7.1-business-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.7.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
 PAM770 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+DM771  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.7.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.7.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
 DM760  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.6.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.6.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
 PAM760 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.6.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.6.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
 PAM751 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.5.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.5.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
@@ -99,18 +157,22 @@ __CONFIG
 #
 # define helper functions
 #
+function timestamp() {
+  echo $(date '+%Y-%m-%d %H:%M:%S')
+}
+
 function extractHeaders() {
-  grep -v '^#' "$MASTER_CONFIG" | awk -F'|' '{ if (NF>0) printf "\t"$1"\n"; }'
+  grep -v '^#' $MASTER_CONFIG | awk -F'|' '{ if (NF>0) printf "\t"$1"\n"; }'
 }
 
 function extractConfiguration() {
-  grep -v '^#' "$MASTER_CONFIG" | grep "^$2 " | awk -F'|' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i"\n"; }' > $1
-  cp "$1" "/tmp/$2.conf"
+  grep -v '^#' $MASTER_CONFIG | grep "^$2 " | awk -F'|' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i"\n"; }' > "$1"
+  cp "$1" /tmp/"$2".conf
 }
 
 function randomid() {
   # longer version, seems overkill
-  #echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
+  # echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
   echo $(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')
 }
 
@@ -118,16 +180,23 @@ function bigString() {
   local in=$1
   local le=${#in}
   local o=$in;
-  if [ $le -gt 60 ]; then
+  if [ "$le" -gt 60 ]; then
     o=${in:0:15}'...'${in: -25}
   fi
-  echo $o
+  echo "$o"
 }
 
+function log() {
+  # printf "%s\n" "$@" | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g" >> "pam-setup.log"
+  printf "%s\n" "$@" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' >> "$LOGFILE"
+}
 function sout() {
   declare -a arr=("$@")
   for i in "${arr[@]}"; do
-    echo ':: '$i
+    echo ':: '"$i"
+    if [[ -n "$LOGFILE" ]]; then
+      log "$(timestamp) $i"
+    fi
   done
 }
 
@@ -138,8 +207,15 @@ function waitForKey() {
   echo
   echo "$@"
   echo
-  read -p 'Press ENTER key to continue...'
+  read -r -p 'Press ENTER key to continue...'
   echo
+}
+
+function checkEnv() {
+  local sw="$1"
+  [[ "$sw" == "curl" ]] && ( command -v curl &> /dev/null || { echo >&2 'ERROR: curl not installed. Please install curl to continue - Aborting'; exit 1; } )
+  [[ "$sw" == "git" ]]  && ( command -v git &> /dev/null  || { echo >&2 'ERROR: GIT not installed. Please install GIT.1.8 (or later) to continue - Aborting'; exit 1; } )
+  [[ "$sw" == "mvn" ]]  && ( command -v mvn &> /dev/null  || { echo >&2 'ERROR: MAVEN not installed. Please install MAVEN.3.6.2 (or later) to continue - Aborting'; exit 1; } )
 }
 
 declare -a summaryAr
@@ -152,24 +228,51 @@ function prettyPrinter() {
   declare -a arr=("$@")
   local maxlen=0
   for i in "${arr[@]}"; do
-    local h=$(echo $i | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
+    local h=$(echo "$i" | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
     local strlenh=${#h}
     [[ $strlenh -gt $maxlen ]] && maxlen=$strlenh
   done
   local spacer=$(printf '%*s' $maxlen)
   for i in "${arr[@]}"; do
-    local h=$(echo $i | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
+    local h=$(echo "$i" | grep -v '^-' | awk -F':-' '{ if (NF>0) printf $1; }')
     local strlen=${#h}
     h=" ${spacer}${h}"
-    local r=$(echo $i | awk -F':-' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i; }')
+    local r=$(echo "$i" | awk -F':-' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i; }')
     local rprefix=""
     local rsuffix=""
-    [[ "$r" == "" ]] && r=$i && rprefix="${bold}${white}"
-    [[ "$r" != "$i" ]] && echo -n " ${h: -$maxlen}:" && rprefix=" [${bold}${blue}" && rsuffix=" ]"
-    echo "${rprefix}${r}${normal}${rsuffix}"
+    local o=""
+    [[ "$r" == "" ]] && r="$i" && rprefix="${bold}${white}"
+    [[ "$r" != "$i" ]] && o=" ${h: -$maxlen}:" && rprefix=" [${bold}${blue}" && rsuffix=" ]"
+    sout "${o}${rprefix}${r}${normal}${rsuffix}"
   done
 }
 
+#
+# print elapsed time for execution
+#
+function timeElapsed() {
+  local diff=$SECONDS
+  local tstr="$0 installation time : "
+  local HRS=$((diff / 3600))
+  local MIN=$((diff % 3600 / 60))
+  local SEC=$((diff % 3600 % 60))
+  if [ "$HRS" -gt 0 ]; then
+   tstr="$tstr $HRS hrs. "
+  fi
+  if [ "$MIN" -gt 0 ]; then
+   tstr="$tstr $MIN mins. "
+  fi
+  if [ "$SEC" -gt 0 ]; then
+   if [ "$MIN" -gt 0 ]; then
+    tstr="$tstr and $SEC secs."
+   elif [ "$HRS" -gt 0 ]; then
+    tstr="$tstr and $SEC secs."
+   else
+    tstr="$tstr $SEC secs."
+   fi
+  fi
+  sout "$tstr"
+}
 
 #
 # echo the value for the config key escaping slashes
@@ -184,15 +287,15 @@ function prepareConfigLine() {
   local args=() && while read -rd:; do args+=("$REPLY"); done <<<"$key:" && local keyPrefix="${args[0]}" && key="${args[1]}"
   [[ -z $key ]] && key="$keyPrefix"
   if [[ "x$key" != "xCOMMENT" ]]; then
-    [[ ! -z "$key" ]] && [ ${pamConfigAr[$key]+xxx} ] && result="${pamConfigAr[$key]}"
+    [[ -n "$key" ]] && [ ${pamConfigAr[$key]+xxx} ] && result="${pamConfigAr[$key]}"
     # result=$(echo ${result} | sed -e "s#/#\\\/#g")
   fi
-  
+
   if [[ "x$keyPrefix" != "xCOMMENT" ]] && [[ ! -z "$result" ]]; then
     pamConfigList+=( "if (outcome == success) of /system-property=$key:read-resource" )
-    pamConfigList+=( "  /system-property=$key:remove" )
+    pamConfigList+=( "  /system-property=$key:remove > $TMP_FILE" )
     pamConfigList+=( "end-if" )
-    pamConfigList+=( "/system-property=$key:add(value=$result)" )
+    pamConfigList+=( "/system-property=$key:add(value=$result) > $TMP_FILE" )
   fi
 }
 
@@ -201,14 +304,14 @@ echo "
 Will install PAM on a standalone EAP node or an EAP cluster. Execute this script on each
 node that will be part of the cluster.
 
-usage: `basename $0` [-h help]
+usage: $(basename "$0") [-h help]
                      -n ip[:node]
                      -b [kie|controller|both|multi=2...], defaults to 'both'
                      [-c ip1:port1,ip2:port2,...]
                      [-s smart_router_ip:port]
-                     [-o additional_options ], specify additional options
+                     [-o option1=value1[:option2=value2...]], specify additional options
 
-example: `basename $0` -n localhost
+example: $(basename "$0") -n localhost
 
 Options:
     -n : the IP[:port] of the node it will operate on, default is localhost:8080
@@ -234,26 +337,82 @@ Options:
           List of controllers in the form of comma-sperated list of 'IP:PORT' pairs
           e.g. 10.10.1.20:8080,192.168.1.34:8350
 
-     -s : Only for KIE ES, optional. Specify Smart Router location, eg 10.10.1.23:9000
+    -s : Only for KIE ES, optional. Specify Smart Router location, eg 10.10.1.23:9000
 
-     -o : Specify additional options. Supported options are:
+    -o : Specify additional options. Supported options are:
 
-          - nodeX_config=file : declare file with additional commands to be applied by
-                                EAPs jboss-cli tool for each node installed
-                                X stands for the number of each node, e.g. node1_config, node2_config, etc
-                                Files to enable CORS for KIE Server in the first four nodes
-                                are provided.
-                                For more nodes copy the relevant files from the addons directory
+         - nodeX_config=file : declare file with additional commands to be applied by
+                               EAPs jboss-cli tool for each node installed
+                               X stands for the number of each node, e.g. node1_config, node2_config, etc
+                               If the default configuration for a file is present in the addons directory
+                               and a file is specified with this option both files will be applied
+                               sequentially with the default applied first
+                               Multiple files can be specified using comma(,) to separate them,
+                               eg. node1_config=fileA,fileB
 
-          - debug_logging     : if present will set logging level to DEBUG
+         - debug_logging     : if present will set logging level to DEBUG
 
-          - dump_requests     : if present will enable request dumping to log file
+         - dump_requests     : if present will enable request dumping to log file
 
-                                WARNING: enabling debug_logging and dump_requests
-                                can generate copious amount of output and can have
-                                significant impact on perforance
+                               WARNING: enabling debug_logging and dump_requests
+                               can generate copious amount of output and can have
+                               significant impact on perforance
 
-     -h : print this message
+         - install_dir       : Installation directory. Defaults to 'jboss-eap-7.2'.
+                               If specified, installation will first happen to default location
+                               and then moved to this one.
+
+         - jvm_memory        : Configures the '-Xmx' parameter of JVM. Number is assumed to imply MB.
+                               Example 'jvm_memory=4096' will be '-Xmx4096m'
+                               
+         - run_mode          : [ development | production ], defaults to 'development'
+                               Configure Business Central and KIE Server to run
+                               in 'development' or 'production' mode.
+                               Please refer to documentation for more information
+                               
+         - git_hook          : install named post-commit git hook implementation
+                              Supported implementations are:
+                               - 'bcgithook' : from https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                               - 'kiegroup'  : from https://github.com/kiegroup/bc-git-integration-push
+                               
+         - git_hook_location : location of post-commit git hooks implementation
+                               Valid values are [ (empty) | download | path-to-githook]
+                               Please refer to the documentation for valid values
+                               'git_hook_location' is only taken into account if 'git_hook' has a valid value
+                               
+         - logfile=file      : create a log file of the installation.
+                               If 'file' is missing defaults to 'pam-setup.log'.
+
+         Configuring an Oracle datasource
+
+         - ojdbc_location    : location of the Oracle JDBC driver
+                               Example '$PWD'/oracle_jdbc_driver/ojdbc8.jar
+
+         - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
+           oracle_port,        which is of the form
+           oracle_sid             jdbc:oracle:thin:@//ORACLE_HOST:ORACLE_PORT/ORACLE_SID
+
+         - oracle_user       : The user name to be used for connecting to Oracle DB
+
+         - oracle_pass       : The password for the Oracle user
+
+         Configuring an PostgreSQL datasource
+
+         - ojdbc_location    : location of the Oracle JDBC driver
+                               Example "$PWD/oracle_jdbc_driver/ojdbc8.jar"
+
+         - postgresql_host,  : These variables are used for bulding the PostgreSQL JDBC connection URL
+           postgresql_port,    which is of the form
+           postgresql_sid         jdbc:postgresql://POSTGRESQL_HOST:POSTGRESQL_PORT/POSTGRESQL_SID
+
+         - postgresql_user   : The user name to be used for connecting to PostgreSQL DB
+
+         - postgresql_pass   : The password for the PostgreSQL user         
+         WARNING
+         To properly configure a datasource all Database related
+         parameters need to be specified
+
+    -h : print this message
 
 Notes:
   - If a file named settings.xml is found in the current directory during
@@ -267,7 +426,7 @@ Notes:
       User            Role
       ----            ----
       admin           EAP admin
-      pamAdmin        rest-all,kie-server,admin,analyst,kiemgmt
+      pamAdmin        kie-server,rest-all,admin,analyst,kiemgmt,manager,user,developer,process-admin
       pamAnalyst      analyst
       pamDeveloper    developer
       pamUser         user
@@ -275,6 +434,18 @@ Notes:
       controllerUser  kie-server,rest-all
 
     Passwords for these users will be printed at the end of the installation in stdout
+    
+  - Examples for git_hook_location
+  
+      git_hook_location value  | what is means
+      -------------------------+------------------
+           (empty)             | will look for bcgithook based on the 'businessautomation-cop' repository structure
+                               | bcgithook should be in the path '../bcgithook'
+                               | if not found at that path, 'git_hook_location' will switch to 'download'
+      -------------------------+------------------
+           download            | Will download 'businessautomation-cop' repository
+      -------------------------+------------------
+        '/path/to/bcgithook'   | Will use this path and fail if not possible
 "
 }
 
@@ -285,15 +456,15 @@ function installUsers() {
   local nodedir=${1:-standalone}
   # have to add EAP admin user as PAM overrides config
   local scPath="$EAP_HOME/${nodedir}/configuration"
-  [[ "$CYGWIN_ON" == "yes" ]] && scPath=$(cygpath -w ${scPath})
-  pushd $EAP_HOME/bin &> /dev/null
-    ./add-user.sh -sc $scPath -s --user "$eapAdminName" --password "$eapAdminPasswd"
+  [[ "$CYGWIN_ON" == "yes" ]] && scPath="$(cygpath -w "${scPath}")"
+  pushd "$EAP_HOME"/bin &> /dev/null
+    ./add-user.sh -sc "$scPath" -s --user "$eapAdminName" --password "$eapAdminPasswd"
      summary "Added EAP admin user :- $eapAdminName / $eapAdminPasswd"
     #
     # look for : org.jbpm.ht.admin.user, org.jbpm.ht.admin.group, 16.3.1. Tasks visible to the current user
     #
     for u in "${uList[@]}"; do
-      ./add-user.sh -sc $scPath -s -a --user "$u" --password "${uPass[$u]}" --role "${uRole[$u]}"
+      ./add-user.sh -sc "$scPath" -s -a --user "$u" --password "${uPass[$u]}" --role "${uRole[$u]}"
       summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
     done
   popd &> /dev/null
@@ -303,9 +474,9 @@ function installUsers() {
 # - install BC
 #
 function installBC() {
-  cd $WORKDIR
-  unzip -qq -o $PAM_ZIP
-  summary "Installed PAM using :- `bigString $PAM_ZIP`"
+  cd "$WORKDIR"
+  unzip -qq -o "$PAM_ZIP"
+  summary "Installed PAM using :- $(bigString "$PAM_ZIP")"
 }
 
 #
@@ -313,18 +484,18 @@ function installBC() {
 #
 function installKIE() {
   local nodedir=${1:-standalone}
-  cd $WORKDIR
+  cd "$WORKDIR"
   rm -rf tmp/kie_zip
   mkdir -p tmp/kie_zip
-  cp $KIE_ZIP tmp/kie_zip
+  cp "$KIE_ZIP" tmp/kie_zip
   pushd tmp/kie_zip &> /dev/null
-    unzip -qq -o $KIE_ZIP
+    unzip -qq -o "$KIE_ZIP"
   popd &> /dev/null
-  cp -r tmp/kie_zip/kie-server.war $EAP_HOME/${nodedir}/deployments
-  : > $EAP_HOME/${nodedir}/deployments/kie-server.war.dodeploy
-  cp tmp/kie_zip/SecurityPolicy/* $EAP_HOME/bin
+  cp -r tmp/kie_zip/kie-server.war "$EAP_HOME"/"${nodedir}"/deployments
+  : > "$EAP_HOME"/"${nodedir}"/deployments/kie-server.war.dodeploy
+  cp tmp/kie_zip/SecurityPolicy/* "$EAP_HOME"/bin
   rm -rf tmp
-  summary "Installed KIE SERVER :- `bigString $KIE_ZIP`"
+  summary "Installed KIE SERVER :- $(bigString "$KIE_ZIP")"
 }
 
 
@@ -333,24 +504,24 @@ function installKIE() {
 #
 function checkConfiguration() {
   local nodedir=${1:-standalone}
-  cd $WORKDIR
-  xmlConfig=$EAP_HOME/${nodedir}/configuration/standalone.xml
-  xmlConfigHA=$EAP_HOME/${nodedir}/configuration/standalone-full-ha.xml
-  if [ ! -r $xmlConfig ]; then
+  cd "$WORKDIR"
+  xmlConfig="$EAP_HOME"/${nodedir}/configuration/standalone.xml
+  xmlConfigHA="$EAP_HOME"/${nodedir}/configuration/standalone-full-ha.xml
+  if [ ! -r "$xmlConfig" ]; then
     sout "ERROR: Cannot read configuration $xmlConfig -- exiting"
     exit 1;
   fi
-  if [ ! -r $xmlConfigHA ]; then
+  if [ ! -r "$xmlConfigHA" ]; then
     sout "ERROR: Cannot read configuration $xmlConfigHA -- exiting"
     exit 1;
   fi
-  cp $xmlConfig $xmlConfig-orig
-  cp $xmlConfigHA $xmlConfig
-  [[ "$CYGWIN_ON" == "yes" ]] && xmlConfig=$(cygpath -w ${xmlConfig})
+  cp "$xmlConfig" "$xmlConfig"-orig
+  cp "$xmlConfigHA" "$xmlConfig"
+  [[ "$CYGWIN_ON" == "yes" ]] && xmlConfig="$(cygpath -w "${xmlConfig}")"
   #
   # custom directories to accommodate multinode installation
   #
-  mkdir -p $EAP_HOME/${nodedir}/{kie,git,metaindex}
+  mkdir -p "$EAP_HOME"/"${nodedir}"/{kie,git,metaindex}
 }
 
 #
@@ -369,7 +540,7 @@ function modifyConfiguration() {
   #nodeCounter=$((nodeCounter-1)) && [[ "$nodedir" == "standalone" ]] && nodeCounter=0
   #local nodeOffset=${nodeConfig['nodeOffset']}
   #nodePort=$((basePort+nodeOffset))
-  checkConfiguration $nodedir
+  checkConfiguration "$nodedir"
   BASE_URL='http://'${nodeIP}:${nodeConfig['nodePort']}
 
   #
@@ -377,8 +548,8 @@ function modifyConfiguration() {
   #
   #   comments support : https://stackoverflow.com/a/48155918
   #
+  unset pamConfigList
   declare -a pamConfigList
-  declare -A pamConfigAr
   if [[ -r pam.config ]]; then
     while read PARAM VALUE; do
      [[ "$PARAM" =~ ^[[:space:]]*# ]] && continue
@@ -392,57 +563,64 @@ function modifyConfiguration() {
   # - create keystore with the KIE server and Controller user
   #
   local ksPath="$EAP_HOME/${nodedir}/configuration"
-  [[ "$CYGWIN_ON" == "yes" ]] && ksPath=$(cygpath -w ${ksPath})
+  [[ "$CYGWIN_ON" == "yes" ]] && ksPath="$(cygpath -w "${ksPath}")"
   echo "${uPass[$kieServerUserName]}"     | keytool -noprompt -importpassword -keystore "$ksPath/eigg.jceks" -keypass kieServerUserPasswd     -alias kieServerUser     -storepass eiggPass -storetype JCEKS 2> /dev/null
   echo "${uPass[$kieControllerUserName]}" | keytool -noprompt -importpassword -keystore "$ksPath/eigg.jceks" -keypass kieControllerUserPasswd -alias kieControllerUser -storepass eiggPass -storetype JCEKS 2> /dev/null
 
   # - generate random serverId if none specified
   if [ "$serverId" == "" ]; then
-    serverId='r-'`randomid`
+    serverId='r-'$(randomid)
   fi
-  tmpf=tmp.`randomid`
   # following property not required for PAM, useful for clustered deployemnts, harmless otherwise
-  prepareConfigLine "jboss.node.name"                       "${nodeConfig[nodeName]}"  
-  prepareConfigLine "jboss.tx.node.id"                      "${nodeConfig[nodeName]}"  
-  prepareConfigLine "org.kie.server.repo"                   '${jboss.server.data.dir}'  
-  prepareConfigLine "org.uberfire.nio.git.dir"              '${jboss.server.base.dir}/git'  
-  prepareConfigLine "org.uberfire.metadata.index.dir"       '${jboss.server.base.dir}/metaindex'  
-  prepareConfigLine "org.guvnor.m2repo.dir"                 '${jboss.server.base.dir}/kie'  
-  prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'  
+  prepareConfigLine "jboss.node.name"                       "${nodeConfig[nodeName]}"
+  prepareConfigLine "jboss.tx.node.id"                      "${nodeConfig[nodeName]}"
+  prepareConfigLine "org.kie.server.repo"                   '${jboss.server.data.dir}'
+  prepareConfigLine "org.uberfire.nio.git.dir"              '${jboss.server.base.dir}/git'
+  prepareConfigLine "org.uberfire.metadata.index.dir"       '${jboss.server.base.dir}/metaindex'
+  prepareConfigLine "org.guvnor.m2repo.dir"                 '${jboss.server.base.dir}/kie'
+  if [[ "${configOptions[run_mode]}" == "development" ]]; then
+    prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'
+    prepareConfigLine "org.kie.server.mode"                   'development'
+  else # production
+    prepareConfigLine "org.guvnor.project.gav.check.disabled" 'false'
+    prepareConfigLine "org.kie.server.mode"                   'production'
+  fi
   # <property name="org.kie.server.domain" value="user_authntication_JAAS_LoginContext_domain_when_using_JMS"/>
   # check for settings.xml and (un)comment accordingly while copying settings.xml in place
-  local keyPrefix="COMMENT" && [[ -r settings.xml ]] && cp settings.xml $EAP_HOME && keyPrefix=""
+  local keyPrefix="COMMENT" && [[ -r settings.xml ]] && cp settings.xml "$EAP_HOME" && keyPrefix=""
   # cPrefix='<!-- ' && cSuffix=' -->' && [[ -r settings.xml ]] && cPrefix="" && cSuffix=""
   # set kie.maven.settings.custom to your custom settings.xml
-  prepareConfigLine "${keyPrefix}:kie.maven.settings.custom"     '${jboss.home.dir}/settings.xml'  
-  prepareConfigLine "COMMENT:org.kie.server.controller.connect"  '10000_milliseconds_delay_for_controller_connect'  
-  prepareConfigLine "appformer.ssh.keys.storage.folder"          '${jboss.server.base.dir}/ssh_keys'  
+  prepareConfigLine "${keyPrefix}:kie.maven.settings.custom"     '${jboss.home.dir}/settings.xml'
+  prepareConfigLine "COMMENT:org.kie.server.controller.connect"  '10000_milliseconds_delay_for_controller_connect'
+  prepareConfigLine "appformer.ssh.keys.storage.folder"          '${jboss.server.base.dir}/ssh_keys'
   # uncomment following line to enable git hooks
-  # prepareConfigLine "org.uberfire.nio.git.hooks"                 '${jboss.home.dir}/git-hooks'  
+  # prepareConfigLine "org.uberfire.nio.git.hooks"                 '${jboss.home.dir}/git-hooks'
   # uncomment the following to set the property and modify the sample file to customize messages from git operations
-  # prepareConfigLine "appformer.git.hooks.bundle"         '${jboss.home.dir}/git-hooks/Messages.properties'  
+  # prepareConfigLine "appformer.git.hooks.bundle"         '${jboss.home.dir}/git-hooks/Messages.properties'
   # properties for Unified KIE Server setup
   # the following values must be the same on all of the KIE Execution Servers
-  prepareConfigLine "org.kie.server.persistence.ds"              'java:jboss/datasources/ExampleDS'  
-  prepareConfigLine "org.kie.server.persistence.dialect"         'org.hibernate.dialect.H2Dialect'  
-  prepareConfigLine "org.kie.executor.jms.queue"                 'queue/KIE.SERVER.EXECUTOR'  
-  prepareConfigLine "kie.keystore.keyStoreURL"                   'file:///${jboss.server.config.dir}/eigg.jceks'  
-  prepareConfigLine "kie.keystore.keyStorePwd"                   'eiggPass'  
+  prepareConfigLine "org.kie.server.persistence.ds"              'java:jboss/datasources/ExampleDS'
+  prepareConfigLine "org.kie.server.persistence.dialect"         'org.hibernate.dialect.H2Dialect'
+  prepareConfigLine "org.kie.executor.jms.queue"                 'queue/KIE.SERVER.EXECUTOR'
+  prepareConfigLine "kie.keystore.keyStoreURL"                   'file:///${jboss.server.config.dir}/eigg.jceks'
+  prepareConfigLine "kie.keystore.keyStorePwd"                   'eiggPass'
 
   if [ "$pamInstall" != "kie" ]; then
     # properties for controller/business-central in a managed KIE Server setup
-    prepareConfigLine "org.kie.server.user"                        "$kieServerUserName"  
+    prepareConfigLine "org.kie.server.user"                        "$kieServerUserName"
     #
     # following is deprecated as of RHPAM.7.4
-    # echo "$(prepareConfigLine "org.kie.server.pwd"             "$kieServerUserPasswd"  
+    # echo "$(prepareConfigLine "org.kie.server.pwd"             "$kieServerUserPasswd"
     #
-    prepareConfigLine "kie.keystore.key.server.alias"              'kieServerUser'  
-    prepareConfigLine "kie.keystore.key.server.pwd"                'kieServerUserPasswd'  
+    prepareConfigLine "kie.keystore.key.server.alias"              'kieServerUser'
+    prepareConfigLine "kie.keystore.key.server.pwd"                'kieServerUserPasswd'
   fi
 
   if [ "$pamInstall" != "controller" ]; then
     # - build clv based on controllerListAr
     clv=''
+    # NOTE: Controller List is a list of IPs or FQDN and ports, every other value would result in a misconfiguration. Quoting the variable does not guard against this
+    # shellcheck disable=SC2068
     for i in ${controllerListAr[@]}; do
       local baseController=business-central
       [[ "$TARGET_TYPE" == "DM" ]] && baseController=decision-central
@@ -451,50 +629,50 @@ function modifyConfiguration() {
     clv=${clv#,}
     nodeConfig['controllerUrl']="${clv}"
     # KIE server capabilities
-    prepareConfigLine "org.drools.server.ext.disabled"             'false'  
+    prepareConfigLine "org.drools.server.ext.disabled"             'false'
     if [[ "$TARGET_TYPE" != "DM" ]]; then
-      prepareConfigLine "org.jbpm.server.ext.disabled"             'false'  
-      prepareConfigLine "org.jbpm.ui.server.ext.disabled"          'false'  
+      prepareConfigLine "org.jbpm.server.ext.disabled"             'false'
+      prepareConfigLine "org.jbpm.ui.server.ext.disabled"          'false'
     fi
-    prepareConfigLine "org.optaplanner.server.ext.disabled"        'false'  
+    prepareConfigLine "org.optaplanner.server.ext.disabled"        'false'
     if [ "$pamInstall" == "kie" ] || [ "$pamInstall" == "both" ]; then
       #local sedclv=$(echo ${clv} | sed -e "s#/#\\\/#g")
       # properties for managed KIE Server
-      prepareConfigLine "org.kie.server.id"                        "$serverId"  
-      prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"  
-      prepareConfigLine "org.kie.server.controller"                "${clv}"  
-      prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"  
+      prepareConfigLine "org.kie.server.id"                        "$serverId"
+      prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"
+      prepareConfigLine "org.kie.server.controller"                "${clv}"
+      prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"
       # overcome 256 character limitation in process variable values
       # if you uncomment the following parameter, remember to alter your database column accordingly
       # see also: https://issues.redhat.com/browse/JBPM-4221
-      # prepareConfigLine "COMMENT:org.jbpm.var.log.length"          "1000"                    
+      # prepareConfigLine "COMMENT:org.jbpm.var.log.length"          "1000"
       #
       # deprecated after RHPAM.7.4
-      # echo '<!-- UNIQ_MARK_1 --><property name="org.kie.server.controller.pwd"  value="REPLACE_ME"/>' | sed s/REPLACE_ME/"$kieControllerUserPasswd"/g >> 
+      # echo '<!-- UNIQ_MARK_1 --><property name="org.kie.server.controller.pwd"  value="REPLACE_ME"/>' | sed s/REPLACE_ME/"$kieControllerUserPasswd"/g >>
       #
-      prepareConfigLine "kie.keystore.key.ctrl.alias"              "kieControllerUser"  
-      prepareConfigLine "kie.keystore.key.ctrl.pwd"                "kieControllerUserPasswd"  
+      prepareConfigLine "kie.keystore.key.ctrl.alias"              "kieControllerUser"
+      prepareConfigLine "kie.keystore.key.ctrl.pwd"                "kieControllerUserPasswd"
       if [[ ! -z $smartRouter ]]; then
-        prepareConfigLine "org.kie.server.router"                  "http://${smartRouter}"  
+        prepareConfigLine "org.kie.server.router"                  "http://${smartRouter}"
       fi
       # set following to false to enable Prometheus end points
-      prepareConfigLine "org.kie.prometheus.server.ext.disabled"   "true"  
+      prepareConfigLine "org.kie.prometheus.server.ext.disabled"   "true"
       # provide custom prediction service
-      # prepareConfigLine "org.jbpm.task.prediction.service" 'SMILERandomForest'  
+      # prepareConfigLine "org.jbpm.task.prediction.service" 'SMILERandomForest'
     fi
   fi
 
   # properties for controller/Business-Central
   # default is full profile
   if [ "$pamInstall" == "controller" ]; then
-    # prepareConfigLine "org.kie.active.profile"                     'full'  
+    # prepareConfigLine "org.kie.active.profile"                     'full'
     if [[ "$TARGET_TYPE" == "DM " ]]; then
       # identify itself as DecisionCentral instead of BusinessCentral
-      prepareConfigLine "org.kie.workbench.profile"          "FORCE_PLANNER_AND_RULES"    
-      prepareConfigLine "org.jbpm.designer.perspective"      "ruleflow"                   
+      prepareConfigLine "org.kie.workbench.profile"          "FORCE_PLANNER_AND_RULES"
+      prepareConfigLine "org.jbpm.designer.perspective"      "ruleflow"
     fi
   else
-    prepareConfigLine "COMMENT:org.kie.active.profile"                     'one_of_full|exec-server|ui-server'  
+    prepareConfigLine "COMMENT:org.kie.active.profile"                     'one_of_full|exec-server|ui-server'
   fi
 
   #
@@ -503,7 +681,7 @@ function modifyConfiguration() {
   if [[ -r pam.config ]]; then
     # configuration properties found at pam.config
     for key in "${!pamConfigAr[@]}"; do
-       prepareConfigLine "${key}"         "${pamConfigAr[$key]}"  
+       prepareConfigLine "${key}"         "${pamConfigAr[$key]}"
      done
   fi
   # since jboss-cli.sh in embedded mode cannot handle multiple base dirs we need to play tricksies...
@@ -514,53 +692,34 @@ function modifyConfiguration() {
   pushd $EAP_HOME/bin &> /dev/null
     local pamConfigFile=/tmp/pamConfigFile.$INSTALL_ID && [[ "$CYGWIN_ON" == "yes" ]] && pamConfigFile=$(cygpath -w ${pamConfigFile})
     echo 'embed-server' > $pamConfigFile
+    # echo 'batch' >> $pamConfigFile
     printf '%s\n' "${pamConfigList[@]}"  >> $pamConfigFile
-    cat $ADDITIONAL_NODE_CONFIG >> $pamConfigFile
+    cat "$ADDITIONAL_NODE_CONFIG" >> $pamConfigFile
+    # echo 'run-batch' >> $pamConfigFile
     echo 'stop-embedded-server' >> $pamConfigFile
     ./jboss-cli.sh --file=$pamConfigFile
+    rm -f $TMP_FILE
   popd &> /dev/null
   if [[ "$nodedir" != "standalone" ]]; then
-    cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig 
+    cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig
     cp $EAP_HOME/standalone/configuration/standalone.xml.backup $EAP_HOME/standalone/configuration/standalone.xml
   fi
-  rm -f $tmpf* $ADDITIONAL_NODE_CONFIG $pamConfigFile
+  rm -f "$ADDITIONAL_NODE_CONFIG" $pamConfigFile
   # try to safeguard exposed interfaces
   local dc=2  && [[ "$CYGWIN_ON" == "yes" ]] && dc=3
-  l=`grep -H -n '<interface name="management">' $xmlConfig | head -1 | cut -d':' -f$dc`;
+  l=$(grep -H -n '<interface name="management">' $xmlConfig | head -1 | cut -d':' -f$dc);
   #  modify management interface, should already be 127.0.0.1 but making sure
   let lno=$((l+1))
-  sed -i "${lno}s/:.*}/:127.0.0.1}/" $xmlConfig
+  sed -i "${lno}s/:.*}/:127.0.0.1}/" "$xmlConfig"
   sync
   # - modify public interface
   let lno=$((l+4))
-  sed -i "${lno}s/:.*}/:$nodeIP}/" $xmlConfig
+  sed -i "${lno}s/:.*}/:$nodeIP}/" "$xmlConfig"
   sync
   # - modify private interface
   let lno=$((l+7))
-  sed -i "${lno}s/:.*}/:$nodeIP}/" $xmlConfig
+  sed -i "${lno}s/:.*}/:$nodeIP}/" "$xmlConfig"
   sync
-  rm -f $tmpf*
-
-  #
-  # modify logging to output to console as well as file
-  #
-  tmpf=tmp.`randomid`
-  : > $tmpf
-  l=`grep -H -n 'periodic-rotating-file-handler' $xmlConfig | head -1 | cut -d':' -f$dc`;
-  echo '<!-- NEW_LOG_HANDLER --> <console-handler name="CONSOLE">' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER -->     <level name="INFO"/>' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER -->     <formatter>' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER -->         <named-formatter name="COLOR-PATTERN"/>' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER -->     </formatter>' >> $tmpf
-  echo '<!-- NEW_LOG_HANDLER --> </console-handler>' >> $tmpf
-  let lno=$((l-1))
-  sed -i -e "${lno}r $tmpf" $xmlConfig
-  : > $tmpf
-  l1=`grep -H -n '<root-logger>' $xmlConfig | head -1 | cut -d':' -f$dc`;
-  let l2=$((l1+2))
-  echo '<!-- NEW_LOG_HANDLER --> <handler name="CONSOLE"/>' > $tmpf
-  sed -i -e "${l2}r $tmpf" $xmlConfig
-  rm -f $tmpf*
 }
 
 #
@@ -569,41 +728,43 @@ function modifyConfiguration() {
 function startUp() {
   local nodedir=${1:-standalone}
   local nodeCounter=${2:-0}
+  local nodeInstallLocation=${3:-$EAP_HOME}
+  [[ "$CYGWIN_ON" == "yes" ]] && nodeInstallLocation=$(cygpath -w ${nodeInstallLocation})
   # nodeCounter=$((nodeCounter-1)) && [[ "$nodedir" == "standalone" ]] && nodeCounter=0
   # local nodeOffset=$((nodeCounter*100))
   # local nodePort=$((basePort+nodeOffset))
   # nodeOffset=$((nodePort-8080))
   local nodeOffset=${nodeConfig['nodeOffset']}
-  local startScript=gopam.sh
+  local startScript=go_"$(basename ${EAP_LOCATION:-$EAP_HOME})".sh
   [[ "$nodeCounter" -gt 0 ]] && startScript=go${nodedir}.sh
   nodeConfig['startScript']="$startScript"
   cat << __GOPAM > $startScript
-  #!/bin/bash
+#!/bin/bash
 
-  #
-  # usage: ./gopam.sh configuration-xml IP-to-bind-to port-offset
-  #
-  # example: ./${startScript}
-  #          by default will start on localhost with standalone.xml and default ports (8080)
-  #
-  #          ./${startScript} standalone.xml 0.0.0.0 100
-  #          will start with standalone.xml binding on all IPs and on port 8180 (port offset 100)
+#
+# usage: ./${startScript} configuration-xml IP-to-bind-to port-offset
+#
+# example: ./${startScript}
+#          by default will start on 0.0.0.0 with standalone.xml and default ports (8080)
+#
+#          ./${startScript} standalone.xml 0.0.0.0 100
+#          will start with standalone.xml binding on all IPs and on port 8180 (port offset 100)
 
-  JBOSS_CONFIG=\${1:-standalone.xml}
-  JBOSS_BIND=\${2:-localhost}
-  JBOSS_PORT_OFFSET=\${3:-$nodeOffset}
-  [[ "\$JBOSS_PORT_OFFSET" != "0" ]] && JBOSS_PORT_OFFSET="-Djboss.socket.binding.port-offset=\$JBOSS_PORT_OFFSET"
-  [[ "\$JBOSS_PORT_OFFSET" == "0" ]] && JBOSS_PORT_OFFSET=" "
-  [[ -z "\$JBOSS_HOME" ]] && JBOSS_HOME="$EAP_HOME"
-  CLI_OPTIONS=" -Djava.security.egd=file:/dev/./urandom "
-  if [[ \$(uname | grep -i CYGWIN) ]]; then
-    JBOSS_HOME=\$(cygpath -w \${JBOSS_HOME})
-    CLI_OPTIONS=" "
-  fi
+JBOSS_CONFIG=\${1:-standalone.xml}
+JBOSS_BIND=\${2:-0.0.0.0}
+JBOSS_PORT_OFFSET=\${3:-$nodeOffset}
+[[ "\$JBOSS_PORT_OFFSET" != "0" ]] && JBOSS_PORT_OFFSET="-Djboss.socket.binding.port-offset=\$JBOSS_PORT_OFFSET"
+[[ "\$JBOSS_PORT_OFFSET" == "0" ]] && JBOSS_PORT_OFFSET=" "
+[[ -z "\$JBOSS_HOME" ]] && JBOSS_HOME="$nodeInstallLocation"
+CLI_OPTIONS=" -Djava.security.egd=file:/dev/./urandom "
+if [[ \$(uname | grep -i CYGWIN) ]]; then
+  JBOSS_HOME=\$(cygpath -w \${JBOSS_HOME})
+  CLI_OPTIONS=" "
+fi
 
-  pushd \${JBOSS_HOME}/bin/ &> /dev/null
-    ./standalone.sh -b \$JBOSS_BIND -c \$JBOSS_CONFIG \$JBOSS_PORT_OFFSET -Djboss.server.base.dir=\$JBOSS_HOME/$nodedir \$CLI_OPTIONS
-  popd &> /dev/null
+pushd \${JBOSS_HOME}/bin/ &> /dev/null
+  ./standalone.sh -b \$JBOSS_BIND -c \$JBOSS_CONFIG \$JBOSS_PORT_OFFSET -Djboss.server.base.dir=\$JBOSS_HOME/$nodedir \$CLI_OPTIONS
+popd &> /dev/null
 __GOPAM
   chmod u+x $startScript
   summary "Startup script :- $startScript"
@@ -619,26 +780,134 @@ function applyAdditionalNodeConfig() {
   local k="${nodeConfig[nodeCounter]}_config"
   local nodeOffset=${nodeConfig['nodeOffset']}
   local default_config="$WORKDIR/addons/$k"
+  local -a ncfg
+  : > "$ADDITIONAL_NODE_CONFIG"
+  # have logging to CONSOLE as well as to FILE
+  ncfg+=( "batch" )
+  ncfg+=( "/subsystem=logging/console-handler=CONSOLE:add" )
+  ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)" )
+  ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)" )
+  ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])' )
+  ncfg+=( "/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=INFO)" )
+  # CORS
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Origin:add(header-name="Access-Control-Allow-Origin", header-value="*")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Origin/:add()' )
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Methods:add(header-name="Access-Control-Allow-Methods",header-value="GET,POST, OPTIONS, PUT, DELETE")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Methods/:add()' )
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Headers:add(header-name="Access-Control-Allow-Headers",header-value="accept, authorization,content-type, x-requested-with")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Headers/:add()' )
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Credentials:add(header-name="Access-Control-Allow-Credentials", header-value="true")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Credentials/:add()' )
+  ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Max-Age:add(header-name="Access-Control-Max-Age",header-value="2")' )
+  ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Max-Age/:add()' )
   # apply node offset
   if [[ "$nodeOffset" != 0 ]]; then
-    echo "/socket-binding-group=standard-sockets/:write-attribute(name=port-offset,value=\${jboss.socket.binding.port-offset:$nodeOffset})" >> $ADDITIONAL_NODE_CONFIG
+    ncfg+=( "/socket-binding-group=standard-sockets/:write-attribute(name=port-offset,value=\${jboss.socket.binding.port-offset:$nodeOffset})" )
   fi
   #
   # apply any node specific configuration
   #
-  [[ ! -r "$default_config" ]] && [[ ! -r "${configOptions[$k]}" ]] && [[ -z "${configOptions[debug_logging]}" ]] && [[ -z "${configOptions[dump_requests]}" ]] && return
-  [[ -r "$default_config" ]] && cat "$default_config" >> $ADDITIONAL_NODE_CONFIG
+  [[ -r "$default_config" ]] && cat "$default_config" >> "$ADDITIONAL_NODE_CONFIG"
   #
-  if [[ -r "${configOptions[$k]}" ]]; then
-    sout "Applying additional configuration for ${nodeConfig[nodeCounter]} based on ${configOptions[$k]}"
-     cat "${configOptions[$k]}" >> $ADDITIONAL_NODE_CONFIG
-  fi
+  # nodeX_config=fileA,fileB,...
+  local -a ndcfg
+  while read -rd,; do ndcfg+=("$REPLY"); done <<<"${configOptions[$k]},"
+  for mndx in "${!ndcfg[@]}"; do
+    if [[ -r "${ndcfg[$mndx]}" ]]; then
+      sout "Applying additional configuration for ${nodeConfig[nodeCounter]} based on ${ndcfg[$mndx]}"
+      cat "${ndcfg[$mndx]}" >> "$ADDITIONAL_NODE_CONFIG"
+    fi
+  done
+
   if [[ ! -z "${configOptions[dump_requests]}" ]]; then
-     cat '/subsystem=undertow/configuration=filter/expression-filter=requestDumperExpression:add(expression="dump-request")' >> $ADDITIONAL_NODE_CONFIG
-     cat "/subsystem=undertow/server=default-server/host=default-host/filter-ref=requestDumperExpression:add" >> $ADDITIONAL_NODE_CONFIG
+     ncfg+=( '/subsystem=undertow/configuration=filter/expression-filter=requestDumperExpression:add(expression="dump-request")' )
+     ncfg+=( "/subsystem=undertow/server=default-server/host=default-host/filter-ref=requestDumperExpression:add" )
+  fi
+  if [[ ! -z "${configOptions[debug_logging]}" ]]; then
+     ncfg+=( '/subsystem=logging/logger=org.jboss.as.domain/:add(category=org.jboss.as.domain,level=TRACE)' )
+     ncfg+=( '/subsystem=logging/logger=org.wildfly.security/:add(category=org.wildfly.security,level=TRACE)' )
+     ncfg+=( '/subsystem=logging/root-logger=ROOT/:undefine-attribute(name=level)' )
+     ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=DEBUG)' )
+     ncfg+=( '/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=DEBUG)' )
+  fi
+
+  if [[ ! -z "${configOptions[oracle_host]}" ]]; then
+    createOraDS
+  fi
+
+  if [[ ! -z "${configOptions[postgresql_host]}" ]]; then
+    createPgDS
+  fi
+
+  ncfg+=( "run-batch" )
+  printf '%s\n' "${ncfg[@]}"  >> "$ADDITIONAL_NODE_CONFIG"
+ }
+
+function createOraDS() {
+  sout "CREATE ${bold}${yellow}OracleDS${normal} "
+  local oracle_keys="ojdbc_location oracle_host oracle_port oracle_sid oracle_user oracle_pass"
+  local osum=""
+  for okey in $oracle_keys; do
+    local tmp="${configOptions[$okey]}"
+    [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]] && osum="$osum $tmp"
+  done
+  osum="${osum//\ /}"
+  if [[ -n "$osum" ]]; then
+    local o1='module add --name=com.oracle --resources="@@OJDBC_LOCATION@@" --dependencies=javax.api,javax.transaction.api'
+    local o2='/subsystem=datasources/jdbc-driver=oracle:add(driver-name=oracle,driver-module-name=com.oracle,driver-xa-datasource-class-name=oracle.jdbc.xa.client.OracleXADataSource)'
+    local o3='data-source add --name=OracleDS --jndi-name=java:jboss/OracleDS --driver-name=oracle --connection-url=jdbc:oracle:thin:@//@@ORACLE_HOST@@:@@ORACLE_PORT@@/@@ORACLE_SID@@ --user-name=@@ORACLE_USER@@ --password=@@ORACLE_PASS@@ --jta=true --use-ccm=true --use-java-context=true --enabled=true --max-pool-size=10 --min-pool-size=5 --flush-strategy="FailingConnectionOnly"'
+    pamConfigAr[hibernate.hbm2ddl.auto]="none"
+    pamConfigAr[org.kie.server.persistence.ds]="java:jboss/OracleDS"
+    pamConfigAr[org.kie.server.persistence.dialect]="org.hibernate.dialect.Oracle10gDialect"
+    for okey in $oracle_keys; do
+      local tmp="${configOptions[$okey]}"
+      if [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]]; then
+        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | sed 's]\\]\\\\]g')
+        # when mac is going to get a proper bash?
+        local skey='@@'`echo $okey | awk '{ print toupper($0); }'`'@@'
+        o1=$(echo "$o1" | sed --expression="s]$skey]$tmp]g")
+        o2=$(echo "$o2" | sed --expression="s]$skey]$tmp]g")
+        o3=$(echo "$o3" | sed --expression="s]$skey]$tmp]g")
+      fi
+    done
+    [[ "$nodedir" == "standalone" ]] && ncfg+=( "$o1" )
+    ncfg+=( "$o2" )
+    ncfg+=( "$o3" )
   fi
 }
 
+function createPgDS() {
+  sout "CREATE ${bold}${yellow}PostgresqlDS${normal} "
+  local postgresql_keys="ojdbc_location postgresql_host postgresql_port postgresql_sid postgresql_user postgresql_pass"
+  local osum=""
+  for okey in $postgresql_keys; do
+    local tmp="${configOptions[$okey]}"
+    [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]] && osum="$osum $tmp"
+  done
+  osum="${osum//\ /}"
+  if [[ -n "$osum" ]]; then
+    local o1='module add --name=com.postgresql --resources="@@OJDBC_LOCATION@@" --dependencies=javax.api,javax.transaction.api'
+    local o2='/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=com.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)'
+    local o3='data-source add --name=PostgresqlDS --jndi-name=java:jboss/PostgresqlDS --driver-name=postgresql --connection-url=jdbc:postgresql://@@POSTGRESQL_HOST@@:@@POSTGRESQL_PORT@@/@@POSTGRESQL_SID@@ --user-name=@@POSTGRESQL_USER@@ --password=@@POSTGRESQL_PASS@@ --jta=true --use-ccm=true --use-java-context=true --enabled=true --max-pool-size=10 --min-pool-size=5 --flush-strategy="FailingConnectionOnly" --validate-on-match=true --background-validation=false --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter'
+    pamConfigAr[hibernate.hbm2ddl.auto]="none"
+    pamConfigAr[org.kie.server.persistence.ds]="java:jboss/PostgresqlDS"
+    pamConfigAr[org.kie.server.persistence.dialect]="org.hibernate.dialect.PostgreSQLDialect"
+    for okey in $postgresql_keys; do
+      local tmp="${configOptions[$okey]}"
+      if [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]]; then
+        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | sed 's]\\]\\\\]g')
+        # when mac is going to get a proper bash?
+        local skey='@@'`echo $okey | awk '{ print toupper($0); }'`'@@'
+        o1=$(echo "$o1" | sed --expression="s]$skey]$tmp]g")
+        o2=$(echo "$o2" | sed --expression="s]$skey]$tmp]g")
+        o3=$(echo "$o3" | sed --expression="s]$skey]$tmp]g")
+      fi
+    done
+    [[ "$nodedir" == "standalone" ]] && ncfg+=( "$o1" )
+    ncfg+=( "$o2" )
+    ncfg+=( "$o3" )
+  fi    
+}
 
 function prepareConfigDB() {
   sqlite3 $CONFIG_DB "drop table if exists pamrc"
@@ -665,16 +934,91 @@ function nodeConfigSave() {
   local pi=""
   for pi in ${nodeConfig['pamInstall']}; do
     sql="insert or ignore into pamrc (installId,pamInstall,nodeName,nodeBase,nodeOffset,nodePort,controllerUrl,installDir,pamTarget,startScript,nodeCounter) values ("
-    sql="${sql}'$INSTALL_ID','$pi','${nodeConfig[nodeName]}','${nodeConfig[nodeBase]}','${nodeConfig[nodeOffset]}','${nodeConfig[nodePort]}','${nodeConfig[controllerUrl]}','$INSTALL_DIR','$target','${nodeConfig[startScript]}','${nodeConfig[nodeCounter]}')"
+    sql="${sql}'$INSTALL_ID','$pi','${nodeConfig[nodeName]}','${nodeConfig[nodeBase]}','${nodeConfig[nodeOffset]}','${nodeConfig[nodePort]}','${nodeConfig[controllerUrl]}','${nodeConfig[eap_location]}','$target','${nodeConfig[startScript]}','${nodeConfig[nodeCounter]}')"
     sqlite3 $CONFIG_DB "${sql};"
   done
+}
+
+function installKieGroupGitHook() {
+  local bcloc=$(sqlite3 -line "$CONFIG_DB" "select pkey,installDir from pamrc where pamInstall='controller'" | grep installDir | awk '{ print $3; }')
+  local ghl gver gart
+  [[ "${configOptions[git_hook_location]}" == "1" ]] && configOptions[git_hook_location]=''
+  [[ -z "${configOptions[git_hook_location]}" ]] && configOptions[git_hook_location]="download"
+  pushd "$bcloc" &> /dev/null
+    if [[ "${configOptions[git_hook_location]}" == "download" ]]; then
+      mkdir kiegroupgithook && cd kiegroupgithook
+      sout "Downloading post commit git hooks from ${bold}${blue}https://github.com/kiegroup/bc-git-integration-push/archive/master.zip${normal}"
+      curl -ks -L -O https://github.com/kiegroup/bc-git-integration-push/archive/master.zip
+      [[ -f master.zip ]] && unzip -qq master.zip
+      if [[ -d bc-git-integration-push-master ]]; then
+        sout "Building post commit git hooks from ${bold}${blue}"$PWD"${normal}"
+        pushd bc-git-integration-push-master &> /dev/null
+          mvn clean install -q
+          gver=$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)
+          gart=$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          ghl=$(find target -maxdepth 1 -iname "${gart}*${gver}*" -print0)
+          [[ -n "$ghl" ]] && [[ -r "$ghl" ]] && [[ -f "$ghl" ]] && ghl="$(pwd)/$ghl"
+        popd &> /dev/null
+      fi
+    fi
+    if [[ -n "${configOptions[git_hook_location]}" ]] && [[ "${configOptions[git_hook_location]}" != "download" ]]; then
+      local tmp="${configOptions[git_hook_location]}"
+      [[ -r "$tmp" ]] && [[ -f "$tmp" ]] && ghl="$tmp"
+    fi
+    sout "Checking for post-commit git hooks at ${bold}${blue}$ghl${normal}"
+    if [[ -n "$ghl" ]] && [[ -r "$ghl" ]] && [[ -f "$ghl" ]]; then
+      sout "Installing post-commit git hooks from ${bold}${blue}$ghl${normal}"
+      cp "$ghl" "${bcloc}/git-hooks"
+      cat << __GITHOOK > "${bcloc}/git-hooks/post-commit"
+#!/usr/bin/env bash
+
+JARFILE="${bcloc}/git-hooks/$(basename $ghl)"
+java -jar $JARFILE
+__GITHOOK
+      chmod u+x "${bcloc}/git-hooks/post-commit"
+      summary "post-commit git hooks :- ${bcloc}/git-hooks"
+    else
+      sout "WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+      summary "--- WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+    fi
+  popd &> /dev/null
+}
+
+function installBCGitHook() {
+  local bcloc=$(sqlite3 -line "$CONFIG_DB" "select pkey,installDir from pamrc where pamInstall='controller'" | grep installDir | awk '{ print $3; }')
+  local githookloc="$WORKDIR/../bcgithook"
+  local ghl=""
+  [[ "${configOptions[git_hook_location]}" == "1" ]] && configOptions[git_hook_location]=''
+  [[ -z "${configOptions[git_hook_location]}" ]] && [[ -d "$githookloc" ]] && cd "$githookloc" && ghl="$(pwd)" && configOptions[git_hook_location]="$ghl"
+  [[ -z "${configOptions[git_hook_location]}" ]] && configOptions[git_hook_location]="download" && sout "DOWNLOADING POST-COMMIT GIT HOOK"
+  pushd "$bcloc" &> /dev/null
+    if [[ "${configOptions[git_hook_location]}" == "download" ]]; then
+      mkdir bcgithook && cd bcgithook
+      curl -ks -L -O https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
+      unzip -qq master.zip
+      [[ -d businessautomation-cop-master/bcgithook ]] && cd businessautomation-cop-master/bcgithook && ghl="$(pwd)"
+    fi
+    if [[ -n "${configOptions[git_hook_location]}" ]] && [[ "${configOptions[git_hook_location]}" != "download" ]]; then
+      local tmp="${configOptions[git_hook_location]}"
+      sout "USING POST-COMMIT GIT HOOKS FROM $tmp"
+      [[ -d "$tmp" ]] && [[ -x "$tmp/install.sh" ]] && [[ -r "$tmp/scripts/post-commit.sh" ]] && cd "$tmp" && ghl="$(pwd)"
+    fi
+    if [[ -n "$ghl" ]]; then
+      pushd "$ghl" &> /dev/null
+        ./install.sh "$bcloc"
+      popd &> /dev/null
+    else
+      sout "WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+      summary "--- WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
+    fi
+  popd &> /dev/null
 }
 
 #
 # - end of function definitions
 #
 
-INSTALL_ID=`randomid`
+TMP_FILE=tmp_file.$(randomid)
 
 #
 # - try to detect CYGWIN
@@ -691,7 +1035,67 @@ WORKDIR=$PWD
 [[ "$CYGWIN_ON" == "yes" ]] && WORKDIR=$(cygpath -w ${WORKDIR})
 
 CONFIG_DB="$WORKDIR"/pam-config.db
-ADDITIONAL_NODE_CONFIG=/tmp/additionalNodeConfig.$INSTALL_ID  && [[ "$CYGWIN_ON" == "yes" ]] && ADDITIONAL_NODE_CONFIG=$(cygpath -w ${ADDITIONAL_NODE_CONFIG})
+
+nodeIP=''
+optB=''
+optC=''
+optS=''
+optO=''
+optL=''
+multiNode=1
+while getopts ":n:b:c:s:o:h" option; do
+  case $option in
+  	n ) nodeIP=$OPTARG;;
+    b ) optB=$OPTARG;;
+    c ) optC=$OPTARG;;
+    s ) optS=$OPTARG;;
+    o ) optO=$OPTARG;;
+  	h ) usage; exit 1;;
+  	: ) echo "No argument given"; opt=1; exit 1;;
+  	* ) echo "Unknown option"; usage; opt=1; exit 1;;
+  esac
+done
+
+
+#
+# - get extra options
+#   option1=value1:option2=value2:
+#
+declare -A configOptions
+if [[ ! -z "$optO" ]]; then
+  declare -a multiOptions
+  while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
+  # NOTE: Special characters in options will result in misconfigurations, quoting the multiOptions will not guard against this
+  # shellcheck disable=SC2068
+  for ondx in ${!multiOptions[@]}; do
+    while read -rd=; do tmpar+=("$REPLY"); done <<<"${multiOptions[$ondx]}="
+    k="${tmpar[0]}"
+    v="${tmpar[1]}" && v="${v:-1}"
+    [[ -n "$k" ]] && configOptions["$k"]="${v}"
+    unset tmpar
+  done
+  tmp="${configOptions[run_mode]}"
+  configOptions[run_mode]="development"
+  [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
+  unset tmp tmpar multiOptions
+  [[ "${configOptions[git_hook]}" == "bcgithook" ]] && checkEnv git && checkEnv curl
+  [[ "${configOptions[git_hook]}" == "kiegroup" ]] && checkEnv git && checkEnv curl && checkEnv mvn
+fi
+
+# check logfile option
+[ ${configOptions[logfile]+xxx} ] && LOGFILE="${configOptions[logfile]}" && [[ "$LOGFILE" == "1" ]] && LOGFILE="pam-setup.log"
+if [[ -n "$LOGFILE" ]]; then
+  if touch "$LOGFILE" &> /dev/null; then
+    loglog="USING LOG FILE : $LOGFILE"
+  else
+    loglog="LOG FILE $LOGFILE CANNOT BE ACCESSED - SKIPPING LOGGING"
+    LOGFILE=""
+  fi
+fi
+
+sout "PAM-SETUP - START"
+[[ -n "$loglog" ]] && sout "$loglog"
+unset loglog
 
 pamTargets=`extractHeaders`
 TARGET_CONFIG=target.conf
@@ -714,34 +1118,16 @@ done
 if [[ "$goon" == "yes" ]]; then
   sout "PROCEEDING WITH ${bold}${yellow}$target${normal} "
 else
-  echo "NO BINARIES FOR PAM INSTALLATION FOUND - ABORTING"
+  sout "NO BINARIES FOR PAM INSTALLATION FOUND - ABORTING"
   exit 1
 fi
 
 rm -f $MASTER_CONFIG $TARGET_CONFIG
 
-nodeIP=''
-optB=''
-optC=''
-optS=''
-optO=''
-multiNode=1
-while getopts ":n:b:c:s:o:h" option; do
-  case $option in
-  	n ) nodeIP=$OPTARG;;
-    b ) optB=$OPTARG;;
-    c ) optC=$OPTARG;;
-    s ) optS=$OPTARG;;
-    o ) optO=$OPTARG;;
-  	h ) usage; exit 1;;
-  	: ) echo "No argument given"; opt=1; exit 1;;
-  	* ) echo "Unknown option"; usage; opt=1; exit 1;;
-  esac
-done
-
 prepareConfigDB
 
 echo "PAM_VERSION=$target" > /root/pam.version
+summary " "
 summary "--- $target Installation Summary ---" " "
 
 # - check nodeIP values - default to localhost:8080
@@ -797,6 +1183,8 @@ for i in "${ar[@]}"; do
   controllerListAr=("${controllerListAr[@]}" http://${i})
 done
 unset ar
+# NOTE: Controller List is a list of IPs or FQDN and ports, every other value would result in a misconfiguration. Quoting the variable does not guard against this
+# shellcheck disable=SC2145
 summary "Using Controller List :- ${controllerListAr[@]}"
 if [ "$pamInstall" == "kie" ] && [ ${#controllerListAr[@]} -lt 1 ]; then
   sout "ERROR: Controllers are madnatory for kie mode installation, none specified"
@@ -806,29 +1194,14 @@ fi
 smartRouter="$optS"
 summary "Using Smart Router location :- ${smartRouter:-NOT INSTALLED}"
 #
-# - get extra options
-#   option1=value1:option2=value2:
-#
-declare -A configOptions
-if [[ ! -z "$optO" ]]; then
-  declare -a multiOptions
-  while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
-  for ondx in ${!multiOptions[@]}; do
-    while read -rd=; do tmpar+=("$REPLY"); done <<<"${multiOptions[$ondx]}="
-    k="${tmpar[0]}"
-    v="${tmpar[1]}" && v="${v:-1}"
-    configOptions["$k"]="${v}"
-    unset tmpar
-  done
-  unset tmpar multiOptions
-fi
-#
 [[ ! -r $EAP7_ZIP ]]      && sout "ERROR: Cannot read EAP.7 ZIP file $EAP7_ZIP -- exiting"          && exit 1;
 patchEAP=yes
 [[ -z $EAP_PATCH_ZIP ]] && patchEAP=no
 eap_patch_file_found=""
 if [[ "$patchEAP" == "yes" ]]; then
-  for eap_patch_file in `ls $EAP_PATCH_ZIP 2> /dev/null`; do
+  # NOTE: ls by default orders results so in case of multiple pacthes available only the last (most recent one) is applied
+  # shellcheck disable=SC2045
+  for eap_patch_file in $(ls $EAP_PATCH_ZIP 2> /dev/null); do
     [[ -r "$eap_patch_file" ]] && eap_patch_file_found="$eap_patch_file"
   done
 fi
@@ -839,16 +1212,29 @@ EAP_PATCH_ZIP="$eap_patch_file_found"
 installPAM=yes
 [[ ! -r $PAM_ZIP ]] && sout "WARNING: Cannot read PAM ZIP file $PAM_ZIP -- will proceed without it" && installPAM=no && patchPAM=no
 
-skip_install=no && [[ -d $INSTALL_DIR ]] && sout "INFO: Installation detected at $INSTALL_DIR -- skipping installation" && skip_install=yes
+EAP_HOME="$WORKDIR/$INSTALL_DIR"
+EAP_LOCATION="${configOptions[install_dir]}"
+( [[ "$EAP_LOCATION" == "1" ]] || [[ -z "$EAP_LOCATION" ]] ) && EAP_LOCATION="pam" 
 
-EAP_HOME=$WORKDIR/$INSTALL_DIR
+skip_install=no && [[ -d $INSTALL_DIR ]]  && sout "INFO: Installation detected at $INSTALL_DIR -- skipping installation" && skip_install=yes
+[[ "$skip_install" == "no" ]] && [[ -d $EAP_HOME ]] && sout "INFO: Installation detected at $EAP_HOME -- skipping installation" && skip_install=yes
+
+if [[ ! -z "$EAP_LOCATION" ]]; then
+  eap_location_created=no && mkdir -p "$EAP_LOCATION" &> /dev/null && eap_location_created=yes 
+  [[ "$eap_location_created" == "no" ]] && sout "ERROR: $EAP_LOCATION CANNOT BE CREATED - ABORTING" && exit 1
+  if [[ "$eap_location_created" == "yes" ]]; then
+    pushd "$EAP_LOCATION" &> /dev/null
+      EAP_LOCATION=$(pwd)
+    popd &> /dev/null
+  fi
+fi
 
 if [ "$skip_install" != "yes" ]; then
   #
-  sout "Installing EAP at $EAP_HOME using $EAP7_ZIP"
+  sout "Installing EAP at ${EAP_LOCATION:-$EAP_HOME} using $EAP7_ZIP"
   unzip -qq $EAP7_ZIP
   summary "Installed EAP using :- $EAP7_ZIP"
-  summary "EAP install location :- $INSTALL_DIR"
+  summary "EAP install location :- ${EAP_LOCATION:-$EAP_HOME}"
   #
   cd $EAP_HOME
   if [[ "$patchEAP" == "yes" ]]; then
@@ -884,13 +1270,17 @@ if [ "$skip_install" != "yes" ]; then
   if [[ "$installPAM" == "yes" ]]; then
     save_pamInstall=''
     for node in `seq 1 $multiNode`; do
+      INSTALL_ID=$(randomid)
+      ADDITIONAL_NODE_CONFIG=/tmp/additionalNodeConfig.$INSTALL_ID  && [[ "$CYGWIN_ON" == "yes" ]] && ADDITIONAL_NODE_CONFIG=$(cygpath -w ${ADDITIONAL_NODE_CONFIG})
+      unset pamConfigAr
+      declare -A pamConfigAr
       declare -A nodeConfig
       save_pamInstall=$pamInstall
       [[ "$node" -eq 1 ]] && [[ "$pamInstall" == "multi" ]] && pamInstall=both
       [[ "$node" -gt 1 ]] && [[ "$pamInstall" == "multi" ]] && pamInstall=kie && nodeParam=node${node}
       nodeConfig['pamInstall']=" "
       nodeParam=${nodeParam:-standalone}
-      nodeConfig['nodeName']=${nodeParam}_`randomid`
+      nodeConfig['nodeName']=${nodeParam}_$(randomid)
       nodeConfig['nodeBase']=$nodeParam
       nodeConfig['nodeCounter']=node$node
       nodeCounter=$((node-1)) && [[ "$nodeParam" == "standalone" ]] && nodeCounter=0
@@ -898,6 +1288,8 @@ if [ "$skip_install" != "yes" ]; then
       nodeOffset=$((nodePort-8080))
       nodeConfig['nodeOffset']=$nodeOffset
       nodeConfig['nodePort']=$nodePort
+      nodeConfig['eap_location']="$EAP_LOCATION"
+      jvm_memory=${configOptions[jvm_memory]} && [[ ! -z "$jvm_memory" ]] && nodeConfig['jvm_memory']="$jvm_memory"
       sout "Installing ${bold}${blue}node${node}${normal} as ${bold}${blue}${nodeConfig[nodeName]}${normal}"
       summary "--- Node instalation node${node} as $nodeParam : ${nodeConfig[nodeName]}"
       ( [[ "$pamInstall" == "controller" ]] || [[ "$pamInstall" == "both" ]] ) && installBC && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} controller"
@@ -905,7 +1297,8 @@ if [ "$skip_install" != "yes" ]; then
       installUsers $nodeParam
       applyAdditionalNodeConfig $nodeParam
       modifyConfiguration $nodeParam
-      startUp $nodeParam $nodeCounter
+      [[ ! -z "$jvm_memory" ]] && echo 'JAVA_OPTS="$JAVA_OPTS -Xmx'$jvm_memory'm "' >> "${EAP_HOME}/bin/standalone.conf"
+      startUp $nodeParam $nodeCounter "$EAP_LOCATION"
       # declare -p nodeConfig
       nodeConfigSave
       pamInstall=$save_pamInstall
@@ -935,16 +1328,29 @@ if [ "$skip_install" != "yes" ]; then
       chmod 744 post-commit
     fi
   popd &> /dev/null
+  # copy to EAP_LOCATION if defined
+  if [[ ! -z "$EAP_LOCATION" ]]; then
+    cp -r "$EAP_HOME"/* "$EAP_LOCATION"
+    rm -rf "$EAP_HOME"
+  fi
+  # install post-commit git hooks
+  [[ "${configOptions[git_hook]}" == "bcgithook" ]]  && installBCGitHook
+  [[ "${configOptions[git_hook]}" == "kiegroup" ]]  && installKieGroupGitHook
   # print summary of installation
   summary " "
   prettyPrinter "${summaryAr[@]}"
 fi  # - end of skip_install check
 
+rm -f $TMP_FILE
 
 # - for debugging, enable command output, stop on first error
 # set -x
 # set -e
 
+timeElapsed
+sout "PAM-SETUP - END RUN"
+
 #
 # - end of script
 #
+

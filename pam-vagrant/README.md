@@ -32,6 +32,7 @@ RHPAM will be installed depending on the existence of the following files:
 | 7.6.0 | rhpam-7.6.0-business-central-eap7-deployable.zip, rhpam-7.6.0-kie-server-ee8.zip  |
 | 7.7.0 | rhpam-7.7.0-business-central-eap7-deployable.zip, rhpam-7.7.0-kie-server-ee8.zip  |
 | 7.7.1 | rhpam-7.7.1-business-central-eap7-deployable.zip, rhpam-7.7.1-kie-server-ee8.zip  |
+| 7.8.1 | rhpam-7.8.1-business-central-eap7-deployable.zip, rhpam-7.8.1-kie-server-ee8.zip  |
 
 |DM Version| Files  |
 |--|--|
@@ -39,7 +40,10 @@ RHPAM will be installed depending on the existence of the following files:
 | 7.4.1 | rhdm-7.4.1-decision-central-eap7-deployable.zip, rhdm-7.4.1-kie-server-ee8.zip  |
 | 7.6.0 | rhdm-7.6.0-decision-central-eap7-deployable.zip, rhdm-7.6.0-kie-server-ee8.zip  |
 | 7.7.1 | rhdm-7.7.1-decision-central-eap7-deployable.zip, rhdm-7.7.1-kie-server-ee8.zip  |
+| 7.8.1 | rhdm-7.8.1-decision-central-eap7-deployable.zip, rhdm-7.8.1-kie-server-ee8.zip  |
 
 For EAP.7.2 the file `jboss-eap-7.2.0.zip` is required as well as the latest patch.
+
+JBoss EAP.7.3, file `jboss-eap-7.3.0.zip`, along with the latest patch, is required for RHPAM.7.8.1 onwards 
 
 At the end of the setup while the vagrant box is being fired up for the first time please wait until PAM is fully loaded to validate the installation. Depending on the local environment it could take up to a minute for PAM to be operational.

@@ -57,7 +57,8 @@ source /root/pam.version
 #
 # modifying settings.xml with the nexus password obtained
 #
-pushd jboss-eap-7.2 &> /dev/null
+src_dir=jboss-eap-7.2 && [[ -d pam ]] && src_dir=pam
+pushd "${src_dir}" &> /dev/null
   sed -i "s/@@NEXUS_PASSWORD@@/${NEXUS_ROOT_PASS}/g" settings.xml
   sed -i "s/@@NEXUS_IP@@/127.0.0.1/g" settings.xml
   cp settings.xml $BASE_DIR/settings.xml.nexus
