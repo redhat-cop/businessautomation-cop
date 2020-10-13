@@ -12,7 +12,7 @@ This project offers a bash-based implementation for such git hooks.
 * Works on Linux, Windows (on a Cygwin environment), probably on Mac (not tested)
 * Scripted or manual installation mode
 * Configurable logging of operations
-* Branch mapping, map branches from BC to remote Git repos
+* [Branch mapping](#branch-mapping), map branches from BC to remote Git repos
 ## Configuration
 **bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present event if per-project configuration files are used. The following variables need to be configured:
 
