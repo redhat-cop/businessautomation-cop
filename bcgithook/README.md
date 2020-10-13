@@ -43,6 +43,19 @@ ALLOW and DENY lists refer to branches that the post-commit git hooks will selec
 * If only the DENY list is defined, commits to branches that can be found in this list will NOT be pushed to the remote git repo.
 * If both ALLOW (or ALLOW_REGEX) and DENY lists are defined, then the DENY list takes precedence. If a branch can be found at both the ALLOW (or ALLOW_REGEX) and DENY lists, then commits to that branch will not be pushed to the remote git repo.
 
+### Branch Mapping
+
+By specifying the optional `BRANCH_MAP` variable it is possible to map one or more Business Central managed branches to branches to a remote git repository with a different name. For example, the follpwing configuration:
+
+```
+BRANCH_MAP="damon:phintias, frodo:sam,  earth : moon , master:mainline"
+```
+
+would push commits from the local branches managed by Business Central `damon`, `frodo`, `earth` and `master` to branches in the remote gir repository named `phintias`, `sam`, `moon` and `mainline` respectively. Useful for new projects created from within Business Central that have to conform with naming conventions imposed by a remote git repository.
+
+Please note that there is currently no way of acheiving the reverse. For example maping of the remote branch `mainline` to a local one named `master` is not supported.
+
+
 **Example 1: Separate branches in ALLOW and DENY lists**
 
 | Definition | Expected Action
