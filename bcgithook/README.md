@@ -12,6 +12,7 @@ This project offers a bash-based implementation for such git hooks.
 * Works on Linux, Windows (on a Cygwin environment), probably on Mac (not tested)
 * Scripted or manual installation mode
 * Configurable logging of operations
+* Branch mapping, map branches from BC to remote Git repos
 ## Configuration
 **bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present event if per-project configuration files are used. The following variables need to be configured:
 
@@ -26,6 +27,7 @@ This project offers a bash-based implementation for such git hooks.
 |`BRANCH_ALLOW`| optional | A comma-separated list, or a regular expession, of branches to allow commits to be pushed to.  When using a comma-separated list of branches, do not leave space between the comma and the branch name or enclose in quotes. |
 |`BRANCH_ALLOW_REGEX`| optional | A regular expression specifying branches to allow commits for. If defined overrides `BRANCH_ALLOW`. Use quotes to specify a regular expression, for example `"^(feature/)\|^(hotfix)"` |
 |`BRANCH_DENY`| optional | a comma-separated list of branches to deny commits to be pushed to. Do not leave space between the comma and the branch name or enclose in quotes. |
+|`BRANCH_MAP`| optional | A comma-separated list of "SOURCE:TARGET" pairs that would map the source branch SOURCE to branch TARGET on the remote repo. Spaces between commas(,) or semi-colons(:) are trimmed. |
 
 See below for example configurations for various Git repos.
 
