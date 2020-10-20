@@ -53,6 +53,14 @@ command -v basename &> /dev/null || { echo >&2 'ERROR: basename not installed. P
 #[[ "$mvnVersion" -lt "362" ]]     || { echo >&2 "WARNING: MAVEN version($mvnVersion) too old. Please consider upgrading to version 3.6.2 (or later)"; }
 #unset mvnvVersion
 
+# - check java version
+tmp=$(java -XshowSettings:all -version 2>&1| grep version | grep specification | grep -v vm | awk -F'=' '{print $2}')
+tmp="${tmp#"${tmp%%[![:space:]]*}"}" && tmp="${tmp%"${k##*[![:space:]]}"}"
+javaspec="$tmp"
+goon=no && ( [[ "$javaspec" == "1.8" ]] || [[ "$javaspec" == "11" ]] ) && goon=yes
+[[ "$goon" == "no"  ]] && { echo >&2 "ERROR: JAVA VERSION not supported. Please install version 8 or 11, found version $javascped - Aborting"; exit 1; }
+unset tmp javaspec goon
+
 # - check sed version on Mac
 if [[ "$MACOS_ON" == "yes" ]]; then
   macsed=no
