@@ -20,8 +20,8 @@ dmn-open-account-bdd-services-api-impl::
 
 |POST
 |/dmn-example-5/services/customer
-|xref:dmn-open-account-bdd-example/dmn-open-account-bdd-model/src/main/java/com/redhat/cop/pam/example5/Customer.java[Customer.java]
-|xref:dmn-open-account-bdd-example/dmn-open-account-bdd-model/src/main/java/com/redhat/cop/pam/example5/CanOpenAccountResults.java[CanOpenAccountResults.java]
+|xref:dmn-open-account-bdd-model/src/main/java/com/redhat/cop/pam/example5/Customer.java[Customer.java]
+|xref:dmn-open-account-bdd-model/src/main/java/com/redhat/cop/pam/example5/CanOpenAccountResults.java[CanOpenAccountResults.java]
 |===
 
 dmn-open-account-bdd-kie-api::
