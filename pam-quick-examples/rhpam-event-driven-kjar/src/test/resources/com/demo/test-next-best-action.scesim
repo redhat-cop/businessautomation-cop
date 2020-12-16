@@ -1,0 +1,560 @@
+<ScenarioSimulationModel version="1.8">
+  <simulation>
+    <scesimModelDescriptor>
+      <factMappings>
+        <FactMapping>
+          <expressionElements/>
+          <expressionIdentifier>
+            <name>Index</name>
+            <type>OTHER</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>#</name>
+            <className>java.lang.Integer</className>
+          </factIdentifier>
+          <className>java.lang.Integer</className>
+          <factAlias>#</factAlias>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>70.0</columnWidth>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements/>
+          <expressionIdentifier>
+            <name>Description</name>
+            <type>OTHER</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Scenario description</name>
+            <className>java.lang.String</className>
+          </factIdentifier>
+          <className>java.lang.String</className>
+          <factAlias>Scenario description</factAlias>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>300.0</columnWidth>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Customer Context</step>
+            </ExpressionElement>
+            <ExpressionElement>
+              <step>average balance</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|1</name>
+            <type>GIVEN</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Customer Context</name>
+            <className>Customer Context</className>
+          </factIdentifier>
+          <className>number</className>
+          <factAlias>Customer Context</factAlias>
+          <expressionAlias>average balance</expressionAlias>
+          <genericTypes/>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>123.69655172413795</columnWidth>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Customer Context</step>
+            </ExpressionElement>
+            <ExpressionElement>
+              <step>category</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|2</name>
+            <type>GIVEN</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Customer Context</name>
+            <className>Customer Context</className>
+          </factIdentifier>
+          <className>string</className>
+          <factAlias>Customer Context</factAlias>
+          <expressionAlias>category</expressionAlias>
+          <genericTypes/>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>123.69655172413795</columnWidth>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Customer Context</step>
+            </ExpressionElement>
+            <ExpressionElement>
+              <step>monthly expense</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|3</name>
+            <type>GIVEN</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Customer Context</name>
+            <className>Customer Context</className>
+          </factIdentifier>
+          <className>number</className>
+          <factAlias>Customer Context</factAlias>
+          <expressionAlias>monthly expense</expressionAlias>
+          <genericTypes/>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>123.69655172413795</columnWidth>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Recent Transactions</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|4</name>
+            <type>GIVEN</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Recent Transactions</name>
+            <className>Recent Transactions</className>
+          </factIdentifier>
+          <className>java.util.List</className>
+          <factAlias>Recent Transactions</factAlias>
+          <expressionAlias>value</expressionAlias>
+          <genericTypes>
+            <string>tTransactions</string>
+          </genericTypes>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>201.82068965517243</columnWidth>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Loan Offer</step>
+            </ExpressionElement>
+            <ExpressionElement>
+              <step>eligible</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|6</name>
+            <type>EXPECT</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Loan Offer</name>
+            <className>Loan Offer</className>
+          </factIdentifier>
+          <className>boolean</className>
+          <factAlias>Loan Offer</factAlias>
+          <expressionAlias>eligible</expressionAlias>
+          <genericTypes/>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>123.69655172413795</columnWidth>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Loan Offer</step>
+            </ExpressionElement>
+            <ExpressionElement>
+              <step>interest rate</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|7</name>
+            <type>EXPECT</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Loan Offer</name>
+            <className>Loan Offer</className>
+          </factIdentifier>
+          <className>number</className>
+          <factAlias>Loan Offer</factAlias>
+          <expressionAlias>interest rate</expressionAlias>
+          <genericTypes/>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>123.69655172413795</columnWidth>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Loan Offer</step>
+            </ExpressionElement>
+            <ExpressionElement>
+              <step>suggested amount</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|8</name>
+            <type>EXPECT</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Loan Offer</name>
+            <className>Loan Offer</className>
+          </factIdentifier>
+          <className>number</className>
+          <factAlias>Loan Offer</factAlias>
+          <expressionAlias>suggested amount</expressionAlias>
+          <genericTypes/>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>123.69655172413795</columnWidth>
+        </FactMapping>
+      </factMappings>
+    </scesimModelDescriptor>
+    <scesimData>
+      <Scenario>
+        <factMappingValues>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Scenario description</name>
+              <className>java.lang.String</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Description</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|1</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">3500</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|2</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">&quot;gold&quot;</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|3</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">-1450</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Recent Transactions</name>
+              <className>Recent Transactions</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">[{&quot;amount&quot;:&quot;-500&quot;, &quot;balance&quot;:&quot;1500&quot;, &quot;value date&quot;:&quot;\&quot;2020-12-16T14:09:00\&quot;&quot;, &quot;category&quot;:&quot;\&quot;shopping\&quot;&quot;}]</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">false</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|7</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|8</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>#</name>
+              <className>java.lang.Integer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Index</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">1</rawValue>
+          </FactMappingValue>
+        </factMappingValues>
+      </Scenario>
+      <Scenario>
+        <factMappingValues>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Scenario description</name>
+              <className>java.lang.String</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Description</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|1</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">3500</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|2</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">&quot;gold&quot;</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|3</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">-1450</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Recent Transactions</name>
+              <className>Recent Transactions</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">[{&quot;amount&quot;:&quot;-500&quot;, &quot;balance&quot;:&quot;1500&quot;, &quot;value date&quot;:&quot;\&quot;2020-12-16T14:09:00\&quot;&quot;, &quot;category&quot;:&quot;\&quot;shopping\&quot;&quot;},{&quot;amount&quot;:&quot;-200&quot;, &quot;balance&quot;:&quot;2000&quot;, &quot;value date&quot;:&quot;\&quot;2020-12-16T14:08:00\&quot;&quot;, &quot;category&quot;:&quot;\&quot;shopping\&quot;&quot;},{&quot;amount&quot;:&quot;-1200&quot;, &quot;balance&quot;:&quot;3200&quot;, &quot;value date&quot;:&quot;\&quot;2020-12-16T14:07:00\&quot;&quot;, &quot;category&quot;:&quot;\&quot;shopping\&quot;&quot;}]</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">true</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|7</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">4.5</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|8</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">10000</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>#</name>
+              <className>java.lang.Integer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Index</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">2</rawValue>
+          </FactMappingValue>
+        </factMappingValues>
+      </Scenario>
+      <Scenario>
+        <factMappingValues>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Scenario description</name>
+              <className>java.lang.String</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Description</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|1</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">3500</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|2</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">&quot;silver&quot;</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Customer Context</name>
+              <className>Customer Context</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|3</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">-1450</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Recent Transactions</name>
+              <className>Recent Transactions</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">[{&quot;amount&quot;:&quot;-500&quot;, &quot;balance&quot;:&quot;1500&quot;, &quot;value date&quot;:&quot;\&quot;2020-12-16T14:09:00\&quot;&quot;, &quot;category&quot;:&quot;\&quot;shopping\&quot;&quot;},{&quot;amount&quot;:&quot;-200&quot;, &quot;balance&quot;:&quot;2000&quot;, &quot;value date&quot;:&quot;\&quot;2020-12-16T14:08:00\&quot;&quot;, &quot;category&quot;:&quot;\&quot;shopping\&quot;&quot;},{&quot;amount&quot;:&quot;-1200&quot;, &quot;balance&quot;:&quot;3200&quot;, &quot;value date&quot;:&quot;\&quot;2020-12-16T14:07:00\&quot;&quot;, &quot;category&quot;:&quot;\&quot;shopping\&quot;&quot;}]</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">true</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|7</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">5</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Loan Offer</name>
+              <className>Loan Offer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|8</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">5000</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>#</name>
+              <className>java.lang.Integer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Index</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">3</rawValue>
+          </FactMappingValue>
+        </factMappingValues>
+      </Scenario>
+    </scesimData>
+  </simulation>
+  <background>
+    <scesimModelDescriptor>
+      <factMappings>
+        <FactMapping>
+          <expressionElements/>
+          <expressionIdentifier>
+            <name>1|1</name>
+            <type>GIVEN</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Empty</name>
+            <className>java.lang.Void</className>
+          </factIdentifier>
+          <className>java.lang.Void</className>
+          <factAlias>INSTANCE 1</factAlias>
+          <expressionAlias>PROPERTY 1</expressionAlias>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+          <columnWidth>114.0</columnWidth>
+        </FactMapping>
+      </factMappings>
+    </scesimModelDescriptor>
+    <scesimData>
+      <BackgroundData>
+        <factMappingValues>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Empty</name>
+              <className>java.lang.Void</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|1</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+          </FactMappingValue>
+        </factMappingValues>
+      </BackgroundData>
+    </scesimData>
+  </background>
+  <settings>
+    <dmnFilePath>src/main/resources/next-best-action.dmn</dmnFilePath>
+    <type>DMN</type>
+    <dmnNamespace>https://kiegroup.org/dmn/_8A641C24-FD0E-4569-BC01-78A8F0901E98</dmnNamespace>
+    <dmnName>next-best-action</dmnName>
+    <skipFromBuild>false</skipFromBuild>
+    <stateless>false</stateless>
+  </settings>
+  <imports>
+    <imports/>
+  </imports>
+</ScenarioSimulationModel>
