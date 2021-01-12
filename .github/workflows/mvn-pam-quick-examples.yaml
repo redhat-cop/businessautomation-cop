@@ -75,3 +75,7 @@ jobs:
           pushd pam-quick-examples/spring-boot-examples/jms/start-jms
           mvn install --no-transfer-progress
           popd
+
+          pushd testing/cucumber-testing-quick-start
+          mvn install --no-transfer-progress
+          popd
