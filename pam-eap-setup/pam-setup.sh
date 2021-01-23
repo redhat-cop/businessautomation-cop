@@ -1215,7 +1215,7 @@ if [[ "$patchEAP" == "yes" ]]; then
     [[ -r "$eap_patch_file" ]] && eap_patch_file_found="$eap_patch_file"
   done
 fi
-EAP_PATCH_ZIP="$eap_patch_file_found"
+EAP_PATCH_ZIP="$eap_patch_file_found" && unset eap_patch_file_found && unset eap_patch_file
 [[ -z $EAP_PATCH_ZIP ]] && patchEAP=no
 [[ ! -z $EAP_PATCH_ZIP ]] && [[ ! -r $EAP_PATCH_ZIP ]] && sout "WARNING: Cannot read EAP PATCH ZIP file $EAP_PATCH_ZIP -- will proceed without it" && patchEAP=no
 
@@ -1251,6 +1251,15 @@ if [ "$skip_install" != "yes" ]; then
     sout "Patching EAP with $EAP_PATCH_ZIP"
     bin/jboss-cli.sh --output-json "patch apply $WORKDIR/$EAP_PATCH_ZIP"
     summary "Patched EAP with :- `bigString $EAP_PATCH_ZIP`"
+    # apply JBEAP-20659 only for patch 7.3.4
+    is734=no && a=${EAP_PATCH_ZIP/7.3.4/} && [[ "$a" != "$EAP_PATCH_ZIP" ]] && is734=yes
+    jbeap20659="jbeap-20659.zip"
+    if ( [[ "$is734" == "yes" ]] && [[ -r "$WORKDIR/$jbeap20659" ]] ); then
+      sout "Patching EAP with JBEAP-20659 password vault patch"
+      bin/jboss-cli.sh --output-json "patch apply $WORKDIR/$jbeap20659"
+      summary "Patched EAP with :- `bigString $jbeap20659`"
+    fi
+    unset is734 jbeeap20659
     pushd $EAP_HOME/bin &> /dev/null
       ./add-user.sh -s --user "$eapAdminName" --password "$eapAdminPasswd"
     popd &> /dev/null
