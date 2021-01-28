@@ -13,8 +13,9 @@ rule "HelloWorld"
     then
         System.out.println("Hello World Rule Fired");
         RuleResponse r = new RuleResponse();
-        r.setPayload( " Hello World " );
+        r.setPayload( "Hello World" );
         r.setRulesFired( r.getRulesFired()+1 );
+        r.setExecutionReference( reference );
         insert( r );
 end
 
@@ -26,7 +27,7 @@ rule "GoodByeWorld"
     then
         System.out.println("Goodbye World Rule Fired");
         RuleResponse r = new RuleResponse();
-        r.setPayload( " Goodbye " + $s );
+        r.setPayload( "Goodbye " + $s );
         r.setRulesFired( r.getRulesFired()+1 );
         r.setExecutionReference( reference );
         insert( r );
