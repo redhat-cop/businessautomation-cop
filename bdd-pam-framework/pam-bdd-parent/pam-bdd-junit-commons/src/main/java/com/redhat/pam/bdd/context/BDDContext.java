@@ -1,7 +1,7 @@
-package org.ippul.pam.bdd.context;
+package com.redhat.pam.bdd.context;
 
 import io.cucumber.guice.ScenarioScoped;
-import org.ippul.pam.bdd.listeners.BDDProcessListener;
+import com.redhat.pam.bdd.listeners.BDDProcessListener;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;

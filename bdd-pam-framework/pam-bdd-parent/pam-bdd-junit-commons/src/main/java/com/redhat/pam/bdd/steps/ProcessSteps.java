@@ -1,9 +1,9 @@
-package org.ippul.pam.bdd.steps;
+package com.redhat.pam.bdd.steps;
 
 import com.google.inject.Inject;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java8.En;
-import org.ippul.pam.bdd.context.BDDContext;
+import com.redhat.pam.bdd.context.BDDContext;
 import org.junit.Assert;
 import org.kie.api.runtime.manager.audit.NodeInstanceLog;
 import org.kie.api.runtime.manager.audit.ProcessInstanceLog;

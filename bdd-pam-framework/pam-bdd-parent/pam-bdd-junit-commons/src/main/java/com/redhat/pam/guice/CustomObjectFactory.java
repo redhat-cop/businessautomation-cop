@@ -1,4 +1,4 @@
-package org.ippul.pam.guice;
+package com.redhat.pam.guice;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

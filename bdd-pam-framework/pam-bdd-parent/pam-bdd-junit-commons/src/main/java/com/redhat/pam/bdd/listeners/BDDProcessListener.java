@@ -1,6 +1,6 @@
-package org.ippul.pam.bdd.listeners;
+package com.redhat.pam.bdd.listeners;
 
-import org.ippul.pam.bdd.context.BDDContext;
+import com.redhat.pam.bdd.context.BDDContext;
 import org.kie.api.event.process.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

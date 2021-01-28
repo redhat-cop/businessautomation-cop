@@ -1,4 +1,4 @@
-package org.ippul.pam.utils;
+package com.redhat.pam.utils;
 
 import java.util.Objects;
 import java.util.function.Function;
