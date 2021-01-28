@@ -20,11 +20,11 @@ public class RoutingConstants {
     }
 
     public interface ROUTE_ID {
-        public static final String DEMO_API_ROUTE_HELLO =  "demoRules.api." + CORE.HELLO_RULES;
-        public static final String DEMO_API_ROUTE_GOODBYE =  "demoRules.api." + CORE.GOODBYE_RULES;
-        public static final String DEMO_ROUTE_HELLO =  "demoRules.impl." + CORE.HELLO_RULES;
-        public static final String DEMO_ROUTE_GOODBYE =  "demoRules.impl." + CORE.GOODBYE_RULES;
-        public static final String AUDIT_API_ROUTE_BYREF =  "audit.api." + AUDIT.FIND_BY_REF;
+        public static final String DEMO_API_ROUTE_HELLO = "demoRules.api." + CORE.HELLO_RULES;
+        public static final String DEMO_API_ROUTE_GOODBYE = "demoRules.api." + CORE.GOODBYE_RULES;
+        public static final String DEMO_ROUTE_HELLO = "demoRules.impl." + CORE.HELLO_RULES;
+        public static final String DEMO_ROUTE_GOODBYE = "demoRules.impl." + CORE.GOODBYE_RULES;
+        public static final String AUDIT_API_ROUTE_BYREF = "audit.api." + AUDIT.FIND_BY_REF;
         public static final String AUDIT_ROUTE_BYREF = "audit.impl." + AUDIT.FIND_BY_REF;
         public static final String AUDIT_ROUTE_PERSIST = "audit.impl." + AUDIT.EXECUTION_LOG;
         public static final String KIE_SCAN_KIEBASE = "kie.impl." + CORE.SCAN_KIEBASE;
@@ -49,5 +49,10 @@ public class RoutingConstants {
     public interface AUDIT {
         public static final String EXECUTION_LOG = DIRECT + "persisExecutionLog";
         public static final String FIND_BY_REF = DIRECT + "executionLogByRef";
+    }
+
+    public interface CONTAINER_ID {
+        public static final String DEMO = "DEMO_CONTAINER";
+        public static final String MORTGAGES = "mortgages-1.0.0-SNAPSHOT";
     }
 }

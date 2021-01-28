@@ -31,6 +31,8 @@ public class KieQueryUtils {
             }
         });
 
+        log.info("Collection Rule Result : {}", result);
+
         if (!result.isEmpty()) {
 
             List<RuleResponse> resultList = new ArrayList<RuleResponse>();

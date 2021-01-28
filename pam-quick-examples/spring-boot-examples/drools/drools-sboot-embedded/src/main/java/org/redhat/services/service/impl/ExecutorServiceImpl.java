@@ -18,7 +18,6 @@ public class ExecutorServiceImpl implements ExecutorService {
     private RuleExecutor ruleExecutor;
 
     @Autowired
-    @Qualifier("kjarRepository")
     KJARRepositoryConfig kjarRepository;
 
     @Override
