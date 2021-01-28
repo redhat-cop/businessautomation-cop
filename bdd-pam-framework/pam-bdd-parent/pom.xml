@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.ippul.pam.bdd</groupId>
+    <artifactId>pam-bdd-parent</artifactId>
+    <packaging>pom</packaging>
+    <name>pam-bdd-parent</name>
+    <version>1.0</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <jboss.eap.bom.version>7.3.0.GA</jboss.eap.bom.version>
+        <ba.bom.version>7.9.1.redhat-00003</ba.bom.version>
+        <io.cucumber.version>6.7.0</io.cucumber.version>
+    </properties>
+
+    <modules>
+        <module>pam-bdd-junit-commons</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.bom</groupId>
+                <artifactId>jboss-eap-jakartaee8-with-tools</artifactId>
+                <version>${jboss.eap.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat.ba</groupId>
+                <artifactId>ba-platform-bom</artifactId>
+                <version>${ba.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-java</artifactId>
+                <version>${io.cucumber.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-java8</artifactId>
+                <version>${io.cucumber.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-junit</artifactId>
+                <version>${io.cucumber.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-guice</artifactId>
+                <version>${io.cucumber.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ippul.pam.bdd</groupId>
+                <artifactId>pam-bdd-junit-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
