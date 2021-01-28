@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.ippul.pam.bdd.examples</groupId>
+        <artifactId>project-to-test-with-bdd-parent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>project-to-test-with-bdd-junit-test</artifactId>
+    <name>project-to-test-with-bdd-junit-test</name>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.ippul.pam.bdd</groupId>
+            <artifactId>pam-bdd-junit-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ippul.pam.bdd.examples</groupId>
+            <artifactId>project-to-test-with-bdd-test-data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ippul.pam.bdd.examples</groupId>
+            <artifactId>project-to-test-with-bdd-wih</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-workitems-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>
