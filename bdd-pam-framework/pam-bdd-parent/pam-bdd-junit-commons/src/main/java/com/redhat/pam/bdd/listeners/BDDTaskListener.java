@@ -1,4 +1,4 @@
-package org.ippul.pam.bdd.listeners;
+package com.redhat.pam.bdd.listeners;
 
 import org.kie.api.task.TaskEvent;
 import org.kie.api.task.TaskLifeCycleEventListener;

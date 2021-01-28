@@ -1,4 +1,4 @@
-package org.ippul.pam.runtime;
+package com.redhat.pam.runtime;
 
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.compiler.kie.builder.impl.KieContainerImpl;

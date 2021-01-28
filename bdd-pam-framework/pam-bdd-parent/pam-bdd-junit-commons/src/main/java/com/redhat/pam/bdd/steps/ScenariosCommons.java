@@ -1,10 +1,10 @@
-package org.ippul.pam.bdd.steps;
+package com.redhat.pam.bdd.steps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import io.cucumber.java8.En;
 import io.cucumber.java8.Scenario;
-import org.ippul.pam.bdd.context.BDDContext;
+import com.redhat.pam.bdd.context.BDDContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class ScenariosCommons implements En {
                 final String className = matcher.group("className");
                 LOGGER.debug("Going to replace datatable cell value '{}' with an instance of class '{}' json file expected in path '{}'(prefix: {})", datatableCell, className, path, prefix);
                 return objectMapper.readValue(getClass().getClassLoader().getResource(datatableCell), Class.forName(className));
-            } else if(datatableCell.equals("org.ippul.property.processId")) {
+            } else if(datatableCell.equals("com.redhat.property.processId")) {
                 return String.valueOf(context.getProcessInstanceId());
             } else {
                 return datatableCell;

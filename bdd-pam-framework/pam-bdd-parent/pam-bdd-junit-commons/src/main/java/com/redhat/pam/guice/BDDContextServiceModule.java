@@ -1,8 +1,8 @@
-package org.ippul.pam.guice;
+package com.redhat.pam.guice;
 
 import com.google.inject.AbstractModule;
 import io.cucumber.guice.ScenarioScoped;
-import org.ippul.pam.bdd.context.BDDContext;
+import com.redhat.pam.bdd.context.BDDContext;
 
 import java.util.Objects;
 import java.util.ServiceLoader;

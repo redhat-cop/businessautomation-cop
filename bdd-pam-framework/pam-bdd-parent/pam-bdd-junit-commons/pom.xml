@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.ippul.pam.bdd</groupId>
+		<groupId>com.redhat</groupId>
     	<artifactId>pam-bdd-parent</artifactId>
 		<version>1.0</version>
 	</parent>

@@ -1,4 +1,4 @@
-package org.ippul.pam.bdd.steps;
+package com.redhat.pam.bdd.steps;
 
 public class SubprocessSteps {
 }

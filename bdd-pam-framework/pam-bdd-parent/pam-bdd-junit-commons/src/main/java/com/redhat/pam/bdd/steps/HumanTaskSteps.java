@@ -1,10 +1,10 @@
-package org.ippul.pam.bdd.steps;
+package com.redhat.pam.bdd.steps;
 
 import com.google.inject.Inject;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java8.En;
-import org.ippul.pam.bdd.context.BDDContext;
-import org.ippul.pam.utils.TriFunction;
+import com.redhat.pam.bdd.context.BDDContext;
+import com.redhat.pam.utils.TriFunction;
 import org.kie.api.task.model.Status;
 import org.kie.api.task.model.TaskSummary;
 import org.slf4j.Logger;
