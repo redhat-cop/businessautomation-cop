@@ -1,5 +1,7 @@
 package org.redhat.services.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,20 +19,23 @@ import org.redhat.services.model.dto.KJAR;
 import org.redhat.services.model.dto.Release;
 import org.redhat.services.rules.util.KieBaseListener;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//import static org.redhat.services.util.RoutingConstants.CONTAINER_ID;
+
 @Slf4j
+@Getter
+@Setter
 @Configuration
 @ConfigurationProperties(prefix = "rules")
-// @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class KJARRepositoryConfig {
 
     @Value("${rules.demo.project}")
@@ -40,7 +45,6 @@ public class KJARRepositoryConfig {
 
     List<KJAR> kjars;
     private Map<String, KJAR> kjarMap = new HashMap<String, KJAR>();
-
     private static final String kieMavenSettingsProp = "kie.maven.settings.custom";
     private String mavenSettings;
 
@@ -183,20 +187,20 @@ public class KJARRepositoryConfig {
     }
     //@formatter:on
 
-    public List<KJAR> getKjars() {
-        return kjars;
-    }
-
-    public String getMavenSettings() {
-        return mavenSettings;
-    }
-
-    public void setMavenSettings(String mavenSettings) {
-        this.mavenSettings = mavenSettings;
-    }
-
-    public void setKjars(List<KJAR> kjars) {
-        this.kjars = kjars;
-    }
+//    public List<KJAR> getKjars() {
+//        return kjars;
+//    }
+//
+//    public String getMavenSettings() {
+//        return mavenSettings;
+//    }
+//
+//    public void setMavenSettings(String mavenSettings) {
+//        this.mavenSettings = mavenSettings;
+//    }
+//
+//    public void setKjars(List<KJAR> kjars) {
+//        this.kjars = kjars;
+//    }
 
 }

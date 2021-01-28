@@ -30,7 +30,6 @@ public class RuleExecutorImpl implements RuleExecutor {
     private KieQueryUtils queryUtils;
 
     @Autowired
-    @Qualifier("kjarRepository")
     KJARRepositoryConfig kjarRepository;
 
     private KieContainer kContainer;
@@ -51,7 +50,9 @@ public class RuleExecutorImpl implements RuleExecutor {
         .apply(  kjarRepository.getKieContainer(demoContainerId) );
         // @formatter:on
 
-        return atomicReferenceRuleResponse.get().get(0);
+        RuleResponse response = atomicReferenceRuleResponse.get().get(0);
+        log.info("RuleResponse Obtained: {}", response);
+        return response;
     }
 
     @Override
@@ -71,7 +72,9 @@ public class RuleExecutorImpl implements RuleExecutor {
         .apply(  kjarRepository.getKieContainer(demoContainerId) );
         // @formatter:on
 
-        return atomicReferenceRuleResponse.get().get(0);
+        RuleResponse response = atomicReferenceRuleResponse.get().get(0);
+        log.info("RuleResponse Obtained: {}", response);
+        return response;
     }
 
     public String executionReference(){
