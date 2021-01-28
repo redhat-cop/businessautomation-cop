@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.redhat</groupId>
-    	<artifactId>pam-bdd-parent</artifactId>
+		<groupId>com.redhat.pam.bdd</groupId>
+    <artifactId>pam-bdd-parent</artifactId>
 		<version>1.0</version>
 	</parent>
 
