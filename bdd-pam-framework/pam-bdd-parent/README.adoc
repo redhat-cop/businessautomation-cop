@@ -5,7 +5,7 @@ A reusable library for easly create BDD test for a kjar
 ## Main components
 
 ### Runtime
-The abstract class xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/runtime/BDDEmbeddedRuntime.java[BDDEmbeddedRuntime.java] load the specified kjar from the maven repository and create an in-memory runtime.
+The abstract class xref:pam-bdd-junit-commons/src/main/java/com/redhat/pam/runtime/BDDEmbeddedRuntime.java[BDDEmbeddedRuntime.java] load the specified kjar from the maven repository and create an in-memory runtime.
 
 Once the kjar is installed on the local maven repository to create an embedded runtime just create an instance of BDDEmbeddedRuntime.java and implement the method 
 [source,java]
@@ -14,16 +14,16 @@ public abstract UserGroupCallback getUserGroupCallback();
 ----
 
 ### BDDContext
-The class xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/context/BDDContext.java[BDDContext.java] contains the informations that need to be maintained between steps.
+The class xref:pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/context/BDDContext.java[BDDContext.java] contains the informations that need to be maintained between steps.
 
 An instance of BDDContext is created at the beginning of the scenario and destroyed at the end of the scenario. 
-The lifecycle is managed by Guice that using SPI load the implementation of xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/guice/BDDCustomContextProvider.java[BDDCustomContextProvider.java] and inject the instance at the injection point.
+The lifecycle is managed by Guice that using SPI load the implementation of xref:pam-bdd-junit-commons/src/main/java/com/redhat/pam/guice/BDDCustomContextProvider.java[BDDCustomContextProvider.java] and inject the instance at the injection point.
 
 ### Common steps
 
-The package xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps[com.redhat.pam.bdd.steps] contains all the implemented steps organised by component:
+The package xref:pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps[com.redhat.pam.bdd.steps] contains all the implemented steps organised by component:
 
-#### xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/HumanTaskSteps.java[HumanTaskSteps.java] 
+#### xref:pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/HumanTaskSteps.java[HumanTaskSteps.java] 
 
 [cols="1,1,1", options="header"]
 .Human Task Steps details
@@ -80,7 +80,7 @@ This function build a predicate using the parameters inside the DataTable passed
 
 |===
 
-#### xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/ProcessSteps.java[ProcessSteps.java]
+#### xref:pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/ProcessSteps.java[ProcessSteps.java]
 
 [cols="1,1,1", options="header"]
 .Process Steps details
@@ -139,7 +139,7 @@ a|
 
 |===
 
-#### xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/ScenariosCommons.java[ScenariosCommons.java]
+#### xref:pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/ScenariosCommons.java[ScenariosCommons.java]
 This class contains some utilities
 
 ##### CustomObject
