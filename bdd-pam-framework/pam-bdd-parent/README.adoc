@@ -1,0 +1,168 @@
+# pam-bdd-parent
+
+A reusable library for easly create BDD test for a kjar
+
+## Main components
+
+### Runtime
+The abstract class xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/runtime/BDDEmbeddedRuntime.java[BDDEmbeddedRuntime.java] load the specified kjar from the maven repository and create an in-memory runtime.
+
+Once the kjar is installed on the local maven repository to create an embedded runtime just create an instance of BDDEmbeddedRuntime.java and implement the method 
+[source,java]
+----
+public abstract UserGroupCallback getUserGroupCallback();
+----
+
+### BDDContext
+The class xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/context/BDDContext.java[BDDContext.java] contains the informations that need to be maintained between steps.
+
+An instance of BDDContext is created at the beginning of the scenario and destroyed at the end of the scenario. 
+The lifecycle is managed by Guice that using SPI load the implementation of xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/guice/BDDCustomContextProvider.java[BDDCustomContextProvider.java] and inject the instance at the injection point.
+
+### Common steps
+
+The package xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps[com.redhat.pam.bdd.steps] contains all the implemented steps organised by component:
+
+#### xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/HumanTaskSteps.java[HumanTaskSteps.java] 
+
+[cols="1,1,1", options="header"]
+.Human Task Steps details
+|===
+|Step text |parameters |Description
+
+|the user {string} claims the task
+a|
+- String username
+- DataTable parameters
+a|
+- Retreive the task assigned as potetial owner for the user "username"
+- Filter the task list using the filter provided in the Datatable
+- Claim the task
+
+|the user {string} starts the task
+a|
+- String username
+- DataTable parameters
+a|
+- Retreive the task owned by user "username"
+- Filter the task list using the filter provided in the Datatable
+- Start the task
+
+|the user {string} completes the task
+a|
+- String username
+- DataTable parameters
+a|
+- Retreive the task owned by user "username"
+- Filter the task list using the filter provided in the Datatable
+- Complete the task passing using parameters(without filters)
+|===
+
+To select the correct task we want to perform the action on the function 'dataTableTaskFilterToPredicate' has been implemented. 
+This function build a predicate using the parameters inside the DataTable passed as step argument.
+
+[cols="1,2,1", options="header"]
+.defined predicate
+|===
+|DataTable key |Predicate |Description
+
+|task.filter.name
+|(taskSummary) -> taskSummary.getName().equals(value);
+|Filter all task with a specific name
+
+|task.filter.subject
+|(taskSummary) -> taskSummary.getSubject().equals(value);
+|Filter all task with a specific subject
+
+|task.filter.status
+|(taskSummary) -> taskSummary.getStatus().equals(Status.valueOf(value));
+|Filter all task with a specific status
+
+|===
+
+#### xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/ProcessSteps.java[ProcessSteps.java]
+
+[cols="1,1,1", options="header"]
+.Process Steps details
+|===
+|Step text |parameters |Description
+
+|an instance of {string} is started using input parameters
+a|
+- String processId
+- DataTable parameters
+|start a new instance of 'processId' passing DataTable as parameters 
+
+|an instance of {string} is started
+a|
+- String processId
+|start a new instance of 'processId' 
+
+|the signal {string} is send to the process instance with parameters
+a|
+- String signalName
+- DataTable dataTable 
+|Send the signal 'signalName' to the process instance passing the value of the key 'signal.body' as parameter
+
+|the signal {string} is send to the kie session with parameters
+a|
+- String signalName
+- DataTable dataTable
+|Send the signal 'signalName' to the kie session passing the value of the key 'signal.body' as parameter
+
+|the signal {string} is send to the process instance
+a|
+- String signalName
+|Send the signal 'signalName' to the process instance
+
+|the signal {string} is send to the kie session
+a|
+- String signalName
+|Send the signal 'signalName' to the kie session 
+
+|the process instance status is {string}
+a|
+- String expectedStatus
+|Assert thant the process instance status is 'expectedStatus'
+
+
+|the process variables values are
+a|
+- DataTable dataTable
+a|
+Check that the process variables match the values passed in the DataTable(using .equals)
+
+|the node {string} has been triggered
+a|
+- String expectedTriggeredNodeName
+|Assert that 'expectedTriggeredNodeName' has been triggered 
+
+|===
+
+#### xref:pam-bdd-parent/pam-bdd-junit-commons/src/main/java/com/redhat/pam/bdd/steps/ScenariosCommons.java[ScenariosCommons.java]
+This class contains some utilities
+
+##### CustomObject
+To pass a custom object as parameter of a step without affect the readbility of the feature file a DataTableType has been created.
+When inside a Datatable a cell match the regular expression
+[source,java]
+----
+(?<path>(?:[^;]*\/))?(?<prefix>(?:[^;]*-))?(?<className>.+?(?=\.json))
+----
+the cell value is replaced with an instance of the object stored in the provided json file.
+
+The regualr expression define 3 groups:
+
+- path(optional): rapresent the path of the file that contains the json rapresentaion of the instance to create.
+- prefix(optional): rapresent a mnemonic prefix that can be add to the filename. If present need to end with the char '-'
+- className: the fully qualified name of the class of the object to be created
+
+[ Example ] 
+
+If we need to pass an instance of the class ```com.redhat.model.MyObject.class``` as parameter of the step we need to:
+
+- Create a file named 'scenario1-com.redhat.model.MyObject.json' in a convenient path ex. bdd/parameters/ 
+- The content of the file must be the json rapresentation of the instance of MyObject
+- In DataTable cell insert ```bdd/parameters/scenario1-com.redhat.model.MyObject.json```
+
+At runtime the value of ```bdd/parameters/scenario1-com.redhat.model.MyObject.json``` will be replaced with the instance stored in the file

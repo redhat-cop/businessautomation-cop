@@ -1,1 +1,0 @@
-# PAM BDD PARENT
