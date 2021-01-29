@@ -14,8 +14,7 @@ import java.util.Properties;
 public class ContextProvider implements BDDCustomContextProvider {
     @Override
     public BDDContext get() {
-//        final String[] GAV = System.getProperty("kjar.deployment.gav").split(":");
-        final String[] GAV = "com.redhat.pam.bdd.examples:project-to-test-with-bdd:1.0".split(":");//System.getProperty("kjar.deployment.gav").split(":");
+        final String[] GAV = System.getProperty("kjar.deployment.gav").split(":");
 
         final KieServices ks = KieServices.Factory.get();
         final ReleaseId releaseId = ks.newReleaseId(GAV[0], GAV[1], GAV[2]);
