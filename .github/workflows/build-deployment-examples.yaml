@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        run: |
+          git config --system core.longpaths true
 
       - name: redhat-csp-download
         if: matrix.os == 'ubuntu-latest'

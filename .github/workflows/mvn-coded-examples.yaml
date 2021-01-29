@@ -1,17 +1,17 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven for code-examples
+name: Java CI with Maven for coded-examples
 
 on:
   push:
     paths:
-      - .github/workflows/mvn-code-examples.yaml
-      - code-examples/**
+      - .github/workflows/mvn-coded-examples.yaml
+      - coded-examples/**
   pull_request:
     paths:
-      - .github/workflows/mvn-code-examples.yaml
-      - code-examples/**
+      - .github/workflows/mvn-coded-examples.yaml
+      - coded-examples/**
 
 jobs:
   build:
@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        run: |
+          git config --system core.longpaths true
 
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
@@ -34,7 +36,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-code-examples-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-coded-examples-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
@@ -50,29 +52,29 @@ jobs:
         with:
           ignore: bcgithook bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-vagrant
 
-      - name: Build code-examples
+      - name: Build coded-examples
         run: |
-          pushd code-examples/dmn-examples
+          pushd coded-examples/dmn-examples
           mvn -B install --no-transfer-progress
           popd
 
-          pushd code-examples/business-central
+          pushd coded-examples/business-central
           mvn -B install --no-transfer-progress
           popd
           
-          pushd code-examples/spring-boot-examples
+          pushd coded-examples/spring-boot-examples
           mvn -B install --no-transfer-progress
           popd
 
-          pushd code-examples/kie-server-extensions
+          pushd coded-examples/kie-server-extensions
           mvn -B install --no-transfer-progress
           popd
 
-          pushd code-examples/quarkus-examples
+          pushd coded-examples/quarkus-examples
           mvn -B install --no-transfer-progress
           popd
 
-          pushd code-examples/spring-boot-examples/jms/start-jms
+          pushd coded-examples/spring-boot-examples/jms/start-jms
           mvn -B install --no-transfer-progress
           popd
 
