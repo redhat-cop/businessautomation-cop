@@ -12,6 +12,7 @@ import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import java.util.Properties;
 
 public class ContextProvider implements BDDCustomContextProvider {
+    
     @Override
     public BDDContext get() {
   
