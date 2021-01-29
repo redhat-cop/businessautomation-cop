@@ -25,6 +25,7 @@ jobs:
     steps:
       - name: Support longpaths
         run: git config --system core.longpaths true
+        if: matrix.os == 'windows-latest'
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -76,9 +77,5 @@ jobs:
           popd
 
           pushd coded-examples/spring-boot-examples/jms/start-jms
-          mvn -B install --no-transfer-progress
-          popd
-
-          pushd testing/cucumber-testing-quick-start
           mvn -B install --no-transfer-progress
           popd
