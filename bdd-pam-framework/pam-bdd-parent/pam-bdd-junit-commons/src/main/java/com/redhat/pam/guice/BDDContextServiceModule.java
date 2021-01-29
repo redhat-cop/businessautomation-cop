@@ -10,8 +10,7 @@ import java.util.ServiceLoader;
 public class BDDContextServiceModule extends AbstractModule {
 
     private static final String ERROR_MESSAGE = "Impossible to load service 'BDDCustomContextProvider'. \n" +
-            "Please add a file named 'META-INF/services/BDDCustomContextProvider' containing the the fully qualified name of BDDCustomContextProvider implementation. \n" +
-            "refer to https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html for more information";
+            "Please add a file named 'META-INF/services/com.redhat.pam.guice.BDDCustomContextProvider' containing the the fully qualified name of BDDCustomContextProvider implementation.";
 
     @Override
     protected void configure() {

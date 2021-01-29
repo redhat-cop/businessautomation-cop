@@ -1,5 +1,11 @@
 package com.redhat.pam.runtime;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Map;
+
+import javax.persistence.EntityManagerFactory;
+
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.compiler.kie.builder.impl.KieContainerImpl;
 import org.drools.compiler.kie.builder.impl.KieModuleKieProject;
@@ -13,41 +19,34 @@ import org.kie.api.runtime.manager.RuntimeEnvironmentBuilder;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.manager.RuntimeManagerFactory;
 import org.kie.api.task.UserGroupCallback;
-import org.kie.internal.identity.IdentityProvider;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
-import org.kie.internal.runtime.conf.RuntimeStrategy;
 import org.kie.internal.runtime.manager.InternalRuntimeManager;
 import org.kie.internal.runtime.manager.deploy.DeploymentDescriptorIO;
 import org.kie.test.util.db.PersistenceUtil;
 
-import javax.persistence.EntityManagerFactory;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Map;
-
 public abstract class BDDEmbeddedRuntime {
+
+    private final KieServices kieServices = KieServices.Factory.get();
 
     private DeploymentDescriptor deploymentDescriptor;
 
     private KieContainer kieContainer;
 
-    private String kieBase;
-
-    private String kieSession;
-
     public RuntimeManager getRuntimeManager(final ReleaseId releaseId) {
         return getRuntimeManager(releaseId, null, null);
     }
 
+    public RuntimeManager getRuntimeManager(final String gav) {
+        final String[] GAV = gav.split(":");
+        final ReleaseId releaseId = kieServices.newReleaseId(GAV[0], GAV[1], GAV[2]);
+        return getRuntimeManager(releaseId, null, null);
+    }
+
     public RuntimeManager getRuntimeManager(final ReleaseId releaseId, final String kieBase, final String kieSession) {
-        IdentityProvider c;
-        this.kieContainer = KieServices.get().newKieContainer(releaseId);
-        this.kieBase = kieBase;
-        this.kieSession = kieSession;
+        this.kieContainer = kieServices.newKieContainer(releaseId);
         this.deploymentDescriptor = getDescriptorFromKModule(releaseId);
         final RuntimeEnvironment runtimeEnvironment = buildRuntimeEnvironment(releaseId, kieBase, kieSession);
-        final RuntimeStrategy runtimeStrategy = deploymentDescriptor.getRuntimeStrategy();
-        return getRuntimeManager(runtimeStrategy, runtimeEnvironment);
+        return getRuntimeManager(runtimeEnvironment);
     }
 
     private RuntimeEnvironment buildRuntimeEnvironment(final ReleaseId releaseId, final String kieBase, final String kieSession) {
@@ -60,9 +59,9 @@ public abstract class BDDEmbeddedRuntime {
                 .userGroupCallback(getUserGroupCallback()).get();
     }
 
-    private RuntimeManager getRuntimeManager(final RuntimeStrategy strategy, final RuntimeEnvironment runtimeEnvironment) {
+    private RuntimeManager getRuntimeManager(final RuntimeEnvironment runtimeEnvironment) {
         final RuntimeManager runtimeManager;
-        switch (strategy) {
+        switch (deploymentDescriptor.getRuntimeStrategy()) {
             case PER_CASE:
                 runtimeManager = RuntimeManagerFactory.Factory.get().newPerCaseRuntimeManager(runtimeEnvironment);
                 break;
@@ -76,7 +75,7 @@ public abstract class BDDEmbeddedRuntime {
                 runtimeManager = RuntimeManagerFactory.Factory.get().newPerProcessInstanceRuntimeManager(runtimeEnvironment);
                 break;
             default:
-                throw new NotSupportedRuntimeStrategyException("Runtime strategy " + strategy + " not recognized");
+                throw new NotSupportedRuntimeStrategyException("Runtime strategy " + deploymentDescriptor.getRuntimeStrategy() + " not recognized");
 
         }
         ((InternalRuntimeManager)runtimeManager).setKieContainer(kieContainer);
@@ -86,13 +85,12 @@ public abstract class BDDEmbeddedRuntime {
     public abstract UserGroupCallback getUserGroupCallback();
 
     private DeploymentDescriptor getDescriptorFromKModule(final ReleaseId releaseId) {
-        InternalKieModule kieModule = ((KieModuleKieProject) ((KieContainerImpl) kieContainer).getKieProject()).getInternalKieModule();
-        DeploymentDescriptor desc = null;
+        final InternalKieModule kieModule = ((KieModuleKieProject) ((KieContainerImpl) kieContainer).getKieProject()).getInternalKieModule();
         if (kieModule.isAvailable("META-INF/kie-deployment-descriptor.xml")) {
-            byte[] content = kieModule.getBytes("META-INF/kie-deployment-descriptor.xml");
-            ByteArrayInputStream input = new ByteArrayInputStream(content);
+            final byte[] content = kieModule.getBytes("META-INF/kie-deployment-descriptor.xml");
+            final ByteArrayInputStream input = new ByteArrayInputStream(content);
             try {
-                desc = DeploymentDescriptorIO.fromXml(input);
+                return DeploymentDescriptorIO.fromXml(input);
             } finally {
                 try {
                     input.close();
@@ -101,7 +99,7 @@ public abstract class BDDEmbeddedRuntime {
                 }
             }
         }
-        return desc;
+        return null;
     }
 }
  

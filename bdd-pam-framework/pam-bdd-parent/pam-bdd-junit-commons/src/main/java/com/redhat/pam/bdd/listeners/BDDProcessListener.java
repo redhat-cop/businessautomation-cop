@@ -42,10 +42,6 @@ public class BDDProcessListener implements ProcessEventListener {
 
     @Override
     public void afterNodeTriggered(ProcessNodeTriggeredEvent processNodeTriggeredEvent) {
-        System.out.println(processNodeTriggeredEvent.getNodeInstance().getNode());
-        System.out.println(processNodeTriggeredEvent.getNodeInstance().getNodeId());
-        System.out.println(processNodeTriggeredEvent.getNodeInstance().getNodeName());
-
     }
 
     @Override
