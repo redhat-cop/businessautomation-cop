@@ -5,37 +5,17 @@
 #
 # $HOME/.bcgithook/default.conf
 #
+# WILL ALSO CHECK FOLLOWING LOCATIONS FOR CONFIGURATION FILES:
+#   - $JBOSS_HOME/git-hooks
+#   - $GIT_HOOKS_DIR
+#   - $GIT_HOOK_DIR
+#
 # CHECK DOCUMENTATION FOR CONFIGURATION DETAILS
 #
 # ------------------------------------------------------------------------------
 
-CONFIG_HOME="$HOME/.bcgithook"
-[[ ! -d "$CONFIG_HOME" ]] && mkdir -p "$CONFIG_HOME"
-CONFIG_FILE="$CONFIG_HOME/default.conf"
-
-LOG_LOCATION="$HOME"
-LOG_FILE="bcgithook_operations.log"
-ERR_FILE="bcgithook_error.log"
-
-PRJ_NAME=null && hwd="$(pwd)" && PRJ_NAME="$(basename ${hwd%%\/hooks} .git)"
-
-PRJ_CONFIG_FILE="$CONFIG_HOME/$PRJ_NAME.conf" && [[ -r "$PRJ_CONFIG_FILE" ]] && CONFIG_FILE="$PRJ_CONFIG_FILE"
-
-# fast and reasonably random
-randomid="$(date +%s)_$RANDOM"
-
-debug() {
-  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-  out "[$timestamp] [$randomid] [$CONFIG_FILE] [$PRJ_NAME] $1"
-}
-out() {
-  if [ -n "$LOG_FILE" ] ; then
-    printf "%s\n" "$@" >> "$LOG_LOCATION/$LOG_FILE"
-  fi
-}
-
 #
-# sanity environment check
+# - sanity environment check
 #
 CYGWIN_ON=no
 MACOS_ON=no
@@ -63,11 +43,47 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 [[ "$bash_ok" != "yes" ]] && echo "ERROR: BASH VERSION NOT SUPPORTED - PLEASE UPGRADE YOUR BASH INSTALLATION - ABORTING" && exit 1
 
 #
-# end of checks
+# - end of checks
 #
 
+# allow for more than one configuration location
+CONFIG_HOME="$HOME/.bcgithook" && [[ ! -d "$CONFIG_HOME" ]] && mkdir -p "$CONFIG_HOME"
+declare -a configAr
+[[ -n "$CONFIG_HOME" ]]   && [[ -d "$CONFIG_HOME" ]]   && configAr+=( "$CONFIG_HOME" )
+[[ -n "$JBOSS_HOME" ]]    && [[ -d "$JBOSS_HOME" ]]    && configAr+=( "$JBOSS_HOME/git-hooks" )
+[[ -n "$GIT_HOOK_DIR" ]]  && [[ -d "$GIT_HOOK_DIR" ]]  && configAr+=( "$GIT_HOOK_DIR" )
+[[ -n "$GIT_HOOKS_DIR" ]] && [[ -d "$GIT_HOOKS_DIR" ]] && configAr+=( "$GIT_HOOKS_DIR" )
+
+LOG_LOCATION="$HOME"
+LOG_FILE="bcgithook_operations.log"
+ERR_FILE="bcgithook_error.log"
+
+PRJ_NAME=null && hwd="$(pwd)" && PRJ_NAME="$(basename ${hwd%%\/hooks} .git)"
+PRJ_CONFIG_FILE="$PRJ_NAME.conf"
+
+# fast and reasonably random
+randomid="$(date +%s)_$RANDOM"
+
+debug() {
+  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  out "[$timestamp] [$randomid] [$CONFIG_FILE] [$PRJ_NAME] $1"
+}
+out() {
+  if [ -n "$LOG_FILE" ] ; then
+    printf "%s\n" "$@" >> "$LOG_LOCATION/$LOG_FILE"
+  fi
+}
+loadConfig() {
+  local f="$1"
+  local d ff
+  for d in "${configAr[@]}"; do
+    # shellcheck source=/dev/null
+    ff="$d/$f" && [[ -r "$ff" ]] && source "$ff" && CONFIG_FILE="$ff"
+  done
+}
+
 urlencode() {
-  old_lc_collate=$LC_COLLATE
+  old_lc_collate="$LC_COLLATE"
   LC_COLLATE=C
 
   local length="${#1}"
@@ -79,19 +95,20 @@ urlencode() {
       esac
   done
 
-  LC_COLLATE=$old_lc_collate
+  LC_COLLATE="$old_lc_collate"
 }
 urldecode() {
   local url_encoded="${1//+/ }"
   printf '%b' "${url_encoded//%/\\x}"
 }
 
+CONFIG_FILE=""
+loadConfig "default.conf"
+loadConfig "$PRJ_CONFIG_FILE"
+
 [[ ! -r "$CONFIG_FILE" ]] && LOG_FILE="$ERR_FILE" \
                           && debug "CONFIG FILE $CONFIG_FILE NOT FOUND - ABORTING" \
                           && exit 1
-
-# shellcheck source=/dev/null
-source "$CONFIG_FILE"
 
 debug "START"
 
