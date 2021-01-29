@@ -12,13 +12,10 @@ import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import java.util.Properties;
 
 public class ContextProvider implements BDDCustomContextProvider {
+    
     @Override
     public BDDContext get() {
-        final String[] GAV = System.getProperty("kjar.deployment.gav").split(":");
-
-        final KieServices ks = KieServices.Factory.get();
-        final ReleaseId releaseId = ks.newReleaseId(GAV[0], GAV[1], GAV[2]);
-
+  
         final BDDEmbeddedRuntime embeddedRuntime = new BDDEmbeddedRuntime() {
             @Override
             public UserGroupCallback getUserGroupCallback() {
@@ -28,6 +25,6 @@ public class ContextProvider implements BDDCustomContextProvider {
             }
         };
 
-        return new BDDContext(embeddedRuntime.getRuntimeManager(releaseId), ProcessInstanceIdContext.get());
+        return new BDDContext(embeddedRuntime.getRuntimeManager(System.getProperty("kjar.deployment.gav")));
     }
 }

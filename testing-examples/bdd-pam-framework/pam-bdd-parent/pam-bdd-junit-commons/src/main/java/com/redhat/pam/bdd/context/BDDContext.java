@@ -24,16 +24,16 @@ public class BDDContext {
 
     private Map<String, Object> processParameters = new HashMap<>();
 
-    public BDDContext(final RuntimeManager runtimeManager, final ProcessInstanceIdContext processInstanceIdContext){
+    public BDDContext(final RuntimeManager runtimeManager){
         this.runtimeManager = runtimeManager;
-        this.runtimeEngine = this.runtimeManager.getRuntimeEngine(processInstanceIdContext);
+        this.runtimeEngine = this.runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get());
         this.kieSession = this.runtimeEngine.getKieSession();
         this.kieSession.addEventListener(new BDDProcessListener(this));
     }
 
-    public BDDContext(final RuntimeManager runtimeManager, final CaseContext caseInstanceIdContext){
+    public BDDContext(final RuntimeManager runtimeManager, final String caseIdentifier){
         this.runtimeManager = runtimeManager;
-        this.runtimeEngine = this.runtimeManager.getRuntimeEngine(caseInstanceIdContext);
+        this.runtimeEngine = this.runtimeManager.getRuntimeEngine(CaseContext.get(caseIdentifier));
         this.kieSession = this.runtimeEngine.getKieSession();
     }
 
