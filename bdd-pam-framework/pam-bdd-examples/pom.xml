@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.redhat.pam.bdd.examples</groupId>
+    <artifactId>pam-bdd-examples</artifactId>
+    <packaging>pom</packaging>
+    <name>pam-bdd-examples</name>
+    <version>1.0</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <com.redhat.pam.bdd.parent.version>1.0</com.redhat.pam.bdd.parent.version>
+    </properties>
+
+    <modules>
+        <module>project-to-test-with-bdd-parent</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.redhat.pam.bdd</groupId>
+                <artifactId>pam-bdd-parent</artifactId>
+                <version>${com.redhat.pam.bdd.parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
