@@ -211,17 +211,6 @@ function sout() {
   done
 }
 
-function waitForKey() {
-  echo '... :::         ::: ...'
-  echo '... ::: WAITING ::: ...'
-  echo '... :::         ::: ...'
-  echo
-  echo "$@"
-  echo
-  read -r -p 'Press ENTER key to continue...'
-  echo
-}
-
 function checkEnv() {
   local sw="$1"
   [[ "$sw" == "curl" ]] && ( command -v curl &> /dev/null || { echo >&2 'ERROR: curl not installed. Please install curl to continue - Aborting'; exit 1; } )
@@ -383,11 +372,11 @@ Options:
                                
          - git_hook          : install named post-commit git hook implementation
                               Supported implementations are:
-                               - 'bcgithook' : from https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                               - 'bcgithook' : from https://github.com/redhat-cop/businessautomation-cop/tree/master/extras/bcgithook
                                - 'kiegroup'  : from https://github.com/kiegroup/bc-git-integration-push
                                
          - git_hook_location : location of post-commit git hooks implementation
-                               Valid values are [ (empty) | download | path-to-githook]
+                               Valid values are [ (empty) | download | path-to-githook ]
                                Please refer to the documentation for valid values
                                'git_hook_location' is only taken into account if 'git_hook' has a valid value
                                
@@ -1007,7 +996,7 @@ function installBCGitHook() {
       mkdir bcgithook && cd bcgithook
       curl -ks -L -O https://github.com/redhat-cop/businessautomation-cop/archive/master.zip
       unzip -qq master.zip
-      [[ -d businessautomation-cop-master/bcgithook ]] && cd businessautomation-cop-master/bcgithook && ghl="$(pwd)"
+      [[ -d businessautomation-cop-master/extras/bcgithook ]] && cd businessautomation-cop-master/extras/bcgithook && ghl="$(pwd)"
     fi
     if [[ -n "${configOptions[git_hook_location]}" ]] && [[ "${configOptions[git_hook_location]}" != "download" ]]; then
       local tmp="${configOptions[git_hook_location]}"

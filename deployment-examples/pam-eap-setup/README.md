@@ -230,7 +230,7 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                                
                  - git_hook          : install named post-commit git hook implementation
                                       Supported implementations are:
-                                       - 'bcgithook' : from https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook
+                                       - 'bcgithook' : from https://github.com/redhat-cop/businessautomation-cop/tree/master/extras/bcgithook
                                        - 'kiegroup'  : from https://github.com/kiegroup/bc-git-integration-push
                                        
                  - git_hook_location : location of post-commit git hooks implementation
