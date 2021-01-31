@@ -24,7 +24,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.redhat.pam.bdd</groupId>
-                <artifactId>pam-bdd-parent</artifactId>
+                <artifactId>bdd-pam-framework</artifactId>
                 <version>${com.redhat.pam.bdd.parent.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
