@@ -50,25 +50,9 @@
                             <name>kjar.deployment.gav</name>
                             <value>${com.redhat.deployment.kjar.gav}</value>
                         </property>
-                        <!-- <property>
-                            <name>kie.maven.settings.custom</name>
-                            <value>/home/ippul/.m2/settings.xml</value>
-                        </property> -->
                     </systemProperties>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <!-- <profiles>
-        <profile>
-            <id>junit-test</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <modules>
-                <module>project-to-test-with-bdd-junit-test</module>
-            </modules>
-            
-        </profile>
-    </profiles> -->
 </project>

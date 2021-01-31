@@ -305,7 +305,7 @@ public class ExampleBDDRunnerTest extends BDDRunner {
 $ mvn clean install
 ----
 
-## BDD Scenario 4 - process with custom work item handler mock
+## BDD Scenario 3 - process with custom work item handler
 
 This example show how test the process definition xref:project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/process-with-custom-wih.bpmn[process-to-test-with-custom-wih] using the bdd-pam-framework.
 
@@ -421,9 +421,9 @@ public class ExampleBDDRunnerTest extends BDDRunner {
 $ mvn clean install
 ----
 
-## BDD Scenario 3 - process with custom work item handler
+## BDD Scenario 4 - process with custom work item handler mock
 
-This example show how test the process definition xref:project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/process-with-custom-wih.bpmn[process-to-test-with-custom-wih] using the bdd-pam-framework.
+This example show how test the process definition xref:project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/process-with-custom-wih.bpmn[process-to-test-with-custom-wih] with a moked custom work item handler using the bdd-pam-framework.
 
 image::project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/project-to-test-with-bdd.process-with-custom-wih-svg.svg[]
 
@@ -584,32 +584,10 @@ public class ExampleBDDRunnerTest extends BDDRunner {
 $ mvn clean install
 ----
 
+## Cucumber Report
+Unisng html cucumber report a user friendly report is automatically generated in project-to-test-with-bdd-junit-test/target/cucumber-reports.html
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+image::images/cucumber-report.png[]
 
 ## Useful System properties
 [cols="1,1,1", options="header"]
