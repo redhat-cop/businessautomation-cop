@@ -2,13 +2,18 @@
 
 Show how to write bdd test for a kjar using bdd-pam-framework
 
-## Example overview
+## Example overview 
+
+- <<BDD Scenario 1 - process with human task>>
+- <<BDD Scenario 2 - process with signal and custom object>>
+- <<BDD Scenario 3 - process with custom work item handler>>
+
+## Project structure overview
 
 - project-to-test-with-bdd: is the kjar to test
 - project-to-test-with-bdd-junit-test: Contains the bdd scenarios to test the process
 - project-to-test-with-bdd-test-model: Contains the custom object used by the KJAR
 - project-to-test-with-bdd-wih: Contains the custom work item handler used by the KJAR
-
 
 ## BDD Scenario 1 - process with human task
 
@@ -222,6 +227,12 @@ If inside a Datatable a cell match the regular expression
 (?<path>(?:[^;]*\/))?(?<prefix>(?:[^;]*-))?(?<className>.+?(?=\.json))
 ----
 the cell value is replaced with an instance of the object stored in the provided json file.
+
+The regualr expression define 3 groups:
+
+- path(optional): rapresent the path of the file that contains the json rapresentaion of the instance to create.
+- prefix(optional): rapresent a mnemonic prefix that can be add to the filename. If present need to end with the char '-'
+- className: the fully qualified name of the class of the object to be created
 ====
 
 To take advantage of this just create a file example-custom-object-com.redhat.examples.bdd.process.Document.json int the test/resources/data folder and put the json rapresentation of the instance as content
@@ -294,7 +305,167 @@ $ mvn clean install
 ----
 
 
+## BDD Scenario 3 - process with custom work item handler
 
+The second example show how test the process definition xref:project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/process-with-custom-wih.bpmn[project-to-test-with-custom-wih] using the bdd-pam-framework.
+
+image::project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/project-to-test-with-bdd.process-with-custom-wih-svg.svg[]
+
+### Test the process
+. Create an implementation of `com.redhat.pam.guice.BDDCustomContextProvider`, this interface declare a method get() that return an instance of `com.redhat.pam.bdd.context.BDDContext`.
+To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-framework define a facility class(com.redhat.pam.runtime.BDDEmbeddedRuntime) that does most of the work for us, the only action needed is to implement the abstract method `getUserGroupCallback()`. In our example the human task is assigned to the members of the group 'BANK.EMPLOYEE' the implementation of the method will be like:
+
+[source,java]
+----
+    @Override
+    public UserGroupCallback getUserGroupCallback() {
+        final Properties properties = new Properties();
+        properties.put("BankEmployee", "BANK.EMPLOYEE");
+        return new JBossUserGroupCallbackImpl(properties);
+    }
+----
+
+Once done to get the RuntimeManager just invoke one of the method provided by the facility class:
+
+[source,java]
+----
+    public RuntimeManager getRuntimeManager(final ReleaseId releaseId);
+    public RuntimeManager getRuntimeManager(final String gav);
+    public RuntimeManager getRuntimeManager(final ReleaseId releaseId, final String kieBase, final String kieSession);
+----
+
+Now that the RuntimeManager is ready we can create an instance of BDDContext using the constructor cof the class
+
+[source,java]
+----
+    public BDDContext(final RuntimeManager runtimeManager);
+----
+
+The full code of the ContextProvider implementation will look like:
+
+[source,java]
+----
+    import com.redhat.pam.bdd.context.BDDContext;
+    import com.redhat.pam.guice.BDDCustomContextProvider;
+    import com.redhat.pam.runtime.BDDEmbeddedRuntime;
+    import org.jbpm.services.task.identity.JBossUserGroupCallbackImpl;
+    import org.kie.api.KieServices;
+    import org.kie.api.builder.ReleaseId;
+    import org.kie.api.task.UserGroupCallback;
+    import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
+
+    import java.util.Properties;
+
+    public class ContextProvider implements BDDCustomContextProvider {
+        
+        @Override
+        public BDDContext get() {
+    
+            final BDDEmbeddedRuntime embeddedRuntime = new BDDEmbeddedRuntime() {
+                @Override
+                public UserGroupCallback getUserGroupCallback() {
+                    final Properties properties = new Properties();
+                    properties.put("BankEmployee", "BANK.EMPLOYEE");
+                    return new JBossUserGroupCallbackImpl(properties);
+                }
+            };
+
+            return new BDDContext(embeddedRuntime.getRuntimeManager("com.redhat.pam.bdd.examples:project-to-test-with-bdd:1.0"));
+        }
+    }
+----
+
+[start=2]
+. Add the Java Service Provider configuration file xref:project-to-test-with-bdd-junit-test/src/test/resources/META-INF/services/com.redhat.pam.guice.BDDCustomContextProvider[com.redhat.pam.guice.BDDCustomContextProvider] the content must be the fully qualified name of the class created in the previous step
+
+[start=3]
+. Custom object parameter
+The signal 'id_document_received' defined in the process definition expect an instance of xref:project-to-test-with-bdd-test-model/src/main/java/com/redhat/examples/bdd/process/Document.java[Document.java] as input parameter. The bdd-pam-framework define a simple way to use custom object
+
+[TIP] 
+====
+If inside a Datatable a cell match the regular expression
+[source,java]
+----
+(?<path>(?:[^;]*\/))?(?<prefix>(?:[^;]*-))?(?<className>.+?(?=\.json))
+----
+the cell value is replaced with an instance of the object stored in the provided json file.
+
+The regualr expression define 3 groups:
+
+- path(optional): rapresent the path of the file that contains the json rapresentaion of the instance to create.
+- prefix(optional): rapresent a mnemonic prefix that can be add to the filename. If present need to end with the char '-'
+- className: the fully qualified name of the class of the object to be created
+====
+
+To take advantage of this just create a file example-custom-object-com.redhat.examples.bdd.process.Document.json int the test/resources/data folder and put the json rapresentation of the instance as content
+
+[source,json]
+----
+{
+  "documentType" : "Driving License",
+  "documentId" : "Document-0001"
+}
+----
+Everytime in the feature file we need to refer to the instance of Document created we just need to write 'data/example-custom-object-com.redhat.examples.bdd.process.Document.json' as DataTable cell value
+
+[start=4]
+. Create the bdd scenario. 
+The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-with-signal-and-custom-object.feature[example-process-with-signal-and-custom-object.feature] contains the scenario to test the process, because we use only the steps defined in the bdd-pam-framework there's no need to write the step implementation:
+
+[source,text]
+----
+    Feature: Examples on how use PAM 7.x bdd integration framework
+
+    Scenario: A process with human task, signal and custom object
+        Given an instance of 'project-to-test-with-bdd.process-with-signal' is started
+        When the user 'BankEmployee' claims the task
+        |task.filter.name|Fill in customer data |
+        And the user 'BankEmployee' starts the task
+        |task.filter.name|Fill in customer data |
+        And the user 'BankEmployee' completes the task
+        |task.filter.name|Fill in customer data |
+        |name            |Claudio               |
+        |surname         |Luppi                 |
+        And the signal 'id_document_received' is send to the process instance with parameters
+        |signal.body     |data/example-custom-object-com.redhat.examples.bdd.process.Document.json|
+        Then the process instance status is 'COMPLETED'
+        And the process variables values are
+        |name     |Claudio                                                                  |
+        |surname  |Luppi                                                                    |
+        |document |data/example-custom-object-com.redhat.examples.bdd.process.Document.json |
+
+----
+
+[start=5]
+. BDD Runner
+Create a class that extends `com.redhat.pam.bdd.runner.BDDRunner` defined in the bdd-pam-framework
+
+[source,java]
+----
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import com.redhat.pam.bdd.runner.BDDRunner;
+import com.redhat.pam.guice.CustomObjectFactory;
+import org.junit.runner.RunWith;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = {
+                "classpath:example-process-with-signal-and-custom-object.feature"
+        }
+)
+public class ExampleBDDRunnerTest extends BDDRunner {
+}
+----
+
+[start=5]
+. Run the example
+
+[source,bash]
+----
+$ mvn clean install
+----
 
 
 

@@ -14,6 +14,6 @@ Feature: Examples on how use PAM 7.x bdd integration framework
       |signal.body     |data/example-custom-object-com.redhat.examples.bdd.process.Document.json|
     Then the process instance status is 'COMPLETED'
     And the process variables values are
-      |name     |Claudio                                                      |
-      |surname  |Luppi                                                        |
+      |name     |Claudio                                                                  |
+      |surname  |Luppi                                                                    |
       |document |data/example-custom-object-com.redhat.examples.bdd.process.Document.json |
