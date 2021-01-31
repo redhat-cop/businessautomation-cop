@@ -15,8 +15,9 @@
 
     <modules>
         <module>project-to-test-with-bdd</module>
-        <module>project-to-test-with-bdd-test-data</module>
+        <module>project-to-test-with-bdd-test-model</module>
         <module>project-to-test-with-bdd-wih</module>
+        <module>project-to-test-with-bdd-junit-test</module>
     </modules>
 
     <properties>
@@ -27,7 +28,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.redhat.pam.bdd.examples</groupId>
-                <artifactId>project-to-test-with-bdd-test-data</artifactId>
+                <artifactId>project-to-test-with-bdd-test-model</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -37,8 +38,28 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>kjar.deployment.gav</name>
+                            <value>${com.redhat.deployment.kjar.gav}</value>
+                        </property>
+                        <!-- <property>
+                            <name>kie.maven.settings.custom</name>
+                            <value>/home/ippul/.m2/settings.xml</value>
+                        </property> -->
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- <profiles>
         <profile>
             <id>junit-test</id>
             <activation>
@@ -47,27 +68,7 @@
             <modules>
                 <module>project-to-test-with-bdd-junit-test</module>
             </modules>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.22.2</version>
-                        <configuration>
-                            <systemProperties>
-                                <property>
-                                    <name>kjar.deployment.gav</name>
-                                    <value>${com.redhat.deployment.kjar.gav}</value>
-                                </property>
-                                <property>
-                                    <name>kie.maven.settings.custom</name>
-                                    <value>/home/ippul/.m2/settings.xml</value>
-                                </property>
-                            </systemProperties>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+            
         </profile>
-    </profiles>
+    </profiles> -->
 </project>

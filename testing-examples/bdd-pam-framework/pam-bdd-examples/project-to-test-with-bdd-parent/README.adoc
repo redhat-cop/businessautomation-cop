@@ -1,0 +1,330 @@
+# project-to-test-with-bdd-parent
+
+Show how to write bdd test for a kjar using bdd-pam-framework
+
+## Example overwiew
+
+- project-to-test-with-bdd: is the kjar to test
+- project-to-test-with-bdd-junit-test: Contains the bdd scenarios to test the process
+- project-to-test-with-bdd-test-model: Contains the custom object used by the KJAR
+- project-to-test-with-bdd-wih: Contains the custom work item handler used by the KJAR
+
+
+## BDD Scenario 1 - process with human task
+
+The first example show how test the process definition xref:project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/process-with-humantask.bpmn[project-to-test-with-bdd.process-with-humantask] using the bdd-pam-framework.
+
+image::project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/project-to-test-with-bdd.process-with-humantask-svg.svg[]
+
+### Test the process
+. Create an implementation of `com.redhat.pam.guice.BDDCustomContextProvider`, this interface declare a method get() that return an instance of `com.redhat.pam.bdd.context.BDDContext`.
+To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-framework define a facility class(com.redhat.pam.runtime.BDDEmbeddedRuntime) that does most of the work for us, the only action needed is to implement the abstract method `getUserGroupCallback()`. In our example the human task is assigned to the members of the group 'BANK.EMPLOYEE' the implementation of the method will be like:
+[source,java]
+----
+    @Override
+    public UserGroupCallback getUserGroupCallback() {
+        final Properties properties = new Properties();
+        properties.put("BankEmployee", "BANK.EMPLOYEE");
+        return new JBossUserGroupCallbackImpl(properties);
+    }
+----
+
+    Once done to get the RuntimeManager just invoke one of the method provided by the facility class:
+[source,java]
+----
+    public RuntimeManager getRuntimeManager(final ReleaseId releaseId);
+    public RuntimeManager getRuntimeManager(final String gav);
+    public RuntimeManager getRuntimeManager(final ReleaseId releaseId, final String kieBase, final String kieSession);
+----
+
+    Now that the RuntimeManager is ready we can create an instance of BDDContext using the constructor cof the class
+[source,java]
+----
+    public BDDContext(final RuntimeManager runtimeManager);
+----
+
+    The full code of the ContextProvider implementation will look like:
+[source,java]
+----
+    import com.redhat.pam.bdd.context.BDDContext;
+    import com.redhat.pam.guice.BDDCustomContextProvider;
+    import com.redhat.pam.runtime.BDDEmbeddedRuntime;
+    import org.jbpm.services.task.identity.JBossUserGroupCallbackImpl;
+    import org.kie.api.KieServices;
+    import org.kie.api.builder.ReleaseId;
+    import org.kie.api.task.UserGroupCallback;
+    import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
+
+    import java.util.Properties;
+
+    public class ContextProvider implements BDDCustomContextProvider {
+        
+        @Override
+        public BDDContext get() {
+    
+            final BDDEmbeddedRuntime embeddedRuntime = new BDDEmbeddedRuntime() {
+                @Override
+                public UserGroupCallback getUserGroupCallback() {
+                    final Properties properties = new Properties();
+                    properties.put("BankEmployee", "BANK.EMPLOYEE");
+                    return new JBossUserGroupCallbackImpl(properties);
+                }
+            };
+
+            return new BDDContext(embeddedRuntime.getRuntimeManager("com.redhat.pam.bdd.examples:project-to-test-with-bdd:1.0"));
+        }
+    }
+----
+[start=2]
+. Add the Java Service Provider configuration file xref:project-to-test-with-bdd-junit-test/src/test/resources/META-INF/services/com.redhat.pam.guice.BDDCustomContextProvider[com.redhat.pam.guice.BDDCustomContextProvider] the content must be the fully qualified name of the class created in the previous step
+
+[start=3]
+. Create the bdd scenario. 
+The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-with-humantask.feature[example-process-with-humantask.feature] contains the scenario to test the process, because we use only the steps defined in the bdd-pam-framework there's no need to write the step implementation:
+[source,text]
+----
+    Feature: Examples on how use PAM 7.x bdd integration framework
+
+    Scenario: A process with human task
+        Given an instance of 'project-to-test-with-bdd.process-with-humantask' is started
+        When the user 'BankEmployee' claims the task
+        |task.filter.name|Fill in customer data |
+        And the user 'BankEmployee' starts the task
+        |task.filter.name|Fill in customer data |
+        And the user 'BankEmployee' completes the task
+        |task.filter.name|Fill in customer data |
+        |name            |Claudio               |
+        |surname         |Luppi                 |
+        Then the process instance status is 'COMPLETED'
+        And the process variables values are
+        |name   |Claudio |
+        |surname|Luppi   |
+----
+[start=4]
+. BDD Runner
+Create a class that extends `com.redhat.pam.bdd.runner.BDDRunner` defined in the bdd-pam-framework
+[source,java]
+----
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import com.redhat.pam.bdd.runner.BDDRunner;
+import com.redhat.pam.guice.CustomObjectFactory;
+import org.junit.runner.RunWith;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = {
+                "classpath:example-process-with-humantask.feature"
+        }
+)
+public class ExampleBDDRunnerTest extends BDDRunner {
+}
+----
+[start=5]
+. Run the example
+[source,bash]
+----
+$ mvn clean install
+----
+
+
+
+
+## BDD Scenario 2 - process with signal and custom object
+
+The first example show how test the process definition xref:project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/process-with-signal-and-custom-object.bpmn[project-to-test-with-bdd.process-with-signal] using the bdd-pam-framework.
+
+image::project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/project-to-test-with-bdd.process-with-signal-svg.svg[]
+
+### Test the process
+. Create an implementation of `com.redhat.pam.guice.BDDCustomContextProvider`, this interface declare a method get() that return an instance of `com.redhat.pam.bdd.context.BDDContext`.
+To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-framework define a facility class(com.redhat.pam.runtime.BDDEmbeddedRuntime) that does most of the work for us, the only action needed is to implement the abstract method `getUserGroupCallback()`. In our example the human task is assigned to the members of the group 'BANK.EMPLOYEE' the implementation of the method will be like:
+[source,java]
+----
+    @Override
+    public UserGroupCallback getUserGroupCallback() {
+        final Properties properties = new Properties();
+        properties.put("BankEmployee", "BANK.EMPLOYEE");
+        return new JBossUserGroupCallbackImpl(properties);
+    }
+----
+
+    Once done to get the RuntimeManager just invoke one of the method provided by the facility class:
+[source,java]
+----
+    public RuntimeManager getRuntimeManager(final ReleaseId releaseId);
+    public RuntimeManager getRuntimeManager(final String gav);
+    public RuntimeManager getRuntimeManager(final ReleaseId releaseId, final String kieBase, final String kieSession);
+----
+
+    Now that the RuntimeManager is ready we can create an instance of BDDContext using the constructor cof the class
+[source,java]
+----
+    public BDDContext(final RuntimeManager runtimeManager);
+----
+
+    The full code of the ContextProvider implementation will look like:
+[source,java]
+----
+    import com.redhat.pam.bdd.context.BDDContext;
+    import com.redhat.pam.guice.BDDCustomContextProvider;
+    import com.redhat.pam.runtime.BDDEmbeddedRuntime;
+    import org.jbpm.services.task.identity.JBossUserGroupCallbackImpl;
+    import org.kie.api.KieServices;
+    import org.kie.api.builder.ReleaseId;
+    import org.kie.api.task.UserGroupCallback;
+    import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
+
+    import java.util.Properties;
+
+    public class ContextProvider implements BDDCustomContextProvider {
+        
+        @Override
+        public BDDContext get() {
+    
+            final BDDEmbeddedRuntime embeddedRuntime = new BDDEmbeddedRuntime() {
+                @Override
+                public UserGroupCallback getUserGroupCallback() {
+                    final Properties properties = new Properties();
+                    properties.put("BankEmployee", "BANK.EMPLOYEE");
+                    return new JBossUserGroupCallbackImpl(properties);
+                }
+            };
+
+            return new BDDContext(embeddedRuntime.getRuntimeManager("com.redhat.pam.bdd.examples:project-to-test-with-bdd:1.0"));
+        }
+    }
+----
+[start=2]
+. Add the Java Service Provider configuration file xref:project-to-test-with-bdd-junit-test/src/test/resources/META-INF/services/com.redhat.pam.guice.BDDCustomContextProvider[com.redhat.pam.guice.BDDCustomContextProvider] the content must be the fully qualified name of the class created in the previous step
+
+[start=3]
+. Create the bdd scenario. 
+The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-with-signal-and-custom-object.feature[example-process-with-signal-and-custom-object.feature] contains the scenario to test the process, because we use only the steps defined in the bdd-pam-framework there's no need to write the step implementation:
+[source,text]
+----
+    Feature: Examples on how use PAM 7.x bdd integration framework
+
+    Scenario: A process with human task, signal and custom object
+        Given an instance of 'project-to-test-with-bdd.process-with-signal' is started
+        When the user 'BankEmployee' claims the task
+        |task.filter.name|Fill in customer data |
+        And the user 'BankEmployee' starts the task
+        |task.filter.name|Fill in customer data |
+        And the user 'BankEmployee' completes the task
+        |task.filter.name|Fill in customer data |
+        |name            |Claudio               |
+        |surname         |Luppi                 |
+        And the signal 'id_document_received' is send to the process instance with parameters
+        |signal.body     |data/example-custom-object-com.redhat.examples.bdd.process.Document.json|
+        Then the process instance status is 'COMPLETED'
+        And the process variables values are
+        |name     |Claudio                                                                  |
+        |surname  |Luppi                                                                    |
+        |document |data/example-custom-object-com.redhat.examples.bdd.process.Document.json |
+
+----
+[start=4]
+. BDD Runner
+Create a class that extends `com.redhat.pam.bdd.runner.BDDRunner` defined in the bdd-pam-framework
+[source,java]
+----
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import com.redhat.pam.bdd.runner.BDDRunner;
+import com.redhat.pam.guice.CustomObjectFactory;
+import org.junit.runner.RunWith;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = {
+                "classpath:example-process-with-humantask.feature"
+        }
+)
+public class ExampleBDDRunnerTest extends BDDRunner {
+}
+----
+[start=5]
+. Run the example
+[source,bash]
+----
+$ mvn clean install
+----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## System properties (Optional)
+[cols="1,1,1", options="header"]
+.System properties
+|===
+|id |default |Description
+
+|kie.maven.settings.custom
+|${user.home}/.m2/settings.xml 
+|The location of a custom settings.xml file for Maven configuration.
+
+|org.guvnor.m2repo.dir
+|${user.home}/.m2/repository 
+|Place where the Maven repository folder is stored
+
+|===
+
+### Example
+
+[source,xml]
+----
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.22.2</version>
+            <configuration>
+                <systemProperties>
+                    <property>
+                        <name>org.guvnor.m2repo.dir</name>
+                        <value>/opt/.m2/repository</value>
+                    </property>
+                    <property>
+                        <name>kie.maven.settings.custom</name>
+                        <value>/etc/.m2/settings.xml</value>
+                    </property>
+                </systemProperties>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+
+
+
