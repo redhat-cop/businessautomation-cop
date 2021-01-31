@@ -19,6 +19,7 @@ image::project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/proce
 ### Test the process
 . Create an implementation of `com.redhat.pam.guice.BDDCustomContextProvider`, this interface declare a method get() that return an instance of `com.redhat.pam.bdd.context.BDDContext`.
 To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-framework define a facility class(com.redhat.pam.runtime.BDDEmbeddedRuntime) that does most of the work for us, the only action needed is to implement the abstract method `getUserGroupCallback()`. In our example the human task is assigned to the members of the group 'BANK.EMPLOYEE' the implementation of the method will be like:
+
 [source,java]
 ----
     @Override
@@ -29,7 +30,8 @@ To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-fram
     }
 ----
 
-    Once done to get the RuntimeManager just invoke one of the method provided by the facility class:
+Once done to get the RuntimeManager just invoke one of the method provided by the facility class:
+
 [source,java]
 ----
     public RuntimeManager getRuntimeManager(final ReleaseId releaseId);
@@ -37,13 +39,15 @@ To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-fram
     public RuntimeManager getRuntimeManager(final ReleaseId releaseId, final String kieBase, final String kieSession);
 ----
 
-    Now that the RuntimeManager is ready we can create an instance of BDDContext using the constructor cof the class
+Now that the RuntimeManager is ready we can create an instance of BDDContext using the constructor cof the class
+
 [source,java]
 ----
     public BDDContext(final RuntimeManager runtimeManager);
 ----
 
-    The full code of the ContextProvider implementation will look like:
+The full code of the ContextProvider implementation will look like:
+
 [source,java]
 ----
     import com.redhat.pam.bdd.context.BDDContext;
@@ -75,12 +79,14 @@ To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-fram
         }
     }
 ----
+
 [start=2]
 . Add the Java Service Provider configuration file xref:project-to-test-with-bdd-junit-test/src/test/resources/META-INF/services/com.redhat.pam.guice.BDDCustomContextProvider[com.redhat.pam.guice.BDDCustomContextProvider] the content must be the fully qualified name of the class created in the previous step
 
 [start=3]
 . Create the bdd scenario. 
 The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-with-humantask.feature[example-process-with-humantask.feature] contains the scenario to test the process, because we use only the steps defined in the bdd-pam-framework there's no need to write the step implementation:
+
 [source,text]
 ----
     Feature: Examples on how use PAM 7.x bdd integration framework
@@ -100,9 +106,11 @@ The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-
         |name   |Claudio |
         |surname|Luppi   |
 ----
+
 [start=4]
 . BDD Runner
 Create a class that extends `com.redhat.pam.bdd.runner.BDDRunner` defined in the bdd-pam-framework
+
 [source,java]
 ----
 import io.cucumber.junit.Cucumber;
@@ -120,8 +128,10 @@ import org.junit.runner.RunWith;
 public class ExampleBDDRunnerTest extends BDDRunner {
 }
 ----
+
 [start=5]
 . Run the example
+
 [source,bash]
 ----
 $ mvn clean install
@@ -139,6 +149,7 @@ image::project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/proce
 ### Test the process
 . Create an implementation of `com.redhat.pam.guice.BDDCustomContextProvider`, this interface declare a method get() that return an instance of `com.redhat.pam.bdd.context.BDDContext`.
 To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-framework define a facility class(com.redhat.pam.runtime.BDDEmbeddedRuntime) that does most of the work for us, the only action needed is to implement the abstract method `getUserGroupCallback()`. In our example the human task is assigned to the members of the group 'BANK.EMPLOYEE' the implementation of the method will be like:
+
 [source,java]
 ----
     @Override
@@ -149,7 +160,8 @@ To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-fram
     }
 ----
 
-    Once done to get the RuntimeManager just invoke one of the method provided by the facility class:
+Once done to get the RuntimeManager just invoke one of the method provided by the facility class:
+
 [source,java]
 ----
     public RuntimeManager getRuntimeManager(final ReleaseId releaseId);
@@ -157,13 +169,15 @@ To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-fram
     public RuntimeManager getRuntimeManager(final ReleaseId releaseId, final String kieBase, final String kieSession);
 ----
 
-    Now that the RuntimeManager is ready we can create an instance of BDDContext using the constructor cof the class
+Now that the RuntimeManager is ready we can create an instance of BDDContext using the constructor cof the class
+
 [source,java]
 ----
     public BDDContext(final RuntimeManager runtimeManager);
 ----
 
-    The full code of the ContextProvider implementation will look like:
+The full code of the ContextProvider implementation will look like:
+
 [source,java]
 ----
     import com.redhat.pam.bdd.context.BDDContext;
@@ -195,12 +209,14 @@ To create an instance of BDDContext we first need a RuntimeManager, bdd-pam-fram
         }
     }
 ----
+
 [start=2]
 . Add the Java Service Provider configuration file xref:project-to-test-with-bdd-junit-test/src/test/resources/META-INF/services/com.redhat.pam.guice.BDDCustomContextProvider[com.redhat.pam.guice.BDDCustomContextProvider] the content must be the fully qualified name of the class created in the previous step
 
 [start=3]
 . Create the bdd scenario. 
 The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-with-signal-and-custom-object.feature[example-process-with-signal-and-custom-object.feature] contains the scenario to test the process, because we use only the steps defined in the bdd-pam-framework there's no need to write the step implementation:
+
 [source,text]
 ----
     Feature: Examples on how use PAM 7.x bdd integration framework
@@ -224,9 +240,11 @@ The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-
         |document |data/example-custom-object-com.redhat.examples.bdd.process.Document.json |
 
 ----
+
 [start=4]
 . BDD Runner
 Create a class that extends `com.redhat.pam.bdd.runner.BDDRunner` defined in the bdd-pam-framework
+
 [source,java]
 ----
 import io.cucumber.junit.Cucumber;
@@ -244,8 +262,10 @@ import org.junit.runner.RunWith;
 public class ExampleBDDRunnerTest extends BDDRunner {
 }
 ----
+
 [start=5]
 . Run the example
+
 [source,bash]
 ----
 $ mvn clean install
