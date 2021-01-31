@@ -2,7 +2,7 @@
 
 Show how to write bdd test for a kjar using bdd-pam-framework
 
-## Example overwiew
+## Example overview
 
 - project-to-test-with-bdd: is the kjar to test
 - project-to-test-with-bdd-junit-test: Contains the bdd scenarios to test the process
@@ -137,12 +137,9 @@ public class ExampleBDDRunnerTest extends BDDRunner {
 $ mvn clean install
 ----
 
-
-
-
 ## BDD Scenario 2 - process with signal and custom object
 
-The first example show how test the process definition xref:project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/process-with-signal-and-custom-object.bpmn[project-to-test-with-bdd.process-with-signal] using the bdd-pam-framework.
+The second example show how test the process definition xref:project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/process-with-signal-and-custom-object.bpmn[project-to-test-with-bdd.process-with-signal] using the bdd-pam-framework.
 
 image::project-to-test-with-bdd/src/main/resources/com/redhat/examples/bdd/process/project-to-test-with-bdd.process-with-signal-svg.svg[]
 
@@ -214,6 +211,31 @@ The full code of the ContextProvider implementation will look like:
 . Add the Java Service Provider configuration file xref:project-to-test-with-bdd-junit-test/src/test/resources/META-INF/services/com.redhat.pam.guice.BDDCustomContextProvider[com.redhat.pam.guice.BDDCustomContextProvider] the content must be the fully qualified name of the class created in the previous step
 
 [start=3]
+. Custom object parameter
+The signal 'id_document_received' defined in the process definition expect an instance of xref:project-to-test-with-bdd-test-model/src/main/java/com/redhat/examples/bdd/process/Document.java[Document.java] as input parameter. The bdd-pam-framework define a simple way to use custom object
+
+[TIP] 
+====
+If inside a Datatable a cell match the regular expression
+[source,java]
+----
+(?<path>(?:[^;]*\/))?(?<prefix>(?:[^;]*-))?(?<className>.+?(?=\.json))
+----
+the cell value is replaced with an instance of the object stored in the provided json file.
+====
+
+To take advantage of this just create a file example-custom-object-com.redhat.examples.bdd.process.Document.json int the test/resources/data folder and put the json rapresentation of the instance as content
+
+[source,json]
+----
+{
+  "documentType" : "Driving License",
+  "documentId" : "Document-0001"
+}
+----
+Everytime in the feature file we need to refer to the instance of Document created we just need to write 'data/example-custom-object-com.redhat.examples.bdd.process.Document.json' as DataTable cell value
+
+[start=4]
 . Create the bdd scenario. 
 The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-with-signal-and-custom-object.feature[example-process-with-signal-and-custom-object.feature] contains the scenario to test the process, because we use only the steps defined in the bdd-pam-framework there's no need to write the step implementation:
 
@@ -241,7 +263,7 @@ The xref:project-to-test-with-bdd-junit-test/src/test/resources/example-process-
 
 ----
 
-[start=4]
+[start=5]
 . BDD Runner
 Create a class that extends `com.redhat.pam.bdd.runner.BDDRunner` defined in the bdd-pam-framework
 
@@ -256,7 +278,7 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = {
-                "classpath:example-process-with-humantask.feature"
+                "classpath:example-process-with-signal-and-custom-object.feature"
         }
 )
 public class ExampleBDDRunnerTest extends BDDRunner {
