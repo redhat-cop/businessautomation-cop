@@ -9,8 +9,8 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>project-to-test-with-bdd-test-data</artifactId>
+    <artifactId>project-to-test-with-bdd-test-model</artifactId>
     <packaging>jar</packaging>
-    <name>project-to-test-with-bdd-test-data</name>
+    <name>project-to-test-with-bdd-test-model</name>
 
 </project>

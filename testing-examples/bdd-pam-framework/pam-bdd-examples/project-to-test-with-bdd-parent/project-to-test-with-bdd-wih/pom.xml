@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.redhat.pam.bdd.examples</groupId>
-            <artifactId>project-to-test-with-bdd-test-data</artifactId>
+            <artifactId>project-to-test-with-bdd-test-model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

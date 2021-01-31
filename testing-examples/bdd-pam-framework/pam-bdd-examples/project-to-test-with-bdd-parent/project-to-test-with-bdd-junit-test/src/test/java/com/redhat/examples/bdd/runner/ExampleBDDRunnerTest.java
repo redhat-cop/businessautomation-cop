@@ -1,4 +1,4 @@
-package com.redhat.examples.bdd.process;
+package com.redhat.examples.bdd.runner;
 
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
@@ -14,8 +14,7 @@ import org.junit.runner.RunWith;
                 "classpath:example-process-with-humantask.feature",
                 "classpath:example-process-with-signal-and-custom-object.feature"
         },
-        glue = {"com.redhat.examples.bdd.steps"},
-        objectFactory = CustomObjectFactory.class
+        glue = {"com.redhat.examples.bdd.steps"}
 )
 public class ExampleBDDRunnerTest extends BDDRunner {
 }

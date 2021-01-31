@@ -144,7 +144,7 @@ This class contains some utilities
 
 ##### CustomObject
 To pass a custom object as parameter of a step without affect the readbility of the feature file a DataTableType has been created.
-When inside a Datatable a cell match the regular expression
+If inside a Datatable a cell match the regular expression
 [source,java]
 ----
 (?<path>(?:[^;]*\/))?(?<prefix>(?:[^;]*-))?(?<className>.+?(?=\.json))
