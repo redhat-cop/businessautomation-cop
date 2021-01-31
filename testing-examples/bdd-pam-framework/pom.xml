@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.redhat.pam.bdd</groupId>
-    <artifactId>pam-bdd-parent</artifactId>
+    <artifactId>bdd-pam-framework</artifactId>
     <packaging>pom</packaging>
-    <name>pam-bdd-parent</name>
+    <name>bdd-pam-framework</name>
     <version>1.0</version>
 
     <properties>
@@ -20,6 +20,7 @@
 
     <modules>
         <module>pam-bdd-junit-commons</module>
+        <module>pam-bdd-examples</module>
     </modules>
 
     <dependencyManagement>
@@ -61,6 +62,11 @@
             <dependency>
                 <groupId>com.redhat.pam.bdd</groupId>
                 <artifactId>pam-bdd-junit-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat.pam.bdd</groupId>
+                <artifactId>pam-bdd-examples</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

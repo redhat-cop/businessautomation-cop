@@ -1,6 +1,8 @@
-# pam-bdd-parent
+# bdd-pam-framework
 
 A reusable library for easly create BDD test for a kjar
+
+Usage examples available at xref::pam-bdd-examples[pam-bdd-examples]
 
 ## Main components
 
@@ -166,3 +168,4 @@ If we need to pass an instance of the class ```com.redhat.model.MyObject.class``
 - In DataTable cell insert ```bdd/parameters/scenario1-com.redhat.model.MyObject.json```
 
 At runtime the value of ```bdd/parameters/scenario1-com.redhat.model.MyObject.json``` will be replaced with the instance stored in the file
+

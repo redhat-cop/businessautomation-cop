@@ -1,4 +1,4 @@
-:link-framework-source-code: https://github.com/redhat-cop/businessautomation-cop/tree/master/testing-examples/bdd-pam-framework/pam-bdd-parent[pam-bdd-parent]
+:link-framework-source-code: https://github.com/redhat-cop/businessautomation-cop/tree/master/testing-examples/bdd-pam-framework/bdd-pam-framework[bdd-pam-framework]
 
 # project-to-test-with-bdd-parent
 
@@ -6,7 +6,7 @@ Show how to write bdd test for a kjar using bdd-pam-framework
 
 ## Pre requisite
 
-The bdd framework "pam-bdd-parent" have to be available in you maven repository
+The bdd framework "bdd-pam-framework" have to be available in you maven repository
 
 Source code available at {link-framework-source-code}
 
