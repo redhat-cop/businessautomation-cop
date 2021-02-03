@@ -56,7 +56,7 @@ jobs:
 
       - name: Build testing-examples/bdd-pam-framework
         run: |
-          pushd testing-examples/bdd-pam-framework/pam-bdd-parent/
+          pushd testing-examples/bdd-pam-framework/
           mvn clean install --no-transfer-progress
           popd
 
