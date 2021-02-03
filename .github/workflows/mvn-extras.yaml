@@ -60,12 +60,6 @@ jobs:
           pushd extras/offliner-maven-plugin
           mvn -B clean package --no-transfer-progress
           popd
-    
-      - name: Build extras/bdd-ui/maven-java-bdd-demo
-        run: |
-          pushd extras/bdd-ui/maven-java-bdd-demo
-          mvn -B clean package --no-transfer-progress
-          popd
 
       # Jave 11 Builds
       - name: Set up JDK 11
@@ -83,24 +77,4 @@ jobs:
         run: |
           pushd extras/data-generator
           mvn -B clean package --no-transfer-progress
-          popd
-
-      # NPM Builds
-      - name: Setup node Build bdd-ui
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
-
-      - name: Build extras/bdd-ui/feature-file-helper-front-end
-        run: |
-          pushd extras/bdd-ui/feature-file-helper-front-end
-          npm install -g @angular/cli
-          npm install
-          ng build
-          popd
-
-      - name: Build extras/bdd-ui/feature-file-helper-back-end
-        run: |
-          pushd extras/bdd-ui/feature-file-helper-back-end
-          npm install
           popd
