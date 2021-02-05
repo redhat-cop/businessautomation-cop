@@ -177,6 +177,14 @@ mkdir -p "$gitHookDir"
 [[ ! -d "$gitHookDir" ]] && error "- GIT HOOKS DIRECTORY CANNOT BE CREATED - ABORTING" && exit 6
 
 cp "$POST_COMMIT_SOURCE" "$gitHookDir/post-commit" || ( error "- POST COMMIT SCRIPT CANNOT BE COPIED INTO PLACE - ABORTING" && exit 7 )
+if [[ ! -r "$gitHookDir"/default.conf ]]; then
+  cp "$DEFAULT_CONF_SOURCE" "$gitHookDir"/default.conf || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
+else
+  cp "$DEFAULT_CONF_SOURCE" "$gitHookDir"/default.conf.new || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
+  sout "${bold}${white}CONFIGURATION FILE NOT INSTALLED${normal} - EXISTING CONFIGURATION FILE NOT OVERRIDEN"
+  sout "${bold}${white}NEW CONFIGURATION FILE COPIED AS .new${normal}"
+fi
+
 echo "
 #                                             
 # INSTALLED AT : $(date '+%Y-%m-%d %H:%M:%S')
