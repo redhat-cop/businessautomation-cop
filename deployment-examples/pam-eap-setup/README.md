@@ -464,7 +464,22 @@ brokerconfig.maxDiskUsage               95
 
 # Oracle: check https://access.redhat.com/solutions/4460791
 # org.kie.server.persistence.dialect   org.jbpm.persistence.jpa.hibernate.DisabledFollowOnLockOracle10gDialect
+
+# process variable values longer than 255 chars in VariableInstanceLog
+# https://access.redhat.com/solutions/917923 plus database schema changes
+# org.jbpm.var.log.length             1000
+#
+# for Human Tasks
+# org.jbpm.task.var.log.length        4000
+
+#
+# enable Prometheus endpoints
+# access metrics at: http://localhost:8080/kie-server/services/rest/metrics
+# 
+org.kie.prometheus.server.ext.disabled  false
 ```
+
+- The default entries for `pam.config` will enable Prometheus endpoints. Prometheus endpoints are available from version 7.4.0 onwards and can be accessed through `http://{{ kie-server  }}/services/rest/metrics` URL. More information can also be found at https://access.redhat.com/documentation/en-us/red_hat_decision_manager/7.9/html-single/managing_red_hat_decision_manager_and_kie_server_settings/index#prometheus-monitoring-con_execution-server
 
 Add as many configuration parameters as required separating the parameters from its value by at least a space.
 
