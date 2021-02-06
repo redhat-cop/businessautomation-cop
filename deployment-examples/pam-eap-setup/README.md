@@ -44,6 +44,7 @@ For details about node configuration check out [Nodes Configuration](#nodes-conf
 	- [for bcgithook](#for-bcgithook)
 	- [for kiegroup](#for-kiegroup)
 - [Configuring EAP](#configuring-eap)
+ - [Enabling access_log](#enabling-access_log)
 
 ## Usage Scenarios
 
@@ -593,6 +594,9 @@ If both a file in the `addons` directory corresponding to a node is found and an
 
 Same for subsequent nodes by specifying `node2` for node 2, `node3` for node 3 and so on.
 
+#### Enabling access_log
+
+The file `addons/access_log` will enable basic loggin to access_log for EAP. To use this file specify it in the `-o` options like `-o node1_config=addons/access_log`. This file implements the [How to enable access logging for JBoss EAP 7?](https://access.redhat.com/solutions/2423311) KB article.
 
 ---
 > Written with [StackEdit](https://stackedit.io/).
