@@ -598,6 +598,17 @@ Same for subsequent nodes by specifying `node2` for node 2, `node3` for node 3 a
 
 The file `addons/access_log` will enable basic loggin to access_log for EAP. To use this file specify it in the `-o` options like `-o node1_config=addons/access_log`. This file implements the [How to enable access logging for JBoss EAP 7?](https://access.redhat.com/solutions/2423311) KB article.
 
+Additional documentation that could be useful for subsequent tuning:
+
+  - [Access log pattern %D and %T (response time) prints "-" in Undertow in JBoss EAP 7](https://access.redhat.com/solutions/2172691)
+  - [How to filter specific messages from access logging in EAP 7](https://access.redhat.com/solutions/4492811) 
+  - [How to customize date format pattern for access logging in JBoss EAP 7](https://access.redhat.com/solutions/2821021)
+  - [How to customize access log rotation in EAP 7](https://access.redhat.com/solutions/2773641)
+  - [Access log trims URL in JBoss EAP 7](https://access.redhat.com/solutions/5430031)
+  - [Does the JBoss access log support millisecond timestamps?](https://access.redhat.com/solutions/2949811)
+  - JBoss EAP.7.2 documentation: access-log attributes : https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.2/html-single/configuration_guide/index#access_log_attributes
+
+
 ---
 > Written with [StackEdit](https://stackedit.io/).
 > ASCII charts with the help of [ASCIIFlow](http://asciiflow.com/)
