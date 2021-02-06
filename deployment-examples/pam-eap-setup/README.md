@@ -44,7 +44,7 @@ For details about node configuration check out [Nodes Configuration](#nodes-conf
 	- [for bcgithook](#for-bcgithook)
 	- [for kiegroup](#for-kiegroup)
 - [Configuring EAP](#configuring-eap)
- - [Enabling access_log](#enabling-access_log)
+  - [Enabling access_log](#enabling-access_log)
 
 ## Usage Scenarios
 
