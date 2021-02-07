@@ -15,7 +15,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <jboss.eap.bom.version>7.3.0.GA</jboss.eap.bom.version>
         <ba.bom.version>7.9.1.redhat-00003</ba.bom.version>
-        <io.cucumber.version>6.7.0</io.cucumber.version>
+        <io.cucumber.version>6.9.1</io.cucumber.version>
     </properties>
 
     <modules>
