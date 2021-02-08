@@ -28,9 +28,10 @@ Supported (i.e. tested) versions:
   - patch level 7.2.x onwards supported for 7.5 and later
  - EAP 7.3
 	 - patch level 7.3.2 supported for PAM.7.8
-	 - patch level 7.3.3 supported for PAM.7.9
-- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0
-- DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0
+	 - patch level 7.3.3, 7.3.4 supported for PAM.7.9 and PAM.7.9.1
+   - patch JBEAP-20659 for EAP.7.3.4 to restore password vault functionality
+- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1
+- DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1
 
 For details about node configuration check out [Nodes Configuration](#nodes-configuration) section at the end of this document. Also:
 
@@ -43,6 +44,7 @@ For details about node configuration check out [Nodes Configuration](#nodes-conf
 	- [for bcgithook](#for-bcgithook)
 	- [for kiegroup](#for-kiegroup)
 - [Configuring EAP](#configuring-eap)
+  - [Enabling access_log](#enabling-access_log)
 
 ## Usage Scenarios
 
@@ -144,6 +146,7 @@ Depending on PAM version the following files are required:
         | 7.8       | rhpam-7.8.0-business-central-eap7-deployable.zip, rhpam-7.8.0-kie-server-ee8.zip  |
         | 7.8.1     | rhpam-7.8.1-business-central-eap7-deployable.zip, rhpam-7.8.1-kie-server-ee8.zip  |
         | 7.9       | rhpam-7.9.0-business-central-eap7-deployable.zip, rhpam-7.9.0-kie-server-ee8.zip  |
+        | 7.9.1     | rhpam-7.9.1-business-central-eap7-deployable.zip, rhpam-7.9.1-kie-server-ee8.zip  |
 
         |DM Version| Files                                                                           |
         |----------|---------------------------------------------------------------------------------|
@@ -153,6 +156,7 @@ Depending on PAM version the following files are required:
         | 7.7.1    | rhdm-7.7.1-decision-central-eap7-deployable.zip, rhdm-7.7.1-kie-server-ee8.zip  |
         | 7.8.1    | rhdm-7.8.1-decision-central-eap7-deployable.zip, rhdm-7.8.1-kie-server-ee8.zip  |
         | 7.9      | rhdm-7.9.0-decision-central-eap7-deployable.zip, rhdm-7.9.0-kie-server-ee8.zip  |
+        | 7.9.1    | rhdm-7.9.1-decision-central-eap7-deployable.zip, rhdm-7.9.1-kie-server-ee8.zip  |
 
 ## Usage
 
@@ -461,7 +465,22 @@ brokerconfig.maxDiskUsage               95
 
 # Oracle: check https://access.redhat.com/solutions/4460791
 # org.kie.server.persistence.dialect   org.jbpm.persistence.jpa.hibernate.DisabledFollowOnLockOracle10gDialect
+
+# process variable values longer than 255 chars in VariableInstanceLog
+# https://access.redhat.com/solutions/917923 plus database schema changes
+# org.jbpm.var.log.length             1000
+#
+# for Human Tasks
+# org.jbpm.task.var.log.length        4000
+
+#
+# enable Prometheus endpoints
+# access metrics at: http://localhost:8080/kie-server/services/rest/metrics
+# 
+org.kie.prometheus.server.ext.disabled  false
 ```
+
+- The default entries for `pam.config` will enable Prometheus endpoints. Prometheus endpoints are available from version 7.4.0 onwards and can be accessed through `http://{{ kie-server  }}/services/rest/metrics` URL. More information can also be found at https://access.redhat.com/documentation/en-us/red_hat_decision_manager/7.9/html-single/managing_red_hat_decision_manager_and_kie_server_settings/index#prometheus-monitoring-con_execution-server
 
 Add as many configuration parameters as required separating the parameters from its value by at least a space.
 
@@ -574,6 +593,20 @@ If both a file in the `addons` directory corresponding to a node is found and an
 - **then** the file `addons/node1_config` will be executed first followed by `jdbc_datasource.cli`
 
 Same for subsequent nodes by specifying `node2` for node 2, `node3` for node 3 and so on.
+
+#### Enabling access_log
+
+The file `addons/access_log` will enable basic loggin to access_log for EAP. To use this file specify it in the `-o` options like `-o node1_config=addons/access_log`. This file implements the [How to enable access logging for JBoss EAP 7?](https://access.redhat.com/solutions/2423311) KB article.
+
+Additional documentation that could be useful for subsequent tuning:
+
+  - [Access log pattern %D and %T (response time) prints "-" in Undertow in JBoss EAP 7](https://access.redhat.com/solutions/2172691)
+  - [How to filter specific messages from access logging in EAP 7](https://access.redhat.com/solutions/4492811) 
+  - [How to customize date format pattern for access logging in JBoss EAP 7](https://access.redhat.com/solutions/2821021)
+  - [How to customize access log rotation in EAP 7](https://access.redhat.com/solutions/2773641)
+  - [Access log trims URL in JBoss EAP 7](https://access.redhat.com/solutions/5430031)
+  - [Does the JBoss access log support millisecond timestamps?](https://access.redhat.com/solutions/2949811)
+  - JBoss EAP.7.2 documentation: access-log attributes : https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.2/html-single/configuration_guide/index#access_log_attributes
 
 
 ---

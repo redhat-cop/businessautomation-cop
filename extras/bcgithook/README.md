@@ -14,7 +14,11 @@ This project offers a bash-based implementation for such git hooks.
 * Configurable logging of operations
 * [Branch mapping](#branch-mapping), map branches from BC to remote Git repos
 ## Configuration
-**bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present event if per-project configuration files are used. The following variables need to be configured:
+**bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present event if per-project configuration files are used. 
+
+The provided installation script will install the `default.conf` file in the `$JBOSS_HOME/git-hooks` directory as well. Configuration files in the `$JBOSS_HOME/git-hooks` directory take precedence over the files in the `$HOME/.bcgithook` directory.
+
+The following variables need to be configured:
 
 |Variable|Type|Content|
 |--|--|--|
@@ -82,6 +86,8 @@ Please note that there is currently no way of acheiving the reverse. For example
 **bcgithook** allows for different configuration per-project. For this to happen a file with the same name as the project having the `.conf` suffix should be placed in `$HOME/.bcgithook` directory. `default.conf` can be used as a template however only values that are different from `default.conf` need to be defined. For example, a project named "FormApplicationProcess" would use the `FormApplicationProcess.conf` configuration file if that file is found.
 
 > Please follow case sensitivity rules for your operating system when naming configuration files.
+
+Per project configuration files can also be placed at the `$JBOSS_HOME/git-hooks` directory. Configuration files placed in this directory take precedence over files in the `$HOME/.bcgithook` directory.
 
 For new projects you can create the configuration beforehand so when BusinessCentral creates them the project specific configuration will be used automatically. That way different projects created in BusinessCentral can be associated to different repositories.
 
