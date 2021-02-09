@@ -55,4 +55,18 @@ At the end of the setup while the vagrant box is being fired up for the first ti
 
 - 4096MB of memory will be allocated to the VagrantBox. If you wish to increase this please modify accordingly [line 7](https://github.com/erouvas/businessautomation-cop/blob/e3e9e8dab24527df0711d49bd3baa310cdc00896/extras/pam-vagrant/Vagrantfile#L7) of the [Vagrantfile](https://github.com/erouvas/businessautomation-cop/blob/master/extras/pam-vagrant/Vagrantfile)
 
+- If you wish to use different ports than `8080` and `8081` to access RHPAM and Nexus respectively, modify accordingly the `host` value in [Vagrantfile](https://github.com/erouvas/businessautomation-cop/blob/master/extras/pam-vagrant/Vagrantfile) for lines [37](https://github.com/erouvas/businessautomation-cop/blob/85523f7b7b751df93d8340cfda94ba32d78aada7/extras/pam-vagrant/Vagrantfile#L37) and [38](https://github.com/erouvas/businessautomation-cop/blob/85523f7b7b751df93d8340cfda94ba32d78aada7/extras/pam-vagrant/Vagrantfile#L38)
+
+- To create the VagrantBox, use `vagrant up`. The same command can be used to start a box after it has been stopped.
+
+- To stop the VagrantBox, use `vagrant halt`
+
+- To destroy the VagrantBox, use `vagrant destroy`. If you destroy the box all data and projects will be deleted so make sure you have back them up to a safe location if you want to keep them. 
+
+- The VagrantBox can be recreated any time by using the `vagrant up` command.
+
+- You can ssh into the VagrantBox by using `vagrant ssh`. Once inside you can use `sudo su -` and navigate to the `/opt/jboss/` directory to check RHPAM installation details
+
+- For more details about Vagrant, please refer to the official documentation at https://www.vagrantup.com/docs
+
 
