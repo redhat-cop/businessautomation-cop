@@ -76,7 +76,7 @@ counter=0
 goon=no
 while [[ "$goon" == "no" ]]; do
   let counter=$((counter+1))
-  if [[ ! -r /opt/jboss/standalone/deployments/business-central.war.deployed ]]; then
+  if [[ ! -r /opt/jboss/standalone/deployments/business-central.war.deployed ]] && [[ ! -r /opt/jboss/standalone/deployments/decision-central.war.deployed ]] ; then
     echo "[ $counter ] Waiting for PAM to be fully deployed... will check again in 5 seconds..."
     sleep 5s
   else

@@ -47,3 +47,12 @@ For EAP.7.2 the file `jboss-eap-7.2.0.zip` is required as well as the latest pat
 JBoss EAP.7.3, file `jboss-eap-7.3.0.zip`, along with the latest patch, is required for RHPAM.7.8.1 onwards 
 
 At the end of the setup while the vagrant box is being fired up for the first time please wait until PAM is fully loaded to validate the installation. Depending on the local environment it could take up to a minute for PAM to be operational.
+
+
+## Installation notes
+
+- The Vagrant box launched will be named `PAM7.CentOS8` and relies on VirtualBox to be installed
+
+- 4096MB of memory will be allocated to the VagrantBox. If you wish to increase this please modify accordingly [line 7](https://github.com/erouvas/businessautomation-cop/blob/e3e9e8dab24527df0711d49bd3baa310cdc00896/extras/pam-vagrant/Vagrantfile#L7) of the [Vagrantfile](https://github.com/erouvas/businessautomation-cop/blob/master/extras/pam-vagrant/Vagrantfile)
+
+
