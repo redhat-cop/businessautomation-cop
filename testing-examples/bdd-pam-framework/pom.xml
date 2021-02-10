@@ -15,11 +15,13 @@
         <maven.compiler.source>11</maven.compiler.source>
         <jboss.eap.bom.version>7.3.0.GA</jboss.eap.bom.version>
         <ba.bom.version>7.9.1.redhat-00003</ba.bom.version>
-        <io.cucumber.version>6.7.0</io.cucumber.version>
+        <io.cucumber.version>6.9.1</io.cucumber.version>
+        <com.google.inject.guice.version>4.2.3</com.google.inject.guice.version>
     </properties>
 
     <modules>
         <module>pam-bdd-junit-commons</module>
+        <module>pam-bdd-integration-test-commons</module>
         <module>pam-bdd-examples</module>
     </modules>
 
@@ -60,8 +62,18 @@
                 <version>${io.cucumber.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${com.google.inject.guice.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.redhat.pam.bdd</groupId>
                 <artifactId>pam-bdd-junit-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat.pam.bdd</groupId>
+                <artifactId>pam-bdd-integration-test-commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

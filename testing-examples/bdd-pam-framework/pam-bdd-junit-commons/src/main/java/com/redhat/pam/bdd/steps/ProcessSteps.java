@@ -100,6 +100,5 @@ public class ProcessSteps implements En {
             Assert.assertTrue(nodeInstanceLog.isPresent());
 
         });
-
     }
 }
