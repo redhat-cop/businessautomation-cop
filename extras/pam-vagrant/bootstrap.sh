@@ -67,16 +67,18 @@ popd &> /dev/null
 #
 # systemd integration
 #
-$BASE_DIR/pam7-systemd-integration.sh
+TARGET_USER=pamservice
+$BASE_DIR/pam7-systemd-integration.sh $TARGET_USER
 
 #
 # Continue with RHPAM and BC setup
 #
 counter=0
 goon=no
+check_deploy_dir="/opt/$TARGET_USER/standalone/deployments"
 while [[ "$goon" == "no" ]]; do
   let counter=$((counter+1))
-  if [[ ! -r /opt/jboss/standalone/deployments/business-central.war.deployed ]] && [[ ! -r /opt/jboss/standalone/deployments/decision-central.war.deployed ]] ; then
+  if [[ ! -r "$check_deploy_dir"/business-central.war.deployed ]] && [[ ! -r "$check_deploy_dir"/decision-central.war.deployed ]] ; then
     echo "[ $counter ] Waiting for PAM to be fully deployed... will check again in 5 seconds..."
     sleep 5s
   else
