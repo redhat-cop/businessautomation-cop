@@ -641,7 +641,8 @@ function modifyConfiguration() {
       # properties for managed KIE Server
       prepareConfigLine "org.kie.server.id"                        "$serverId"
       prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"
-      prepareConfigLine "org.kie.server.controller"                "${clv}"
+      # prepareConfigLine "org.kie.server.controller"                "${clv}"
+      prepareConfigLine "org.kie.server.controller"                "@@CLV@@"
       prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"
       # overcome 256 character limitation in process variable values
       # if you uncomment the following parameter, remember to alter your database column accordingly
@@ -700,6 +701,10 @@ function modifyConfiguration() {
     echo 'stop-embedded-server' >> $pamConfigFile
     ./jboss-cli.sh --file=$pamConfigFile
     rm -f $TMP_FILE
+    # comma-separated CLV needs special handling
+    tmpclv="${nodeConfig['controllerUrl']}"
+    sed -i "s]@@CLV@@]$tmpclv]" "$EAP_HOME/standalone/configuration/standalone.xml"
+    unset tmpclv
   popd &> /dev/null
   if [[ "$nodedir" != "standalone" ]]; then
     cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig
