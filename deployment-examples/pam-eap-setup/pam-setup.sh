@@ -1099,6 +1099,11 @@ if [[ -n "$LOGFILE" ]]; then
   fi
 fi
 
+echo "--PRE_START--"
+echo "PWD = $(pwd)"
+echo "df -h"
+echo "ls -al /"
+printenv
 sout "PAM-SETUP - START"
 [[ -n "$loglog" ]] && sout "$loglog"
 unset loglog
