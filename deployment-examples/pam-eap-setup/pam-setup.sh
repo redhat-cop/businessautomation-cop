@@ -1125,7 +1125,7 @@ for target in $pamTargets; do
     [[ ! -r "$EAP7_ZIP" ]] && ln -s "$GITHUB_WORKSPACE/$EAP7_ZIP" .
     [[ ! -r "$PAM_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$PAM_ZIP" .
     [[ ! -r "$KIE_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
-    for epzf in "$GITHUB_WORKSPACE/$EAP_PATCH_ZIP"; do 
+    for epzf in $GITHUB_WORKSPACE/$EAP_PATCH_ZIP; do 
       [[ -r "$epzf" ]] && ln -s "$epzf" .
     done
     goon=yes
