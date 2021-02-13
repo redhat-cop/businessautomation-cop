@@ -27,6 +27,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Seed workspace
+        command: "touch /github/workspace/afile.txt"
+
       - name: redhat-csp-download
         if: matrix.os == 'ubuntu-latest'
         uses: erouvas/github-actions/redhat-csp-download@master
