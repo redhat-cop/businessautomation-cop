@@ -1119,14 +1119,17 @@ for target in $pamTargets; do
   INSTALL_DIR=
   extractConfiguration $TARGET_CONFIG $target
   . $TARGET_CONFIG
-  [[ -r "$EAP7_ZIP" ]] && [[ -r "$PAM_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && goon=yes && break;
+  [[ -r "$EAP7_ZIP" ]] && [[ -r "$PAM_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && goon=yes && break;
   # check GITHUB_WORKSPACE as well and create symlinks if necessary
-  if ( [[ -r "$GITHUB_WORKSPACE/$EAP7_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$PAM_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$KIE_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$KIE_ZIP" ]] ); then
-    ln -s "$GITHUB_WORKSPACE/$EAP7_ZIP" .
-    ln -s "$GITHUB_WORKSPACE/$PAM_ZIP" .
-    ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
-    ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
+  if ( [[ -r "$GITHUB_WORKSPACE/$EAP7_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$PAM_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$KIE_ZIP" ]] ); then
+    [[ ! -r "$EAP7_ZIP" ]] && ln -s "$GITHUB_WORKSPACE/$EAP7_ZIP" .
+    [[ ! -r "$PAM_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$PAM_ZIP" .
+    [[ ! -r "$KIE_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
+    for epzf in "$GITHUB_WORKSPACE/$EAP_PATCH_ZIP"; do 
+      [[ -r "$epzf" ]] && ln -s "$epzf" .
+    done
     goon=yes
+    unset epzf
     break
   fi
 done
