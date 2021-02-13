@@ -1104,6 +1104,7 @@ echo "PWD = $(pwd)"
 echo "df -h"
 echo "ls -al /"
 printenv
+find / -iname "*.zip"
 sout "PAM-SETUP - START"
 [[ -n "$loglog" ]] && sout "$loglog"
 unset loglog
