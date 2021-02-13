@@ -1101,8 +1101,9 @@ fi
 
 echo "--PRE_START--"
 echo "PWD = $(pwd)"
-echo "df -h"
-echo "ls -al /"
+df -h
+ls -al /
+ls -ls $HOME
 printenv
 find / -iname "*.zip"
 sout "PAM-SETUP - START"

@@ -33,7 +33,7 @@ jobs:
         with:
           rh_username: ${{ secrets.RH_USERNAME }}
           rh_password: ${{ secrets.RH_PASSWORD }}
-          download: '[{"file":"/github/workspace/jboss-eap-7.3.0.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=80101"},{"file":"/tmp/jboss-eap-7.3.3-patch.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=88471"},{"file":"rhpam-7.9.0-business-central-eap7-deployable.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=89691"},{"file":"rhpam-7.9.0-kie-server-ee8.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=89701"}]'
+          download: '[{"file":"/github/workspace/jboss-eap-7.3.0.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=80101"},{"file":"/tmp/jboss-eap-7.3.3-patch.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=88471"},{"file":"/github/home/rhpam-7.9.0-business-central-eap7-deployable.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=89691"},{"file":"rhpam-7.9.0-kie-server-ee8.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=89701"}]'
 
       - name: Run pam-setup.sh
         if: matrix.os == 'ubuntu-latest'
