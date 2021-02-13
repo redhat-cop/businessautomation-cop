@@ -1099,13 +1099,7 @@ if [[ -n "$LOGFILE" ]]; then
   fi
 fi
 
-echo "--PRE_START--"
-echo "PWD = $(pwd)"
-df -h
-ls -al /
-ls -ls $HOME
-printenv
-find / -iname "*.zip"
+
 sout "PAM-SETUP - START"
 [[ -n "$loglog" ]] && sout "$loglog"
 unset loglog
@@ -1126,6 +1120,15 @@ for target in $pamTargets; do
   extractConfiguration $TARGET_CONFIG $target
   . $TARGET_CONFIG
   [[ -r "$EAP7_ZIP" ]] && [[ -r "$PAM_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && goon=yes && break;
+  # check GITHUB_WORKSPACE as well and create symlinks if necessary
+  if ( [[ -r "$GITHUB_WORKSPACE/$EAP7_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$PAM_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$KIE_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$KIE_ZIP" ]] ); then
+    ln -s "$GITHUB_WORKSPACE/$EAP7_ZIP" .
+    ln -s "$GITHUB_WORKSPACE/$PAM_ZIP" .
+    ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
+    ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
+    goon=yes
+    break
+  fi
 done
 
 if [[ "$goon" == "yes" ]]; then
