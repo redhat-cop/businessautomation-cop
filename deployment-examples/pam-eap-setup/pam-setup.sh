@@ -641,7 +641,8 @@ function modifyConfiguration() {
       # properties for managed KIE Server
       prepareConfigLine "org.kie.server.id"                        "$serverId"
       prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"
-      prepareConfigLine "org.kie.server.controller"                "${clv}"
+      # prepareConfigLine "org.kie.server.controller"                "${clv}"
+      prepareConfigLine "org.kie.server.controller"                "@@CLV@@"
       prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"
       # overcome 256 character limitation in process variable values
       # if you uncomment the following parameter, remember to alter your database column accordingly
@@ -700,6 +701,10 @@ function modifyConfiguration() {
     echo 'stop-embedded-server' >> $pamConfigFile
     ./jboss-cli.sh --file=$pamConfigFile
     rm -f $TMP_FILE
+    # comma-separated CLV needs special handling
+    tmpclv="${nodeConfig['controllerUrl']}"
+    sed -i "s]@@CLV@@]$tmpclv]" "$EAP_HOME/standalone/configuration/standalone.xml"
+    unset tmpclv
   popd &> /dev/null
   if [[ "$nodedir" != "standalone" ]]; then
     cp $EAP_HOME/standalone/configuration/standalone.xml $xmlConfig
@@ -1094,6 +1099,7 @@ if [[ -n "$LOGFILE" ]]; then
   fi
 fi
 
+
 sout "PAM-SETUP - START"
 [[ -n "$loglog" ]] && sout "$loglog"
 unset loglog
@@ -1113,7 +1119,19 @@ for target in $pamTargets; do
   INSTALL_DIR=
   extractConfiguration $TARGET_CONFIG $target
   . $TARGET_CONFIG
-  [[ -r "$EAP7_ZIP" ]] && [[ -r "$PAM_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && goon=yes && break;
+  [[ -r "$EAP7_ZIP" ]] && [[ -r "$PAM_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && goon=yes && break;
+  # check GITHUB_WORKSPACE as well and create symlinks if necessary
+  if ( [[ -r "$GITHUB_WORKSPACE/$EAP7_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$PAM_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$KIE_ZIP" ]] ); then
+    [[ ! -r "$EAP7_ZIP" ]] && ln -s "$GITHUB_WORKSPACE/$EAP7_ZIP" .
+    [[ ! -r "$PAM_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$PAM_ZIP" .
+    [[ ! -r "$KIE_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
+    for epzf in $GITHUB_WORKSPACE/$EAP_PATCH_ZIP; do 
+      [[ -r "$epzf" ]] && ln -s "$epzf" .
+    done
+    goon=yes
+    unset epzf
+    break
+  fi
 done
 
 if [[ "$goon" == "yes" ]]; then

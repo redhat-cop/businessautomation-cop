@@ -1,13 +1,13 @@
-name: Build for pam-eap-setup
+name: Build for  pam-eap-setup
 
 on:
   push:
     paths:
-      - .github/workflows/build-pam-eap-setup.yaml
+      - .github/workflows/build-deployment-examples.yaml
       - deployment-examples/pam-eap-setup/**
   pull_request:
     paths:
-      - .github/workflows/build-pam-eap-setup.yaml
+      - .github/workflows/build-deployment-examples.yaml
       - deployment-examples/pam-eap-setup/**
 
 jobs:
@@ -29,11 +29,11 @@ jobs:
 
       - name: redhat-csp-download
         if: matrix.os == 'ubuntu-latest'
-        uses: garethahealy/github-actions/redhat-csp-download@master
+        uses: erouvas/github-actions/redhat-csp-download@master
         with:
           rh_username: ${{ secrets.RH_USERNAME }}
           rh_password: ${{ secrets.RH_PASSWORD }}
-          download: '[{"file":"/github/workspace/pam-eap-setup/jboss-eap-7.3.0.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=80101"},{"file":"/github/workspace/pam-eap-setup/jboss-eap-7.3.3-patch.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=88471"},{"file":"/github/workspace/pam-eap-setup/rhpam-7.9.0-business-central-eap7-deployable.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=89691"},{"file":"/github/workspace/pam-eap-setup/rhpam-7.9.0-kie-server-ee8.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=89701"}]'
+          download: '[{"file":"/github/workspace/jboss-eap-7.3.0.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=80101"},{"file":"/github/workspace/jboss-eap-7.3.3-patch.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=88471"},{"file":"/github/workspace/rhpam-7.9.0-business-central-eap7-deployable.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=89691"},{"file":"/github/workspace/rhpam-7.9.0-kie-server-ee8.zip","url":"https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=89701"}]'
 
       - name: Run pam-setup.sh
         if: matrix.os == 'ubuntu-latest'
