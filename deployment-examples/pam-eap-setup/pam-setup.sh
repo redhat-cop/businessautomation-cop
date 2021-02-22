@@ -6,8 +6,8 @@
 #
 
 #
-# sanity environment check
 #
+# sanity environment check
 CYGWIN_ON=no
 MACOS_ON=no
 LINUX_ON=no
@@ -143,27 +143,29 @@ MASTER_CONFIG=master.conf
 # versions supported
 #
 cat << "__CONFIG" > $MASTER_CONFIG
-PAM791 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.9.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.9.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
-DM791  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.9.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.9.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
-PAM790 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.9.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.9.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
-DM790  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.9.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.9.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
-DM781  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.8.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.8.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
-PAM781 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.8.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
-PAM780 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.8.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
-PAM771 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-PAM770 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.7.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-DM771  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.7.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.7.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
-DM760  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.6.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.6.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
-PAM760 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.6.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.6.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-PAM751 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.5.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.5.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-PAM75  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.5.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.5.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-DM741  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.4.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.4.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
-PAM741 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.4.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.4.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-PAM74  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.4.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.4.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-PAM731 | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.3.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.3.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-DM731  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=                          | PAM_ZIP=rhdm-7.3.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.3.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
-PAM73  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=                          | PAM_ZIP=rhpam-7.3.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.3.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
-PAM72  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=                          | PAM_ZIP=rhpam-7.2.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.2.0-kie-server-ee7.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+PAM7100 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.10.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.10.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
+DM7100  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.10.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.10.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
+PAM791  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.9.1-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.9.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
+DM791   | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.9.1-decision-central-eap7-deployable.zip   | KIE_ZIP=rhdm-7.9.1-kie-server-ee8.zip   | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
+PAM790  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.9.0-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.9.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
+DM790   | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.9.0-decision-central-eap7-deployable.zip   | KIE_ZIP=rhdm-7.9.0-kie-server-ee8.zip   | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
+DM781   | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.8.1-decision-central-eap7-deployable.zip   | KIE_ZIP=rhdm-7.8.1-kie-server-ee8.zip   | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
+PAM781  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.1-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.8.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
+PAM780  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.8.0-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.8.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
+PAM771  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.1-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.7.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+PAM770  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.7.0-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.7.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+DM771   | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.7.1-decision-central-eap7-deployable.zip   | KIE_ZIP=rhdm-7.7.1-kie-server-ee8.zip   | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
+DM760   | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.6.0-decision-central-eap7-deployable.zip   | KIE_ZIP=rhdm-7.6.0-kie-server-ee8.zip   | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
+PAM760  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.6.0-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.6.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+PAM751  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.5.1-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.5.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+PAM75   | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.5.0-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.5.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+DM741   | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhdm-7.4.1-decision-central-eap7-deployable.zip   | KIE_ZIP=rhdm-7.4.1-kie-server-ee8.zip   | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
+PAM741  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.4.1-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.4.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+PAM74   | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.4.0-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.4.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+PAM731  | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=jboss-eap-7.2.*-patch.zip | PAM_ZIP=rhpam-7.3.1-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.3.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+DM731   | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=                          | PAM_ZIP=rhdm-7.3.1-decision-central-eap7-deployable.zip   | KIE_ZIP=rhdm-7.3.1-kie-server-ee8.zip   | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=DM
+PAM73   | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=                          | PAM_ZIP=rhpam-7.3.0-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.3.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
+PAM72   | EAP7_ZIP=jboss-eap-7.2.0.zip | EAP_PATCH_ZIP=                          | PAM_ZIP=rhpam-7.2.0-business-central-eap7-deployable.zip  | KIE_ZIP=rhpam-7.2.0-kie-server-ee7.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.2 | TARGET_TYPE=PAM
 __CONFIG
 
 #
@@ -179,7 +181,6 @@ function extractHeaders() {
 
 function extractConfiguration() {
   grep -v '^#' $MASTER_CONFIG | grep "^$2 " | awk -F'|' '{ if (NF>0) for (i=2; i<=NF; i++) printf $i"\n"; }' > "$1"
-  cp "$1" /tmp/"$2".conf
 }
 
 function randomid() {
@@ -1121,16 +1122,18 @@ for target in $pamTargets; do
   . $TARGET_CONFIG
   [[ -r "$EAP7_ZIP" ]] && [[ -r "$PAM_ZIP" ]] && [[ -r "$KIE_ZIP" ]] && goon=yes && break;
   # check GITHUB_WORKSPACE as well and create symlinks if necessary
-  if ( [[ -r "$GITHUB_WORKSPACE/$EAP7_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$PAM_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$KIE_ZIP" ]] ); then
-    [[ ! -r "$EAP7_ZIP" ]] && ln -s "$GITHUB_WORKSPACE/$EAP7_ZIP" .
-    [[ ! -r "$PAM_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$PAM_ZIP" .
-    [[ ! -r "$KIE_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
-    for epzf in $GITHUB_WORKSPACE/$EAP_PATCH_ZIP; do 
-      [[ -r "$epzf" ]] && ln -s "$epzf" .
-    done
-    goon=yes
-    unset epzf
-    break
+  if ( [[ "$goon" != yes ]] ); then
+    if ( [[ -r "$GITHUB_WORKSPACE/$EAP7_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$PAM_ZIP" ]] && [[ -r "$GITHUB_WORKSPACE/$KIE_ZIP" ]] ); then
+      [[ ! -r "$EAP7_ZIP" ]] && ln -s "$GITHUB_WORKSPACE/$EAP7_ZIP" .
+      [[ ! -r "$PAM_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$PAM_ZIP" .
+      [[ ! -r "$KIE_ZIP" ]]  && ln -s "$GITHUB_WORKSPACE/$KIE_ZIP" .
+      for epzf in $GITHUB_WORKSPACE/$EAP_PATCH_ZIP; do 
+        [[ -r "$epzf" ]] && ln -s "$epzf" .
+      done
+      goon=yes
+      unset epzf
+      break
+    fi
   fi
 done
 
