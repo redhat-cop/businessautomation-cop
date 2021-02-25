@@ -527,7 +527,7 @@ It is also advisable to check whether KB4460791 [What is the supported oracle di
 You can install a post-commit git hook implementation at the same time as installing Business Central with the following options.
 
 The following post-commit git hook implementation are supported:
-- [bcgithook](https://github.com/redhat-cop/businessautomation-cop/tree/master/bcgithook)
+- [bcgithook](https://github.com/redhat-cop/businessautomation-cop/tree/master/extras/bcgithook)
 - [kiegroup](https://github.com/kiegroup/bc-git-integration-push)
 
 > **IMPORTANT**
