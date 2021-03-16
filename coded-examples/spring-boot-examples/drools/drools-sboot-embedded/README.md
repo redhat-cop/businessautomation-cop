@@ -32,8 +32,8 @@ RESPONSE { "rulesFired": 1, "message": " Goodbye Paulo " }
 
 #### Useful Links: 
 
-- Context Root: \<HOST>:8090/rest
-- KIE Server Base : http://localhost:8090/rest/server
-- KIE Server Containers : http://localhost:8090/rest/server/containers
-- Swagger JSON: http://localhost:8090/rest/swagger.json
-- Swagger UI: http://localhost:8090/rest/api-docs?url=http://localhost:8090/rest/swagger.json
+- Context Root: \<HOST>:8090/api
+- Swagger JSON: http://localhost:8090/api/api-doc
+- Swagger UI: http://localhost:8090/webjars/swagger-ui/index.html?url=/api/api-doc
+- Spring Management (Actuator): http://localhost:8091/actuator/
+- H2 Console: http://localhost:8090/h2-console

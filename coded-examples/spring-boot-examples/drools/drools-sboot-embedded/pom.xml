@@ -19,7 +19,7 @@
     <properties>
         <version.spring.boot.bom>2.1.3.Final-redhat-00001</version.spring.boot.bom>
         <version.camel.bom>2.23.2.fuse-740011-redhat-00001</version.camel.bom>
-        <version.swagger>3.22.2</version.swagger>
+        <version.swagger>3.44.0</version.swagger>
         <version.webjars.locator>0.36</version.webjars.locator>
         <version.mapstruct>1.3.0.Final</version.mapstruct>
 
@@ -128,7 +128,7 @@
             <artifactId>mapstruct-jdk8</artifactId>
         </dependency>
 
-        <!-- Swagger UI -->
+        <!-- Swagger UI -->        
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>

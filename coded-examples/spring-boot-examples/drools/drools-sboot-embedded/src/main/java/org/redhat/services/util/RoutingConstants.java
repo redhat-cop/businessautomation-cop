@@ -5,8 +5,8 @@ public class RoutingConstants {
     // API Routing API
     public static String API_BASE = "/api/";
     public static String SWAGGER_ENDPOINT = "api-doc";
-    public static String DEMO_ENDPOINT = "demo/rules/";
-    public static String AUDIT_ENDPOINT = "audit/rules/";
+    public static String DEMO_ENDPOINT = "/demo/rules/";
+    public static String AUDIT_ENDPOINT = "/audit/rules/";
 
     // Camel Endpoint Types
     public static final String DIRECT = "direct:";
