@@ -20,9 +20,11 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- Product Version Mappings https://access.redhat.com/solutions/3405361 -->
-        <version.rhpam>7.8.0.redhat-00002</version.rhpam>
+        <!-- <version.rhpam>7.8.0.redhat-00002</version.rhpam> -->
+        <version.rhpam>7.10.0.redhat-00004</version.rhpam>
         <!-- NOTE: Versions on Example KJAR projects maintain local versions to keep BC happy -->
-        <version.org.kie>7.39.0.Final-redhat-00005</version.org.kie>
+        <!-- <version.org.kie>7.39.0.Final-redhat-00005</version.org.kie> -->
+        <version.org.kie>7.48.0.Final-redhat-00004</version.org.kie>
         <version.spring.boot>2.2.2.RELEASE</version.spring.boot>
         <version.org.keycloak>9.0.3.redhat-00002</version.org.keycloak>
 

@@ -227,3 +227,4 @@ buildNumber.properties
 
 # macOS
 .DS_Store
+**/.vscode/

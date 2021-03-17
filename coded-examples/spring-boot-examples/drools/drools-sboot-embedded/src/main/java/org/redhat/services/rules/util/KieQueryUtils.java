@@ -2,11 +2,11 @@ package org.redhat.services.rules.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.ObjectFilter;
 import org.redhat.services.model.RuleResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,16 +20,7 @@ public class KieQueryUtils {
     public BiFunction<KieSession, AtomicReference<List<RuleResponse>>, KieSession> getRuleResponse = (kieSession, ruleResponses) -> {
 
         log.info("Obtaining RuleResponse results from KieSession");
-        Collection<Object> result = (Collection<Object>) kieSession.getObjects(new ObjectFilter() {
-
-            @Override
-            public boolean accept(Object obj) {
-                if (obj instanceof RuleResponse) {
-                    return true;
-                }
-                return false;
-            }
-        });
+        Collection<Object> result = (Collection<Object>) kieSession.getObjects(obj -> obj instanceof RuleResponse);
 
         log.info("Collection Rule Result : {}", result);
 
@@ -44,4 +35,21 @@ public class KieQueryUtils {
 
         return kieSession;
     };
+
+    @SuppressWarnings("unchecked")
+    public BiFunction<KieSession, AtomicReference<List<Object>>, KieSession> getAllFacts = (kieSession, facts) -> {
+
+        log.info("Obtaining all facts from KieSession");
+        Collection<Object> result = (Collection<Object>) kieSession.getObjects();
+
+        log.info("Facts Collection : {}", result);
+
+        if (!result.isEmpty()) {
+            log.debug("{} Facts obtained from KieSession", result.size());
+            facts.set(Arrays.asList(result.toArray()));
+        }
+
+        return kieSession;
+    };
+
 }

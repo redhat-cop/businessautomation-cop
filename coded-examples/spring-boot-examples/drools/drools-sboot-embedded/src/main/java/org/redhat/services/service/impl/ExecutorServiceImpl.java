@@ -7,7 +7,6 @@ import org.redhat.services.model.dto.Release;
 import org.redhat.services.rules.api.RuleExecutor;
 import org.redhat.services.service.api.ExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Slf4j
