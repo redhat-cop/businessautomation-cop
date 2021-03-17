@@ -3,9 +3,8 @@ package org.redhat.services.api;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
-import org.redhat.services.model.CarInsuranceRequest;
+
 import org.redhat.services.model.MortgageRequest;
-import org.redhat.services.model.RuleResponse;
 import org.redhat.services.routing.processor.RequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,15 +63,6 @@ public class ServiceRoutingAPI extends RouteBuilder {
             .endParam()
             .route().routeId(ROUTE_ID.DEMO_API_ROUTE_GOODBYE)
         	.to(CORE.GOODBYE_RULES);
-        
-        // Dedicated Car Insurance API Endpoint
-        rest().post(API.DEMO_RULES_INSURANCE)
-            .consumes( MediaType.APPLICATION_JSON )
-            .type(CarInsuranceRequest.class)
-            .produces( MediaType.APPLICATION_JSON )
-            .outType(Map.class)
-            .route().routeId(ROUTE_ID.DEMO_API_ROUTE_INSURANCE)
-            .to(CORE.INSURANCE_RULES);
 
         // Dedicated Mortgages API Endpoint
         rest().post(API.DEMO_RULES_MORTGAGE)

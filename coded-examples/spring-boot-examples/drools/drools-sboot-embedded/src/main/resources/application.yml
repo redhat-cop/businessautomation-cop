@@ -67,10 +67,6 @@ rules:
       artifactId: mortgages
       version: 1.0.0-SNAPSHOT
       scanningInterval: 600000 # 10 minutes
-    - groupId: com.redhat.demos
-      artifactId: decisions-showcase
-      version: 1.0.0-SNAPSHOT
-      scanningInterval: 600000 # 10 minutes
     # - groupId: org.redhat.services
     #   artifactId: drools-example-helloworld
     #   version: 0.0.1-SNAPSHOT

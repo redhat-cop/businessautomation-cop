@@ -3,7 +3,6 @@ package org.redhat.services.rules.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.kie.api.runtime.KieContainer;
 import org.redhat.services.config.KJARRepositoryConfig;
-import org.redhat.services.model.CarInsuranceRequest;
 import org.redhat.services.model.MortgageRequest;
 import org.redhat.services.model.RuleResponse;
 import org.redhat.services.rules.api.RuleExecutor;
@@ -80,38 +79,10 @@ public class RuleExecutorImpl implements RuleExecutor {
         return response;
     }
 
-
-    @Override
-    public Map<String, Object> executeCarInsuranceRules(CarInsuranceRequest request) {
-
-        log.debug("Executing executeCarInsuranceRules ");
-
-        Object facts[] = {request.getDriver(), request.getPolicy()};
-        AtomicReference<List<Object>> atomicReferenceFacts = new AtomicReference<>();
-        // AtomicReference<List<RuleResponse>> atomicReferenceRuleResponse = new AtomicReference<>();
-
-        //@formatter:off
-        sessionUtils.createNewKieSession
-        .andThen( kSession -> sessionUtils.insertFacts.apply(kSession, facts) ) // insert facts into session
-        .andThen( kSession -> sessionUtils.fireAllRules.apply( kSession )) // Fire Rules
-        .andThen( kSession -> queryUtils.getAllFacts.apply( kSession, atomicReferenceFacts ))
-        .andThen( kSession -> sessionUtils.tearDown.apply(kSession))
-        .apply(  kjarRepository.getKieContainer(CONTAINER_ID.DECISIONS_SHOWCASE) );
-        // @formatter:on
-
-        // RuleResponse response = atomicReferenceRuleResponse.get().get(0);
-        log.info("Facts Obtained: {}", atomicReferenceFacts.get());
-        Map<String, Object> returnedFacts =  atomicReferenceFacts.get().stream().collect(
-            Collectors.toMap(
-                fact -> fact.getClass().getSimpleName(), 
-                fact -> fact));
-        return returnedFacts;
-    }
-
     @Override
     public Map<String, Object> executeMortgageRules(MortgageRequest request) {
 
-        log.debug("Executing executeCarInsuranceRules ");
+        log.debug("Executing executeMortgageRules ");
 
         Object facts[] = {
             request.getApplicant(), 
@@ -119,7 +90,6 @@ public class RuleExecutorImpl implements RuleExecutor {
             request.getLoanApplication(), 
             request.getBankruptcy()};
         AtomicReference<List<Object>> atomicReferenceFacts = new AtomicReference<>();
-        // AtomicReference<List<RuleResponse>> atomicReferenceRuleResponse = new AtomicReference<>();
 
         //@formatter:off
         sessionUtils.createNewKieSession

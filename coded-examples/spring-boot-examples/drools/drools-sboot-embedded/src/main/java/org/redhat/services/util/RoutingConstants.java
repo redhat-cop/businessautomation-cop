@@ -6,7 +6,6 @@ public class RoutingConstants {
     public static String API_BASE = "/api/";
     public static String SWAGGER_ENDPOINT = "api-doc";
     public static String DEMO_ENDPOINT = "/demo/rules/";
-    public static String CAR_INSURANCE_ENDPOINT = "/demo/insurance/rules/";
     public static String AUDIT_ENDPOINT = "/audit/rules/";
 
     // Camel Endpoint Types
@@ -26,11 +25,8 @@ public class RoutingConstants {
         public static final String DEMO_API_ROUTE_GOODBYE = "demoRules.api." + CORE.GOODBYE_RULES;
         public static final String DEMO_ROUTE_HELLO = "demoRules.impl." + CORE.HELLO_RULES;
         public static final String DEMO_ROUTE_GOODBYE = "demoRules.impl." + CORE.GOODBYE_RULES;
-
         public static final String DEMO_API_ROUTE_MORTGAGE = "demoRules.api." + CORE.MORTGAGE_RULES;
         public static final String DEMO_ROUTE_MORTGAGE = "demoRules.impl." + CORE.MORTGAGE_RULES;
-        public static final String DEMO_API_ROUTE_INSURANCE = "demoRules.api." + CORE.INSURANCE_RULES;
-        public static final String DEMO_ROUTE_INSURANCE = "demoRules.impl." + CORE.INSURANCE_RULES;
 
         public static final String AUDIT_API_ROUTE_BYREF = "audit.api." + AUDIT.FIND_BY_REF;
         public static final String AUDIT_ROUTE_BYREF = "audit.impl." + AUDIT.FIND_BY_REF;
@@ -45,7 +41,6 @@ public class RoutingConstants {
         public static final String DEMO_RULES_HELLOWORLD = DEMO_ENDPOINT + "hello";
         public static final String DEMO_RULES_GOODBYE = DEMO_ENDPOINT + "goodbye";
         public static final String DEMO_RULES_MORTGAGE = DEMO_ENDPOINT + "mortgage";
-        public static final String DEMO_RULES_INSURANCE = DEMO_ENDPOINT + "insurance";
         public static final String AUDIT_LOG_BY_REFERENCE = AUDIT_ENDPOINT + "reference";
     }
 
@@ -55,7 +50,6 @@ public class RoutingConstants {
         public static final String HELLO_RULES = DIRECT + "helloWorld";
         public static final String GOODBYE_RULES = DIRECT + "goodbyeWorld";
         public static final String MORTGAGE_RULES = DIRECT + "mortgage";
-        public static final String INSURANCE_RULES = DIRECT + "carInsurance";
     }
 
     public interface AUDIT {
@@ -66,6 +60,5 @@ public class RoutingConstants {
     public interface CONTAINER_ID {
         public static final String DEMO = "DEMO_CONTAINER";
         public static final String MORTGAGES = "mortgages-1.0.0-SNAPSHOT";
-        public static final String DECISIONS_SHOWCASE = "decisions-showcase-1.0.0-SNAPSHOT";
     }
 }
