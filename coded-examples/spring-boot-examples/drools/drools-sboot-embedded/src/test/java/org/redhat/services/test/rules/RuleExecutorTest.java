@@ -50,6 +50,7 @@ public class RuleExecutorTest extends AppTestBase {
         Applicant applicant = new Applicant();
         applicant.setAge(17);
         applicant.setName("Test");
+        applicant.setCreditRating("OK");
         IncomeSource incomeSource = new IncomeSource();
         LoanApplication loanApplication = new LoanApplication();
         Bankruptcy bankruptcy = new Bankruptcy();
