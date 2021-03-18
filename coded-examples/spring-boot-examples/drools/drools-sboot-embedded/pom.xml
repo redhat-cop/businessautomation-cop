@@ -210,11 +210,6 @@
 
         <!-- External KJAs -->
         <dependency>
-            <groupId>com.redhat.demos</groupId>
-            <artifactId>decisions-showcase</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.redhat.services</groupId>
             <artifactId>mortgages</artifactId>
             <version>1.0.0-SNAPSHOT</version>
