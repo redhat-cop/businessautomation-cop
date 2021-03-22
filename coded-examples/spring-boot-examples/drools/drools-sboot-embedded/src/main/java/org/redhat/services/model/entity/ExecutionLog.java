@@ -41,7 +41,7 @@ public class ExecutionLog implements Serializable {
     @Column(name = "RULE_EXECUTION_DURATION_MS")
     private long rulesExecutionDuration;
 
-    @Column(name = "PAYLOAD")
+    @Column(name = "PAYLOAD", columnDefinition = "CLOB")
     private String payload;
 
     @Column(name = "AGENDA_GROUP")

@@ -15,6 +15,7 @@ public class RoutingConstants {
 
 
     public interface AGENDA_GROUPS {
+        public static final String MAIN = "MAIN"; // Drools default AgendaGroup
         public static final String DEMO_HELLO = "hello";
         public static final String DEMO_GOODBYE = "goodbye";
     }
@@ -24,6 +25,9 @@ public class RoutingConstants {
         public static final String DEMO_API_ROUTE_GOODBYE = "demoRules.api." + CORE.GOODBYE_RULES;
         public static final String DEMO_ROUTE_HELLO = "demoRules.impl." + CORE.HELLO_RULES;
         public static final String DEMO_ROUTE_GOODBYE = "demoRules.impl." + CORE.GOODBYE_RULES;
+        public static final String DEMO_API_ROUTE_MORTGAGE = "demoRules.api." + CORE.MORTGAGE_RULES;
+        public static final String DEMO_ROUTE_MORTGAGE = "demoRules.impl." + CORE.MORTGAGE_RULES;
+
         public static final String AUDIT_API_ROUTE_BYREF = "audit.api." + AUDIT.FIND_BY_REF;
         public static final String AUDIT_ROUTE_BYREF = "audit.impl." + AUDIT.FIND_BY_REF;
         public static final String AUDIT_ROUTE_PERSIST = "audit.impl." + AUDIT.EXECUTION_LOG;
@@ -36,6 +40,7 @@ public class RoutingConstants {
         public static final String SCENARIO_LIST = API_BASE + "trigger/scenarios";
         public static final String DEMO_RULES_HELLOWORLD = DEMO_ENDPOINT + "hello";
         public static final String DEMO_RULES_GOODBYE = DEMO_ENDPOINT + "goodbye";
+        public static final String DEMO_RULES_MORTGAGE = DEMO_ENDPOINT + "mortgage";
         public static final String AUDIT_LOG_BY_REFERENCE = AUDIT_ENDPOINT + "reference";
     }
 
@@ -44,6 +49,7 @@ public class RoutingConstants {
         public static final String LOAD_KIEBASE = DIRECT + "loadKieBase";
         public static final String HELLO_RULES = DIRECT + "helloWorld";
         public static final String GOODBYE_RULES = DIRECT + "goodbyeWorld";
+        public static final String MORTGAGE_RULES = DIRECT + "mortgage";
     }
 
     public interface AUDIT {

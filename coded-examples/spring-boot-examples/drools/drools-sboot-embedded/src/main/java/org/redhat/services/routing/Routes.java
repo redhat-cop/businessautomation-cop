@@ -69,6 +69,11 @@ public class Routes extends RouteBuilder {
             .log( LoggingLevel.INFO, "Invoking GoodbyeWorld Rules Route" )
             .bean( ruleExecutor, "executeGoodbyeRules( ${header.name} )" );
 
+        // Demo Mortgage Base Rules Impl
+        from( CORE.MORTGAGE_RULES ).routeId(ROUTE_ID.DEMO_ROUTE_MORTGAGE)
+            .log( LoggingLevel.INFO, "Invoking Mortgages Rules Route" )
+            .log( LoggingLevel.INFO, "Request body: ${body}" )
+            .bean( ruleExecutor, "executeMortgageRules( ${body} )" );
 
         /**********************************/
         /**  Audit Routes  **/

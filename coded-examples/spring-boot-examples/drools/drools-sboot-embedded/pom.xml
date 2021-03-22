@@ -157,6 +157,11 @@
             <groupId>org.drools</groupId>
             <artifactId>drools-workbench-models-guided-dtable</artifactId>
         </dependency>
+        <!-- DMN -->
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-dmn-core</artifactId>
+        </dependency>        
 
         <!-- KIE -->
         <dependency>
@@ -172,7 +177,6 @@
             <artifactId>kie-server-api</artifactId>
 <!--            <version>7.41.0.Final</version>-->
         </dependency>
-
 
         <!-- TEST -->
         <dependency>
@@ -204,7 +208,12 @@
             <scope>test</scope>
         </dependency>
 
-
+        <!-- External KJAs -->
+        <dependency>
+            <groupId>org.redhat.services</groupId>
+            <artifactId>mortgages</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
