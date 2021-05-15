@@ -116,9 +116,18 @@ echo "
 Will install bcgithook post-commit git hook and default 
 configuration
 
-usage: $(basename "$0") [JBOSS_HOME] [-h help]
+usage: $(basename "$0") [JBOSS_HOME] [global|local] [-h help]
 
 JBOSS_HOME should point to a JBoss EAP or WildFly installation.
+
+'global|local' refers to the location of the configuration file.
+Configuration file '.bcgithook' will be placed to
+
+      global : \$HOME/.bcgithook
+      local  : JBOSS_HOME/git-hooks
+      
+'local' allows for different configuration per RHPAM installation
+should you have more than instances in the same (phsyical or virtual) machine
 
 Standard directory structure is assumed as the one 
 produced by unzipping the JBoss EAP or WildFly binary.
@@ -138,9 +147,15 @@ This script will attempt to:
 Please make sure JBoss EAP or WildFly is NOT RUNNING 
 before executing this script
 
-Additional information: https://github.com/redhat-cop/businessautomation-cop/blob/master/bcgithook
+Additional information: https://github.com/redhat-cop/businessautomation-cop/tree/master/extras/bcgithook
 "
 }
+
+while getopts "h" option; do
+  case $option in
+  	h ) usage; exit 1;;
+  esac
+done
 
 #
 # - goon with installation
@@ -153,11 +168,21 @@ POST_COMMIT_SOURCE="$SOURCE"/scripts/post-commit.sh
 CONFIG_HOME="$HOME/.bcgithook" && [[ "$CYGWIN_ON" == "yes" ]] && CONFIG_HOME=$(cygpath -w "${CONFIG_HOME}")
 
 jbhome="$1" && [[ "$CYGWIN_ON" == "yes" ]] && jbhome="$(cygpath -w "${jbhome}")"
+config_location="$2"
 
 # - some sanity checks
 [[ ! -r "$DEFAULT_CONF_SOURCE" ]] && error "- DEFAULT CONFIGURATION CANNOT BE FOUND - ABORTING" && exit 1
 [[ ! -r "$POST_COMMIT_SOURCE" ]]  && error "- POST COMMIT SCRIPT CANNOT BE FOUND - ABORTING" && exit 1
 [[ ! -d "$jbhome" ]] && error "- JBOSS_HOME CANNOT BE FOUND - ABORTING" && exit 2
+
+[[ "x$config_location" == "x" ]] && config_location="global"
+( [[ "x$config_location" != "xglobal" ]] && [[ "x$config_location" != "xlocal" ]] ) && error "- CONFIG_LOCATION global OR local NOT SPECIFIED - ABORTING" && exit 4
+
+gitHookDir="$jbhome"/git-hooks
+[[ "x$config_location" == "xlocal" ]] && CONFIG_HOME="$gitHookDir"
+
+
+sout "${bold}${white}CONFIGURATION LOCATION SET AT ${CONFIG_HOME}${normal}"
 
 [[ ! -x "$jbhome/bin/jboss-cli.sh" ]] && error "- JBOSS CLI CANNOT BE EXECUTED - ABORTING" && exit 3
 
@@ -172,18 +197,17 @@ else
   sout "${bold}${white}NEW CONFIGURATION FILE COPIED AS .new${normal}"
 fi
 
-gitHookDir="$jbhome"/git-hooks
 mkdir -p "$gitHookDir"
 [[ ! -d "$gitHookDir" ]] && error "- GIT HOOKS DIRECTORY CANNOT BE CREATED - ABORTING" && exit 6
 
 cp "$POST_COMMIT_SOURCE" "$gitHookDir/post-commit" || ( error "- POST COMMIT SCRIPT CANNOT BE COPIED INTO PLACE - ABORTING" && exit 7 )
-if [[ ! -r "$gitHookDir"/default.conf ]]; then
-  cp "$DEFAULT_CONF_SOURCE" "$gitHookDir"/default.conf || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
-else
-  cp "$DEFAULT_CONF_SOURCE" "$gitHookDir"/default.conf.new || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
-  sout "${bold}${white}CONFIGURATION FILE NOT INSTALLED${normal} - EXISTING CONFIGURATION FILE NOT OVERRIDEN"
-  sout "${bold}${white}NEW CONFIGURATION FILE COPIED AS .new${normal}"
-fi
+# if [[ ! -r "$gitHookDir"/default.conf ]]; then
+#   cp "$DEFAULT_CONF_SOURCE" "$gitHookDir"/default.conf || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
+# else
+#   cp "$DEFAULT_CONF_SOURCE" "$gitHookDir"/default.conf.new || ( error "- CONFIGURATION FILE CANNOT BE COPIED INTO PLACE - ABORTING" && exit 5 )
+#   sout "${bold}${white}CONFIGURATION FILE NOT INSTALLED${normal} - EXISTING CONFIGURATION FILE NOT OVERRIDEN"
+#   sout "${bold}${white}NEW CONFIGURATION FILE COPIED AS .new${normal}"
+# fi
 
 echo "
 #                                             

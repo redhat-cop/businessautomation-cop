@@ -1,4 +1,5 @@
-﻿![Build for bcgithook](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20bcgithook/badge.svg)
+﻿
+![Build for bcgithook](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20bcgithook/badge.svg)
 
 # bcgithook: Business Central git hooks in bash
 Business Central is able to push changes into remote git repositories utilizing post-commit git hooks.
@@ -83,9 +84,12 @@ Please note that there is currently no way of acheiving the reverse. For example
 |`BRANCH_DENY=master,release`| Commits in branches "master" and "release" will not be pushed to the remote git repo.|
 
 ### per-project configuration
-**bcgithook** allows for different configuration per-project. For this to happen a file with the same name as the project having the `.conf` suffix should be placed in `$HOME/.bcgithook` directory. `default.conf` can be used as a template however only values that are different from `default.conf` need to be defined. For example, a project named "FormApplicationProcess" would use the `FormApplicationProcess.conf` configuration file if that file is found.
+
+**bcgithook** allows for different configuration per-project. For this to happen a file with the same name as the project having the `.conf` suffix should be placed in the configuration directory. `default.conf` can be used as a template however only values that are different from `default.conf` need to be defined. For example, a project named "FormApplicationProcess" would use the `FormApplicationProcess.conf` configuration file if that file is found.
 
 > Please follow case sensitivity rules for your operating system when naming configuration files.
+
+There can be a single configuration directory (at `$HOME/.bcgithook`) for all instances of RHPAM/RHDM that are present in the same (physical or virtual) machine or a different directory per RHPAM/RHDM instance. In the latter case the configuration directory is at  `$JBOSS_HOME/git-hooks`.
 
 Per project configuration files can also be placed at the `$JBOSS_HOME/git-hooks` directory. Configuration files placed in this directory take precedence over files in the `$HOME/.bcgithook` directory.
 
@@ -94,7 +98,21 @@ For new projects you can create the configuration beforehand so when BusinessCen
 Please note that projects imported in Business Central will always be associated with the git repository they were imported from.
 
 ## Installation
-Please execute the `install.sh` script providing the directory of your [JBoss EAP](https://developers.redhat.com/products/eap/overview) or [WildFly](https://wildfly.org/) installation (a.k.a `JBOSS_HOME`). The script assumes standard directory layout and will perform the following steps:
+Please execute the `install.sh` script providing the directory of your [JBoss EAP](https://developers.redhat.com/products/eap/overview) or [WildFly](https://wildfly.org/) installation (a.k.a `JBOSS_HOME`).
+
+Example: `install.sh /opt/jboss/rhpam`
+
+`install.sh JBOSS_HOME [global|local] [-h]`
+
+Options:
+
+* `-h` : will bring the help text
+* `JBOSS_HOME` : the full path to your RHPAM installation (on JBoss EAP)
+* `global|local`: specify the configuration directory, defaults to `global`
+	* `global`: will install configuration files at the `$HOME/.bcgithook` directory
+	* `local`: will install configuration files at the `JBOSS_HOME/git-hooks` directory
+
+ The script assumes EAP standard directory layout and will perform the following steps:
 
 > **IMPORTANT** : Please make sure that JBoss EAP or WildFly is not running before you execute following steps of run the `install.sh` script.
 
