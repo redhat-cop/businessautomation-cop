@@ -384,6 +384,13 @@ Options:
                                Please refer to the documentation for valid values
                                'git_hook_location' is only taken into account if 'git_hook' has a valid value
                                
+         - bcgithook_config  : location for the configuration of the 'bcgithook' implementation
+                               Valid values are [ global | local ] with 'local' being the default
+                               - 'local'  will install the configuration in the 'INSTALL_DIR/git-hooks' directory
+                                          allowing for separate configuration per RHPAM installation
+                               - 'global' will install the configuration in the 'HOME/.bcgithook' directory
+                                          providing a single configuration point for all RHPAM installtions (in the same machine)
+                               
          - logfile=file      : create a log file of the installation.
                                If 'file' is missing defaults to 'pam-setup.log'.
 
@@ -997,6 +1004,7 @@ function installBCGitHook() {
   local bcloc=$(sqlite3 -line "$CONFIG_DB" "select pkey,installDir from pamrc where pamInstall='controller'" | grep installDir | awk '{ print $3; }')
   local githookloc="$WORKDIR/../bcgithook"
   local ghl=""
+  local confd="local"
   [[ "${configOptions[git_hook_location]}" == "1" ]] && configOptions[git_hook_location]=''
   [[ -z "${configOptions[git_hook_location]}" ]] && [[ -d "$githookloc" ]] && cd "$githookloc" && ghl="$(pwd)" && configOptions[git_hook_location]="$ghl"
   [[ -z "${configOptions[git_hook_location]}" ]] && configOptions[git_hook_location]="download" && sout "DOWNLOADING POST-COMMIT GIT HOOK"
@@ -1013,8 +1021,9 @@ function installBCGitHook() {
       [[ -d "$tmp" ]] && [[ -x "$tmp/install.sh" ]] && [[ -r "$tmp/scripts/post-commit.sh" ]] && cd "$tmp" && ghl="$(pwd)"
     fi
     if [[ -n "$ghl" ]]; then
+      [[ "${configOptions[bcgithook_config]}" == "global" ]] && confd='global'
       pushd "$ghl" &> /dev/null
-        ./install.sh "$bcloc"
+        ./install.sh "$bcloc" "${confd}"
       popd &> /dev/null
     else
       sout "WARNING: post-commit git hooks NOT INSTALLED - CANNOT FIND IMPLEMENTATION LOCATION"
