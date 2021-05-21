@@ -551,7 +551,7 @@ The following post-commit git hook implementation are supported:
 |:--------|:------------|
 |`git_hook`| name of the git hook implementation to be installed, either `bcgithook` or `kiegroup`. |
 |`git_hook_location`| the location of the named `git_hook` implementation to be installed.<br>Valid values are `[ download\|path-on-the-local-disk ]`. <br>`git_hook_location` is only taken into account if `git_hook` location has a valid value |
-|`bcgithook_config`| location of the configuration for the `bcgithook` implementation<br/>Valida values are `[ global\|local ]`. `local` will allow for separate configuration per RHPAM installation (in the same machine).<br/>Please refer to `bcgithook` documentation for more details. |
+|`bcgithook_config`| location of the configuration for the `bcgithook` implementation<br/>Valid values are `[ global\|local ]`.<br/>`local` will allow for separate configuration per RHPAM installation (in the same machine).<br/>Please refer to `bcgithook` documentation for more details. |
 
 Examples for `git_hook_location` values
 
