@@ -247,6 +247,13 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                                        Please refer to the documentation for valid values
                                        'git_hook_location' is only taken into account if 'git_hook' has a valid value
 
+                 - bcgithook_config  : location for the configuration of the 'bcgithook' implementation
+                                       Valid values are [ global | local ] with 'local' being the default
+                                       - 'local'  will install the configuration in the 'INSTALL_DIR/git-hooks' directory
+                                                  allowing for separate configuration per RHPAM installation
+                                       - 'global' will install the configuration in the 'HOME/.bcgithook' directory
+                                                  providing a single configuration point for all RHPAM installtions (in the same machine)
+
                  - logfile=file      : create a log file of the installation.
                                        If 'file' is missing defaults to 'pam-setup.log'.
 
@@ -544,6 +551,7 @@ The following post-commit git hook implementation are supported:
 |:--------|:------------|
 |`git_hook`| name of the git hook implementation to be installed, either `bcgithook` or `kiegroup`. |
 |`git_hook_location`| the location of the named `git_hook` implementation to be installed.<br>Valid values are `[ download\|path-on-the-local-disk ]`. <br>`git_hook_location` is only taken into account if `git_hook` location has a valid value |
+|`bcgithook_config`| location of the configuration for the `bcgithook` implementation<br/>Valid values are `[ global\|local ]`.<br/>`local` will allow for separate configuration per RHPAM installation (in the same machine).<br/>Please refer to `bcgithook` documentation for more details. |
 
 Examples for `git_hook_location` values
 
