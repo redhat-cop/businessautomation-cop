@@ -15,7 +15,7 @@ This project offers a bash-based implementation for such git hooks.
 * Configurable logging of operations
 * [Branch mapping](#branch-mapping), map branches from BC to remote Git repos
 ## Configuration
-**bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present event if per-project configuration files are used. 
+**bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present even if per-project configuration files are used. 
 
 The provided installation script will install the `default.conf` file in the `$JBOSS_HOME/git-hooks` directory as well. Configuration files in the `$JBOSS_HOME/git-hooks` directory take precedence over the files in the `$HOME/.bcgithook` directory.
 
@@ -29,7 +29,7 @@ The following variables need to be configured:
 |`GIT_TYPE` | optional | Leave blank or undefined for all Git repos. Use **"azure"** (in quotation marks) for Azure DevOps |
 |`LOG_LOCATION` | optional | The directory where logs should be written. Defaults to `$HOME` |
 |`LOG_SYSTEM_REPOS` | optional | If set to "yes" will log access to system repositories, can result in some verbosity |
-|`BRANCH_ALLOW`| optional | A comma-separated list, or a regular expession, of branches to allow commits to be pushed to.  When using a comma-separated list of branches, do not leave space between the comma and the branch name or enclose in quotes. |
+|`BRANCH_ALLOW`| optional | A comma-separated list, or a regular expression, of branches to allow commits to be pushed to.  When using a comma-separated list of branches, do not leave space between the comma and the branch name or enclose in quotes. |
 |`BRANCH_ALLOW_REGEX`| optional | A regular expression specifying branches to allow commits for. If defined overrides `BRANCH_ALLOW`. Use quotes to specify a regular expression, for example `"^(feature/)\|^(hotfix)"` |
 |`BRANCH_DENY`| optional | a comma-separated list of branches to deny commits to be pushed to. Do not leave space between the comma and the branch name or enclose in quotes. |
 |`BRANCH_MAP`| optional | A comma-separated list of "SOURCE:TARGET" pairs that would map the source branch SOURCE to branch TARGET on the remote repo. Spaces between commas(,) or semi-colons(:) are trimmed. |
@@ -50,15 +50,15 @@ ALLOW and DENY lists refer to branches that the post-commit git hooks will selec
 
 ### Branch Mapping
 
-By specifying the optional `BRANCH_MAP` variable it is possible to map one or more Business Central managed branches to branches to a remote git repository with a different name. For example, the follpwing configuration:
+By specifying the optional `BRANCH_MAP` variable it is possible to map one or more Business Central managed branches to branches to a remote git repository with a different name. For example, the following configuration:
 
 ```
 BRANCH_MAP="damon:phintias, frodo:sam,  earth : moon , master:mainline"
 ```
 
-would push commits from the local branches managed by Business Central `damon`, `frodo`, `earth` and `master` to branches in the remote gir repository named `phintias`, `sam`, `moon` and `mainline` respectively. Useful for new projects created from within Business Central that have to conform with naming conventions imposed by a remote git repository.
+would push commits from the local branches managed by Business Central `damon`, `frodo`, `earth` and `master` to branches in the remote git repository named `phintias`, `sam`, `moon` and `mainline` respectively. Useful for new projects created from within Business Central that have to conform with naming conventions imposed by a remote git repository.
 
-Please note that there is currently no way of acheiving the reverse. For example maping of the remote branch `mainline` to a local one named `master` is not supported.
+Please note that there is currently no way of achieving the reverse. For example mapping of the remote branch `mainline` to a local one named `master` is not supported.
 
 
 **Example 1: Separate branches in ALLOW and DENY lists**
@@ -80,7 +80,7 @@ Please note that there is currently no way of acheiving the reverse. For example
 | Definition | Expected Action
 |-|-|
 |`BRANCH_ALLOW_REGEX="^(hotfix/)\|^(feature/)"`| Specifies branches to allow commits for in the form of regular expressions. In this example commits in branches starting with `hotfix/` or `feature/` will be allowed to be pushed to the remote git repo |
-|`BRANCH_ALLOW="branch2,feature/fa"`| This variable is overriden by `BRANCH_ALLOW_REGEX` and will be ignored |
+|`BRANCH_ALLOW="branch2,feature/fa"`| This variable is overridden by `BRANCH_ALLOW_REGEX` and will be ignored |
 |`BRANCH_DENY=master,release`| Commits in branches "master" and "release" will not be pushed to the remote git repo.|
 
 ### per-project configuration
