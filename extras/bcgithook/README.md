@@ -159,7 +159,7 @@ In the directory specified by that parameter place the `post-commit.sh` script r
 > **post-commit** remember to make this file executable by the user BC is running under
 > **default.conf** remember to make this file readable by the user BC is running under. 
 
-Having the `default.conf` in a PV allows for easy modification of the git-hooks configuration without having to reinstall everything. Also, due to BC invoking the post-commit git hook every time a commit is made the configuration can be changed without stopping BC although this is not something you would want to do regularly.
+Having the `default.conf` in a PV allows for easy modification of the git-hooks configuration without having to reinstall everything. Also, due to BC invoking the post-commit git hook every time a commit is made the configuration can be changed without stopping BC, although this is not something you would want to do regularly.
 
 
 ## Notes on Git Repos
