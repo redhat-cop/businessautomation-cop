@@ -21,9 +21,17 @@ This project offers a bash-based implementation for such git hooks.
 * [Configuration](#configuration)
 	* [Commits per branch](#commits-per-branch)
 	* [Branch Mapping](#branch-mapping)
-	* [per-project configuration](#per--project-configuration)
+	* [per-project configuration](#per-project-configuration)
 * [Installation](#installation)
 * [Installation in OpenShift](#installation-in-openshift)
+* [Notes on Git Repos](#notes-on-git-repos)
+** [GitLab](#GitLab)
+** [GitHub](#GitHub)
+** [Gitea](#Gitea)
+** [Azure DevOps](#azure-devops)
+** [Bitbucket](#bitbucket)
+* [Compatability](#compatability)
+* [Other implementations](#other-implementations)
 
 ## Configuration
 **bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present even if per-project configuration files are used. 
