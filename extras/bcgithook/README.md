@@ -18,12 +18,12 @@ This project offers a bash-based implementation for such git hooks.
 
 ## Jump to
 
-- [Configuration](#configuration)
--- [Commits per branch](#commits-per-branch)
--- [Branch Mapping](#branch-mapping)
--- [per-project configuration](#per--project-configuration)
-- [Installation](#installation)
-- [Installation in OpenShift](#installation-in-openshift)
+* [Configuration](#configuration)
+	* [Commits per branch](#commits-per-branch)
+	* [Branch Mapping](#branch-mapping)
+	* [per-project configuration](#per--project-configuration)
+* [Installation](#installation)
+* [Installation in OpenShift](#installation-in-openshift)
 
 ## Configuration
 **bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present even if per-project configuration files are used. 
