@@ -16,7 +16,12 @@ This project offers a bash-based implementation for such git hooks.
 * Configurable logging of operations
 * [Branch mapping](#branch-mapping), map branches from BC to remote Git repos
 
+## Jump to
+
 - [Configuration](#configuration)
+-- [Commits per branch](#commits-per-branch)
+-- [Branch Mapping](#branch-mapping)
+-- [per-project configuration](#per--project-configuration)
 - [Installation](#installation)
 - [Installation in OpenShift](#installation-in-openshift)
 
