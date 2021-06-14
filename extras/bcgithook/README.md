@@ -15,6 +15,11 @@ This project offers a bash-based implementation for such git hooks.
 * Scripted or manual installation mode
 * Configurable logging of operations
 * [Branch mapping](#branch-mapping), map branches from BC to remote Git repos
+
+- [Configuration](#configuration)
+- [Installation](#installation)
+- [Installation in OpenShift](#installation-in-openshift)
+
 ## Configuration
 **bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present even if per-project configuration files are used. 
 
