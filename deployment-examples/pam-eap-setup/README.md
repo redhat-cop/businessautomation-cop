@@ -17,7 +17,7 @@ EAP will be installed in standalone mode.
 
 Supported configurations:
 
-- Business Central and multiple or single KIE Sever nodes on localhost
+- Business Central and multiple or single KIE Server nodes on localhost
 - Business Central and multiple KIE Server nodes on different hosts
 
 Supported (i.e. tested) versions:
@@ -198,9 +198,9 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                            Node 1 will use the IP:PORT specified with '-n' with each subsequent node
                            using a port offset of 100
 
-            -c :  Manadatory for 'kie' mode of PAM installation, ignored in other modes
+            -c :  Mandatory for 'kie' mode of PAM installation, ignored in other modes
                   Specify list of controllers that this KIE ES should connect to.
-                  List of controllers in the form of comma-sperated list of 'IP:PORT' pairs
+                  List of controllers in the form of comma-separated list of 'IP:PORT' pairs
                   e.g. 10.10.1.20:8080,192.168.1.34:8350
 
             -s : Only for KIE ES, optional. Specify Smart Router location, eg 10.10.1.23:9000
@@ -223,7 +223,7 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
 
                                        WARNING: enabling debug_logging and dump_requests
                                        can generate copious amount of output and can have
-                                       significant impact on perforance
+                                       significant impact on performance
 
                  - install_dir       : Installation directory. Defaults to 'pam7'.
                                        If specified, installation will first happen to default location
@@ -252,7 +252,7 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                                        - 'local'  will install the configuration in the 'INSTALL_DIR/git-hooks' directory
                                                   allowing for separate configuration per RHPAM installation
                                        - 'global' will install the configuration in the 'HOME/.bcgithook' directory
-                                                  providing a single configuration point for all RHPAM installtions (in the same machine)
+                                                  providing a single configuration point for all RHPAM installations (in the same machine)
 
                  - logfile=file      : create a log file of the installation.
                                        If 'file' is missing defaults to 'pam-setup.log'.
@@ -262,7 +262,7 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                  - ojdbc_location    : location of the Oracle JDBC driver
                                        Example to "$PWD/oracle_jdbc_driver/ojdbc8.jar"
 
-                 - oracle_host,      : These variables are used for bulding the Oracle JDBC connection URL
+                 - oracle_host,      : These variables are used for building the Oracle JDBC connection URL
                    oracle_port,        which is of the form
                    oracle_sid             jdbc:oracle:thin:@//ORACLE_HOST:ORACLE_PORT/ORACLE_SID
 
@@ -279,7 +279,7 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                  - ojdbc_location    : location of the Oracle JDBC driver
                                        Example "$PWD/oracle_jdbc_driver/ojdbc8.jar"
 
-                 - postgresql_host,  : These variables are used for bulding the PostgreSQL JDBC connection URL
+                 - postgresql_host,  : These variables are used for building the PostgreSQL JDBC connection URL
                    postgresql_port,    which is of the form
                    postgresql_sid        jdbc:postgresql://POSTGRESQL_HOST:POSTGRESQL_PORT/POSTGRESQL_SID
 
@@ -370,7 +370,7 @@ BC or KIE nodes will be created using the same EAP base installation, as per <ht
 
 ### Install location - Installation log
 
-By default PAM will be installed in a directory named `pam` in the current directory. `pam` will be created if it does not exist.  Installation location can be overriden by the `install_dir` option. The startup script will be named after the installation location with a `go_` prefix.
+By default PAM will be installed in a directory named `pam` in the current directory. `pam` will be created if it does not exist.  Installation location can be overridden by the `install_dir` option. The startup script will be named after the installation location with a `go_` prefix.
 
 Example:
   - `./pam-setup.sh` will install PAM in a directory named `pam` and the startup script will be named `go_pam.sh`
@@ -431,7 +431,7 @@ The default `run_mode` for `pam-setup.sh` is `development`.
 
 ### Enabling DEBUG logging
 
-Enabling `debug_logging` will have the effect of placing the following defintions in your `standalone.xml` file.
+Enabling `debug_logging` will have the effect of placing the following definitions in your `standalone.xml` file.
 
 ```xml
 <logger category="org.jboss.as.domain">
@@ -454,7 +454,7 @@ This will also log login related events. The combined effect will be quite exten
 
 ### Additional Configuration
 
-There are a multitude of properties than can be configured for Business Central and KIE Server. `pam-eap-setup` offers shortcuts for the most common of them, but there are still a lot that are left out. To include any of these extra configuration parameters file `pam.config`can be used to specify parameters that should be included.
+There are a multitude of properties than can be configured for Business Central and KIE Server. `pam-eap-setup` offers shortcuts for the most common of them, but there are still a lot that are left out. To include any of these extra configuration parameters file `pam.config` can be used to specify parameters that should be included.
 
 Parameters specified in the `pam.config` files are included both in Business Central as well KIE Server deployments. Each component will pick the relevant parameters so the presence of extraneous parameters in the system properties is not a problem.
 
@@ -517,13 +517,13 @@ ORACLE_PASS=oracle_password
                           oracle_user=$ORACLE_USER:oracle_pass=$ORACLE_PASS
 ```
 
-All parameters are required for the configuration to be succesful. The Oracle JDBC URL that will be configured is of the following format:
+All parameters are required for the configuration to be successful. The Oracle JDBC URL that will be configured is of the following format:
 
 ```bash
 jdbc:oracle:thin:@//ORACLE_HOST:ORACLE_PORT/ORACLE_SID
 ```
 
-The OJDBC driver must be provided and placed in a directory readble by the installation script. Please make sure that the version of OJDBC driver you are providing matches the version of the Oracle database you are using.
+The OJDBC driver must be provided and placed in a directory readable by the installation script. Please make sure that the version of OJDBC driver you are providing matches the version of the Oracle database you are using.
 
 The datasource will be named `OracleDS` and will be configured to use the `oracle.jdbc.xa.client.OracleXADataSource` class for connections. The [When RHPAM is configured to use Oracle as a database, the first start-up will work fine but every subsequent restart will show ORA-00955 and ORA-02275 in the server.log file](https://access.redhat.com/solutions/3494221), KB3494221, article is also taken into account.
 
@@ -609,7 +609,7 @@ Same for subsequent nodes by specifying `node2` for node 2, `node3` for node 3 a
 
 #### Enabling access_log
 
-The file `addons/access_log` will enable basic loggin to access_log for EAP. To use this file specify it in the `-o` options like `-o node1_config=addons/access_log`. This file implements the [How to enable access logging for JBoss EAP 7?](https://access.redhat.com/solutions/2423311) KB article.
+The file `addons/access_log` will enable basic logging to access_log for EAP. To use this file specify it in the `-o` options like `-o node1_config=addons/access_log`. This file implements the [How to enable access logging for JBoss EAP 7?](https://access.redhat.com/solutions/2423311) KB article.
 
 Additional documentation that could be useful for subsequent tuning:
 
