@@ -1,4 +1,5 @@
 ﻿
+
 ![Build for bcgithook](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20bcgithook/badge.svg)
 
 # bcgithook: Business Central git hooks in bash
@@ -14,6 +15,24 @@ This project offers a bash-based implementation for such git hooks.
 * Scripted or manual installation mode
 * Configurable logging of operations
 * [Branch mapping](#branch-mapping), map branches from BC to remote Git repos
+
+## Jump to
+
+* [Configuration](#configuration)
+	* [Commits per branch](#commits-per-branch)
+	* [Branch Mapping](#branch-mapping)
+	* [per-project configuration](#per-project-configuration)
+* [Installation](#installation)
+* [Installation in OpenShift](#installation-in-openshift)
+* [Notes on Git Repos](#notes-on-git-repos)
+	* [GitLab](#GitLab)
+	* [GitHub](#GitHub)
+	* [Gitea](#Gitea)
+	* [Azure DevOps](#azure-devops)
+	* [Bitbucket](#bitbucket)
+* [Compatability](#compatability)
+* [Other implementations](#other-implementations)
+
 ## Configuration
 **bcgithook** will look for its configuration in file `default.conf` placed in `$HOME/.bcgithook` directory. This file must be present even if per-project configuration files are used. 
 
@@ -128,6 +147,20 @@ Options:
 * Modify the contents of **bcgithook** configuration in `$HOME/.bcgithook/default.conf` to match your needs before starting JBoss EAP or WildFly.
 
 > **bcgithook** can be installed at anytime after Business Central is used, but post-commit git hooks will only be applied to projects created (or imported) after *bcgithook* installation
+
+## Installation in OpenShift
+
+By far the easier installation method is to utilize the `GIT_HOOKS_DIR` parameter. Have it pointing to a PV volume and manually copy the two files necessary to that volume.
+
+* Documentation about the `GIT_HOOKS_DIR` parameter can be found at [RHPAM.7.10: Specifying the Git hooks directory for an authoring environment](https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.10/html-single/deploying_red_hat_process_automation_manager_on_red_hat_openshift_container_platform/index#template-deploy-githooksparams-openshift-templates-authoring-proc)
+
+In the directory specified by that parameter place the `post-commit.sh` script renaming it to `post-commit` and the configuration file `default.conf.example` renaming it to `default.conf`. These two files are all that required for the git hooks. 
+
+> **post-commit** remember to make this file executable by the user BC is running under
+> **default.conf** remember to make this file readable by the user BC is running under. 
+
+Having the `default.conf` in a PV allows for easy modification of the git-hooks configuration without having to reinstall everything. Also, due to BC invoking the post-commit git hook every time a commit is made the configuration can be changed without stopping BC, although this is not something you would want to do regularly.
+
 
 ## Notes on Git Repos
 ### GitLab
