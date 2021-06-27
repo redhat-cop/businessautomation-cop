@@ -162,9 +162,12 @@ done < <( git remote -v )
 useme=""
 bburl=""
 gitUrl="$remoteGitUrl"
+isgit="nay"
 isit="https://" && checkurl=${gitUrl#$isit} && [[ "$checkurl" != "$gitUrl" ]] && useme="$isit"
 isit="http://"  && checkurl=${gitUrl#$isit} && [[ "$checkurl" != "$gitUrl" ]] && useme="$isit"
-[[ "$isit" != "" ]] && bburl=${gitUrl#$useme} && bburl=${bburl/*@/} && bburl="${useme}$workusername:$workpasswd@$bburl"
+isit="git@"     && checkurl=${gitUrl#$isit} && [[ "$checkurl" != "$gitUrl" ]] && useme="$isit" && isgit="aye" 
+[[ "$isgit" == "nay" ]] && [[ "$isit" != "" ]] && bburl=${gitUrl#$useme} && bburl=${bburl/*@/} && bburl="${useme}$workusername:$workpasswd@$bburl"
+[[ "$isgit" == "aye" ]] && bburl="$gitUrl"
 
 [[ "$bburl" == "" ]] && debug "REMOTE URL CANNOT BE DETERMINED - ABORTING" && exit 3
 
