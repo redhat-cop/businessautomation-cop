@@ -162,9 +162,12 @@ done < <( git remote -v )
 useme=""
 bburl=""
 gitUrl="$remoteGitUrl"
+isgit="nay"
 isit="https://" && checkurl=${gitUrl#$isit} && [[ "$checkurl" != "$gitUrl" ]] && useme="$isit"
 isit="http://"  && checkurl=${gitUrl#$isit} && [[ "$checkurl" != "$gitUrl" ]] && useme="$isit"
-[[ "$isit" != "" ]] && bburl=${gitUrl#$useme} && bburl=${bburl/*@/} && bburl="${useme}$workusername:$workpasswd@$bburl"
+isit="git@"     && checkurl=${gitUrl#$isit} && [[ "$checkurl" != "$gitUrl" ]] && useme="$isit" && isgit="aye" 
+[[ "$isgit" == "nay" ]] && [[ "$isit" != "" ]] && bburl=${gitUrl#$useme} && bburl=${bburl/*@/} && bburl="${useme}$workusername:$workpasswd@$bburl"
+[[ "$isgit" == "aye" ]] && bburl="$gitUrl"
 
 [[ "$bburl" == "" ]] && debug "REMOTE URL CANNOT BE DETERMINED - ABORTING" && exit 3
 
@@ -174,8 +177,9 @@ REPO_NAME="$PRJ_NAME.git"
 # - newly created projects
 if [[ $(git remote -v | wc -l) -eq 0 ]]; then
   hwd=$(pwd)
-  debug "NEW PROJECT ADDING $BBID TO $bburl/$REPO_NAME"
-  git remote add "$BBID" "$bburl"/"$REPO_NAME"
+  newRepo="$bburl/$REPO_NAME" 
+  debug "NEW PROJECT ADDING $BBID TO $newRepo"
+  git remote add "$BBID" "$newRepo"
 fi
 
 if [[ "$addBBID" == "yes" ]]; then
