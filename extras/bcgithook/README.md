@@ -22,6 +22,7 @@ This project offers a bash-based implementation for such git hooks.
 	* [Commits per branch](#commits-per-branch)
 	* [Branch Mapping](#branch-mapping)
 	* [per-project configuration](#per-project-configuration)
+	* [Using git-ssh style URLs for remote repositories](#using-git-ssh-style-urls-for-remote-repositories)
 * [Installation](#installation)
 * [Installation in OpenShift](#installation-in-openshift)
 * [Notes on Git Repos](#notes-on-git-repos)
@@ -115,6 +116,34 @@ Per project configuration files can also be placed at the `$JBOSS_HOME/git-hooks
 For new projects you can create the configuration beforehand so when BusinessCentral creates them the project specific configuration will be used automatically. That way different projects created in BusinessCentral can be associated to different repositories.
 
 Please note that projects imported in Business Central will always be associated with the git repository they were imported from.
+
+
+### Using git-ssh style URLs for remote repositories
+
+bcgithook supports git-ssh URLs for remote git repos. These URLs are similar to `git@gitlab.com:<git_user_id>`. They can be used both in the default configuration as well as in the per-project configuration files.
+
+Before configuring the git-ssh style URLs the key of the remote git repository must first be part of the `known_hosts` file for SSH. For GitLab this can be done by executing the following. Replace with the host of your remote git repository.
+
+```
+#
+# Please continue reading for more secure ways of doing this
+#
+ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+```
+
+Going forward blindingly with this approach runs the risk of a potential MITM attack. It is advisable to check the SSH key obtained with the SSH fingerprints provided by git hosting providers. For GitLab and GitHub the relevant fingerprints could be obtained from the following locations:
+
+* GitLab: https://docs.gitlab.com/ee/user/gitlab_com/
+* Github: https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
+
+To generate the fingerprint the following apprach could be used:
+
+```
+ssh-keyscan gitlab.com >> gitlabkey
+ssh-keygen -lf gitlabkey
+```
+
+
 
 ## Installation
 Please execute the `install.sh` script providing the directory of your [JBoss EAP](https://developers.redhat.com/products/eap/overview) or [WildFly](https://wildfly.org/) installation (a.k.a `JBOSS_HOME`).
