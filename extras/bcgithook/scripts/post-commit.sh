@@ -177,6 +177,8 @@ REPO_NAME="$PRJ_NAME.git"
 # - newly created projects
 if [[ $(git remote -v | wc -l) -eq 0 ]]; then
   hwd=$(pwd)
+  # is it generic or project specific
+  newRepo="$bburl/$REPO_NAME" && checkurl="${bburl%.git}" && [[ "$checkurl" != "bburl" ]] && newRepo="$bburl"
   newRepo="$bburl/$REPO_NAME" 
   debug "NEW PROJECT ADDING $BBID TO $newRepo"
   git remote add "$BBID" "$newRepo"
