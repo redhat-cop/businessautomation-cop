@@ -1,5 +1,6 @@
 ﻿
 
+
 ![Build for bcgithook](https://github.com/redhat-cop/businessautomation-cop/workflows/Build%20for%20bcgithook/badge.svg)
 
 # bcgithook: Business Central git hooks in bash
@@ -105,7 +106,7 @@ Please note that there is currently no way of achieving the reverse. For example
 
 ### per-project configuration
 
-**bcgithook** allows for different configuration per-project. For this to happen a file with the same name as the project having the `.conf` suffix should be placed in the configuration directory. `default.conf` can be used as a template however only values that are different from `default.conf` need to be defined. For example, a project named "FormApplicationProcess" would use the `FormApplicationProcess.conf` configuration file if that file is found.
+**bcgithook** allows for different configuration per-project. For this to happen a file with the same name as the project having the `.conf` suffix should be placed in the configuration directory. `default.conf` can be used as a template however only values that are different from `default.conf` need to be defined. For example, a project named "FormApplicationProcess" would use the `FormApplicationProcess.conf` configuration file if that file is found (or `formapplicationprocess.conf` depending on your git hosting conventions, please check against your case).
 
 > Please follow case sensitivity rules for your operating system when naming configuration files.
 
@@ -117,6 +118,14 @@ For new projects you can create the configuration beforehand so when BusinessCen
 
 Please note that projects imported in Business Central will always be associated with the git repository they were imported from.
 
+The `GIT_URL` used to specify the projects source can be in one of the following formats (in the following replace GitLab with your preferred git hostname):
+
+| Format | Description
+|-|-|
+|`git@gitlab.com:<gitlab_id>`| **Generic** This is the same URL format that is used in the `default.conf` configuration. The project's name will be appended to it by the script. Can be re-used across projects. |
+|`git@gitlab.com:<gitlab_id>/<project_name>.git`| **Specific** This format that includes the project's name can only be used in the per-project configuration file. Cannot be re-used in other projects. |
+
+The same holds for HTTP(S) style URLs.
 
 ### Using git-ssh style URLs for remote repositories
 
