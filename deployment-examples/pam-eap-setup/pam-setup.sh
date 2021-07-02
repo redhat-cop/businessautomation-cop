@@ -807,6 +807,7 @@ function applyAdditionalNodeConfig() {
   ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)" )
   ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])' )
   ncfg+=( "/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=INFO)" )
+  ncfg+=( '/subsystem=logging/logger=org.jbpm.workbench.wi.backend.server.workitem.RepositoryStorageVFSImpl/:add(category=org.jbpm.workbench.wi.backend.server.workitem.RepositoryStorageVFSImpl,level=DEBUG)' )
   # CORS
   ncfg+=( '/subsystem=undertow/configuration=filter/response-header=Access-Control-Allow-Origin:add(header-name="Access-Control-Allow-Origin", header-value="*")' )
   ncfg+=( '/subsystem=undertow/server=default-server/host=default-host/filter-ref=Access-Control-Allow-Origin/:add()' )
