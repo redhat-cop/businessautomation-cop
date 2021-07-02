@@ -34,7 +34,7 @@ Supported (i.e. tested) versions:
 - PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1
 - DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1
 
-For details about node configuration check out [Nodes Configuration](#nodes-configuration) section at the end of this document. Also:
+For details about node configuration check out [Nodes configuration](#nodes-configuration) section at the end of this document. Also:
 
 - [Install location - Installation log](#install-location---installation-log)
 - [Development vs Production Mode](#development-vs-production-mode)
@@ -367,6 +367,7 @@ BC or KIE nodes will be created using the same EAP base installation, as per <ht
 - node-identifier property in EAP configured as per <https://access.redhat.com/solutions/721613>
 - ActiveMQ Artemis disk threshold increased as per <https://access.redhat.com/solutions/4390511> to better handle near full disks
 - Enable CORS for first four nodes of KIE Server as per <https://access.redhat.com/solutions/4036301> and <https://access.redhat.com/solutions/3713131>
+- Enabling logging messages that will show when a project or space is deleted in RHPAM or Decision Manager as per [KB6139932](https://access.redhat.com/solutions/6139932)
 
 ### Install location - Installation log
 
