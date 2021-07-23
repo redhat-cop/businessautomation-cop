@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<module xmlns="urn:jboss:module:1.1" name="com.bacop.jwt_jaspi.kie_jwt_jaspi">
+
+    <resources>
+        <resource-root path="kie_jwt_jaspi-1.4-SNAPSHOT.jar"/>
+        <resource-root path="jjwt-api-0.11.2.jar"/>
+        <resource-root path="jjwt-impl-0.11.2.jar"/>
+        <resource-root path="jjwt-gson-0.11.2.jar"/>
+        <resource-root path="gson-2.8.2.redhat-4.jar"/>
+    </resources>
+
+    <dependencies>
+        <module name="javax.servlet.api"/>
+        <module name="javax.security.auth.message.api"/>
+        <module name="org.wildfly.security.elytron"/>
+        <module name="javax.api"/>
+    </dependencies>
+</module>
+
