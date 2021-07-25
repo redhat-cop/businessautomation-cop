@@ -105,9 +105,9 @@
             <artifactId>undertow-server-servlet</artifactId>
             <version>${version.org.wildfly.security.elytron-web}</version>
         </dependency>
-<!--     --->
+<!--     -->
 <!--- maybe not needed -->
-<!--     --->
+<!--     -->
 <dependency>
     <groupId>javax.security.auth.message</groupId>
     <artifactId>javax.security.auth.message-api</artifactId>
