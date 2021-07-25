@@ -36,8 +36,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.example.simple_rule</groupId>
-            <artifactId>rules-runtime-support</artifactId>
+            <groupId>com.bacop.jwt_dm_project</groupId>
+            <artifactId>droolsLogger</artifactId>
             <version>${project.version}</version>
         </dependency>
 

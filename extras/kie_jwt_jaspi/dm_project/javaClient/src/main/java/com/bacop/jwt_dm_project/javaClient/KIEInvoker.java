@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.example.simple_rule.ContinentMap;
-import com.example.simple_rule.Country;
+import com.bacop.jwt_dm_project.ContinentMap;
+import com.bacop.jwt_dm_project.Country;
 
 import org.drools.core.command.runtime.rule.FireAllRulesCommand;
 import org.drools.core.command.runtime.rule.InsertObjectCommand;

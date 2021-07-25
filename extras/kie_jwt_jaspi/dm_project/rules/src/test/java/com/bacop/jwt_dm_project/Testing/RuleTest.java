@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
 
-import com.example.simple_rule.ContinentMap;
-import com.example.simple_rule.Country;
-import com.example.simple_rule.CustomDuties;
+import com.bacop.jwt_dm_project.ContinentMap;
+import com.bacop.jwt_dm_project.Country;
+import com.bacop.jwt_dm_project.CustomDuties;
 
 import org.junit.Test;
 import org.kie.api.KieBase;
