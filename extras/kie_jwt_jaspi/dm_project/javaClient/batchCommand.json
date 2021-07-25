@@ -1,0 +1,139 @@
+{
+  "lookup" : "restLess",
+  "commands" : [ {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Europe",
+  "country" : "United Kingdom"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Europe",
+  "country" : "France"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Europe",
+  "country" : "Italy"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Europe",
+  "country" : "Germany"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Europe",
+  "country" : "Greece"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Asia",
+  "country" : "India"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Asia",
+  "country" : "Japan"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Asia",
+  "country" : "Thailand"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Asia",
+  "country" : "Indonesia"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.ContinentMap":{
+  "continent" : "Asia",
+  "country" : "Maldives"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.Country":{
+  "country" : "France"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "insert" : {
+      "object" : {"com.example.simple_rule.Country":{
+  "country" : "Maldives"
+}},
+      "out-identifier" : null,
+      "return-object" : true,
+      "entry-point" : "DEFAULT",
+      "disconnected" : false
+    }
+  }, {
+    "fire-all-rules" : {
+      "max" : -1,
+      "out-identifier" : "fireAll"
+    }
+  } ]
+}
