@@ -27,3 +27,7 @@ projects needed:
 - OCP image builder
 
 xkcd standards: https://xkcd.com/927/
+
+Sequence:
+
+- Install PAM.7.7.0/KIE-Server only using pam-eap-setup
