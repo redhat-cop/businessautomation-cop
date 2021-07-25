@@ -4,15 +4,15 @@
 
     <!-- parent coordinates -->
     <parent>
-        <groupId>com.example.simple_rule</groupId>
-        <artifactId>SimpleParent_dm771</artifactId>
-        <version>2.2-SNAPSHOT</version>
-        <relativePath>../simpleparent_dm771</relativePath>
+        <groupId>com.bacop.jwt_dm_project</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.3-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
     </parent>
 
-    <artifactId>SimpleRules_dm771</artifactId>
+    <artifactId>rules</artifactId>
 
-    <name>SimpleRules_dm771</name>
+    <name>rules</name>
     <packaging>kjar</packaging>
 
     <properties>

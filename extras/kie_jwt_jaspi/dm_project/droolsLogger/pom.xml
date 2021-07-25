@@ -4,13 +4,13 @@
 
     <!-- parent coordinates -->
     <parent>
-        <groupId>com.example.simple_rule</groupId>
-        <artifactId>SimpleParent_dm771</artifactId>
-        <version>2.2-SNAPSHOT</version>
-        <relativePath>../simpleparent_dm771</relativePath>
+        <groupId>com.bacop.jwt_dm_project</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.3-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
     </parent>
 
-    <artifactId>rules-runtime-support</artifactId>
+    <artifactId>droolsLogger</artifactId>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
