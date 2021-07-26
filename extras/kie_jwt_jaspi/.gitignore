@@ -604,8 +604,9 @@ Thumbs.db
 #
 # pam-setup additions
 #
-go*.sh
-*.db
+go_pam*.sh
+gonode*.sh
+pam-*.db
 pam7/
 pam7_*/
 

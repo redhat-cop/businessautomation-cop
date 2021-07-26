@@ -18,3 +18,4 @@ read -p "Press ENTER to start the installation ..."
 echo; echo
 
 ../../deployment-examples/pam-eap-setup/pam-setup.sh -b multi=2
+
