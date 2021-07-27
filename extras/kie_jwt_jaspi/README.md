@@ -34,13 +34,15 @@ Sequence:
 - Install PAM.7.7.0/KIE-Server only using [pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/tree/master/deployment-examples/pam-eap-setup)
 
 
-## STEP 1 - Local KIE Server installation
+## Overview of demo
 
 A locally installed KIE Server will be used to demonstrate JWT processing as a JASPI module.
 The installation will be performed using [pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/tree/master/deployment-examples/pam-eap-setup). Two KIE Servers will be installed, one will be left unmodified and on the other the JWT processing module will be installed.
 
 A sample Drools-based project will be deployed on both KIE Servers and will be invoked both with and without a JWT token.
+The Drools project will be invoked with and without the JWT token to demonstrate the effect the JWT processing module has on invoking KIE Server endpoints.
 
+An OCP image will be built incorporating the custom JWT processign module. Handling of liveness and health probes will need to be handled.
 
 
 
