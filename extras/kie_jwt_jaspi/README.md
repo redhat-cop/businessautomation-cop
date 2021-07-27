@@ -45,5 +45,12 @@ The Drools project will be invoked with and without the JWT token to demonstrate
 An OCP image will be built incorporating the custom JWT processign module. Handling of liveness and health probes will need to be handled.
 
 
+## Step 1 - Local install of KIE Servers
+
+Installation will be based on [pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/tree/master/deployment-examples/pam-eap-setup) using the following :
+
+```
+../../deployment-examples/pam-eap-setup/pam-setup.sh -b multi=2
+```
 
 
