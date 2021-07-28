@@ -53,4 +53,48 @@ Installation will be based on [pam-eap-setup](https://github.com/redhat-cop/busi
 ../../deployment-examples/pam-eap-setup/pam-setup.sh -b multi=2
 ```
 
+This will create the following set up on your local environment
+
+```
++--------------------------------------------------+
+| EAP                                              |
+|                                                  |
+| +--- standalone -------------+  +- node 2 -----+ |
+| |+-----------+ +------------+|  |+------------+| |
+| ||           | |            ||  ||            || |
+| || Business  | | KIE Server ||  || KIE Server || |
+| || Central   | |            ||  ||            || |
+| ||           | |            ||  ||            || |
+| |+-----------+ +------------+|  |+------------+| |
+| +- :8080 --------------------+  +- :8180 ------+ |
+|                                                  |
++--------------------------------------------------+
+```
+
+The custom JWT processing module will be installed on KIE Server on `node 2` (port 8180) while the KIE Server on the `standalone` node will be unmodified. Both KIE Servers will be controlled by a Business Central instance to demonstrate the effect of the custom JWT module in the "controlling" functionality.
+
+To proceed with the installation, place the following files in the current directory:
+
+- jboss-eap-7.2.0.zip
+- jboss-eap-7.2.9-patch.zip (or any other EAP.7.2 patch, optional)
+- rhpam-7.7.0-kie-server-ee8.zip
+- rhpam-7.7.0-business-central-eap7-deployable.zip
+
+and execute the `demo_step1.sh` script
+> The `demo_step1.sh` script will delete previous installations so re-running it will provide you with a clean start up environment
+
+## Step 2 - Build and deploy dm_project
+
+The `dm_project` is an unsophisticated RHDM project consisting of a Drools module, a rules event listener and a Java-based KIE client to invoke the Drools project.
+
+Start the `standalone` node installed at "Step 1" using the `go_pam.sh` script and leave it running. Switch to another terminal and build the `dm_project` by invoking the `demo_step2.sh` script.
+
+The `demo_step2.sh` script will build the `dm_project` and deposit the artefacts to the maven repository that is embedded in Business Central.
+
+Upon successful completion you can check that the artefacts have been correctly deployed by logging in the Business Central and checking the embedded repository. You should see arterfacts similar to the following:
+
+![]( images/bc_maven_repo_dm_project.png)
+
+
+> Written with [StackEdit](https://stackedit.io/).
 

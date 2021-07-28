@@ -6,20 +6,22 @@
 
   <servers>
 
-    <!-- configure locally installed maven repository manager -->
-    <!--                                                      -->
-    <!-- to enable it uncomment the relevant line in the      -->
-    <!-- activeprofiles section                               -->
-    <!-- and provide correct passwords below                  -->
+    <!-- configure locally installed maven repository manager       -->
+    <!-- current values correlate to the maven repository manager   -->
+    <!-- embedded in Business Central as installed by pam-eap-setup -->
+    <!--                                                            -->
+    <!-- to enable it uncomment the relevant line in the            -->
+    <!-- activeprofiles section                                     -->
+    <!-- and provide correct passwords below                        -->
     <server>
       <id>local_repo_release</id>
-      <username>admin</username>
-      <password>admin123</password>
+      <username>pamAdmin</username>
+      <password>S3cr3tK3y#</password>
     </server>
     <server>
       <id>local_repo_snapshot</id>
-      <username>admin</username>
-      <password>admin123</password>
+      <username>pamAdmin</username>
+      <password>S3cr3tK3y#</password>
     </server>
   </servers>
 
@@ -85,7 +87,7 @@
           </releases>
           <id>local_repo_release</id>
           <name>maven-releases</name>
-          <url>http://localhost:8081/repository/maven-releases/</url>
+          <url>http://localhost:8080/repository/maven-releases/</url>
         </repository>
         <repository>
           <snapshots>
@@ -94,7 +96,7 @@
           </snapshots>
           <id>local_repo_snapshot</id>
           <name>maven-snapshot</name>
-          <url>http://localhost:8081/repository/maven-snapshots/</url>
+          <url>http://localhost:8080/repository/maven-snapshots/</url>
         </repository>
       </repositories>
       <pluginRepositories>
@@ -104,13 +106,13 @@
           </snapshots>
           <id>local_repo_release</id>
           <name>maven-release</name>
-          <url>http://localhost:8081/repository/maven-releases/</url>
+          <url>http://localhost:8080/repository/maven-releases/</url>
         </pluginRepository>
         <pluginRepository>
           <snapshots />
           <id>local_repo_snapshot</id>
           <name>maven-snapshot</name>
-          <url>http://localhost:8081/repository/maven-snapshots/</url>
+          <url>http://localhost:8080/repository/maven-snapshots/</url>
         </pluginRepository>
       </pluginRepositories>
     </profile>
@@ -122,10 +124,10 @@
     <activeProfile>jboss_enterprise_maven_repository_ga</activeProfile>
     
     <!-- uncomment the following to enable access to JBoss Early Access repository -->
-    <!-- <activeProfile>jboss_early_access_repo</activeProfile>                    -->
+    <activeProfile>jboss_early_access_repo</activeProfile>                   
     
     <!-- uncomment the following to enable a locally installed maven repository manager -->
-    <!-- <activeProfile>local_repo_profile</activeProfile>  -->
+    <activeProfile>local_repo_profile</activeProfile>
     
   </activeProfiles>
 

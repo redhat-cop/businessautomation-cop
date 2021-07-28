@@ -609,4 +609,5 @@ gonode*.sh
 pam-*.db
 pam7/
 pam7_*/
+/pam
 

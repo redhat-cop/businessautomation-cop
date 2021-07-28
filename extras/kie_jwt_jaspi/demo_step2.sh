@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
 #
-# - clean-up previous installations
+# - STEP 2
 #
-rm -rf go_pam* pam gopam.sh jboss-eap-7.2 rh-sso-7.3 gonode*.sh gosso.sh pam-config.db gostandalone.sh "$INSTALL_DIR"
-rm -rf jboss-eap-7.3
-
 
 cat << "__END_OF_DATA"
             _____           _____
@@ -26,23 +23,14 @@ cat << "__END_OF_DATA"
                       "
 __END_OF_DATA
 
-echo "
+echo "STEP 2 - BUILD DM_PROJECT"
 
-STEP 1 - INSTALL LOCAL KIE SERVER
+# - check that BusinessCentral is up and running
+result=$(curl -s http://localhost:8080/business-central/rest/ready | jq -r '.success')
+[[ "x$result" != "xtrue" ]] && echo "ERROR - Please start BusinessCentral with './go_pam.sh' before running this script" && exit 1
 
-Before continuing JBoss EAP 7.2 (and optionally patch) as well as
-RHPAM.7.7.1 should be downloaded with the following files being present
-in the current directory
+pushd dm_project/parent &> /dev/null
+  mvn clean deploy -PLOCAL_BC -s../../settings.xml
+popd &> /dev/null
 
-- jboss-eap-7.2.0.zip
-- jboss-eap-7.2.9-patch.zip (or any other EAP.7.2 patch, optional)
-- rhpam-7.7.0-kie-server-ee8.zip
-- rhpam-7.7.0-business-central-eap7-deployable.zip
 
-"
-
-read -p "Press ENTER to start the installation ..."
-echo; echo
-
-ln -sf ../../deployment-examples/pam-eap-setup/settings.xml
-../../deployment-examples/pam-eap-setup/pam-setup.sh -b multi=2

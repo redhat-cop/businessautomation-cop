@@ -14,8 +14,8 @@
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <rhpam.bom.version>7.7.1.redhat-00002</rhpam.bom.version>
-        <kie.version>7.33.0.Final-redhat-00003</kie.version>
+        <rhpam.bom.version>7.7.0.redhat-00002</rhpam.bom.version>
+        <kie.version>7.33.0.Final-redhat-00002</kie.version>
         <junit.version>4.12</junit.version>
         <slf4j-simple.version>1.7.25.redhat-00001</slf4j-simple.version>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -29,13 +29,13 @@
             <distributionManagement>
                 <repository>
                     <id>dev-azure-com-rouvas-rouvas-release</id>
-                    <url>https://pkgs.dev.azure.com/rouvas/_packaging/rouvas/maven/v1</url>
+                    <url>https://pkgs.dev.azure.com/rouvas/_packaging/trickle/maven/v1</url>
                     <layout>default</layout>
                 </repository>
                 <snapshotRepository>
                     <uniqueVersion>true</uniqueVersion>
                     <id>dev-azure-com-rouvas-rouvas-snapshot</id>
-                    <url>https://pkgs.dev.azure.com/rouvas/_packaging/rouvas/maven/v1</url>
+                    <url>https://pkgs.dev.azure.com/rouvas/_packaging/trickle/maven/v1</url>
                 </snapshotRepository>
             </distributionManagement>
         </profile>
@@ -44,14 +44,14 @@
             <id>LOCAL_BC</id>
             <distributionManagement>
                 <repository>
-                    <id>guvnor_m2_repo</id>
-                    <url>http://localhost:8080/decision-central/maven2/</url>
+                    <id>local_repo_release</id>
+                    <url>http://localhost:8080/business-central/maven2/</url>
                     <layout>default</layout>
                 </repository>
                 <snapshotRepository>
                     <uniqueVersion>true</uniqueVersion>
-                    <id>guvnor_m2_repo</id>
-                    <url>http://localhost:8080/decision-central/maven2/</url>
+                    <id>local_repo_snapshot</id>
+                    <url>http://localhost:8080/business-central/maven2/</url>
                 </snapshotRepository>
             </distributionManagement>
         </profile>
