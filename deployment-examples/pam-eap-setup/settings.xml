@@ -123,7 +123,7 @@
    
     <activeProfile>jboss_enterprise_maven_repository_ga</activeProfile>
     
-    <!-- uncomment the following to enable access to JBoss Early Access repository -->
+    <!-- the following enables access to JBoss Early Access repository -->
     <activeProfile>jboss_early_access_repo</activeProfile>                   
     
     <!-- uncomment the following to enable a locally installed maven repository manager -->
