@@ -143,6 +143,8 @@ MASTER_CONFIG=master.conf
 # versions supported
 #
 cat << "__CONFIG" > $MASTER_CONFIG
+PAM7111 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.11.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.11.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
+DM7111  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.11.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.11.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
 PAM7110 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.11.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.11.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
 DM7110  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.11.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.11.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
 PAM7101 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.10.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.10.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
@@ -1157,6 +1159,25 @@ else
   sout "NO BINARIES FOR PAM INSTALLATION FOUND - ABORTING"
   exit 1
 fi
+
+cat << "__END_OF_DATA"
+            _____           _____
+88      ,ad8PPPP88b,     ,d88PPPP8ba,     88888888ba      db         88b           d88
+88     d8P"      "Y8b, ,d8P"      "Y8b    88      "8b    d88b        888b         d888
+88    dP'           "8a8"           `Yd   88      ,8P   d8'`8b       88`8b       d8'88
+88    8(              "              )8   88aaaaaa8P'  d8'  `8b      88 `8b     d8' 88
+88    I8                             8I   88""""""'   d8YaaaaY8b     88  `8b   d8'  88
+88     Yb,                         ,dP    88         d8""""""""8b    88   `8b d8'   88
+88      "8a,                     ,a8"     88        d8'        `8b   88    `888'    88
+88        "8a,                 ,a8"       88       d8'          `8b  88     `8'     88 
+            "Yba             adP"
+              `Y8a         a8P'
+                `88,     ,88'
+                  "8b   d8"  
+                   "8b d8"   
+                    `888'
+                      "
+__END_OF_DATA
 
 rm -f $MASTER_CONFIG $TARGET_CONFIG
 
