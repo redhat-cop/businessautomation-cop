@@ -4,7 +4,7 @@
 
 
 
-![Build for pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/workflows/build-deployment-examples/badge.svg)
+![pam-eap-setup build](https://github.com/redhat-cop/businessautomation-cop/workflows/build-deployment-examples/badge.svg)
 
 # pam-setup
 
