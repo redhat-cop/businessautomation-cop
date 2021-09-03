@@ -36,7 +36,18 @@ bash_ok=no && [ "${BASH_VERSINFO:-0}" -ge $min_bash_version ] && bash_ok=yes
 #
 # sanity checks on environment environment
 #
-command -v sed &> /dev/null      || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later, gnu sed.4.8 for macOS) to continue - Aborting'; exit 1; }
+SED='sed'
+if [[ "$MACOS_ON" == "no" ]]; then
+  SED='sed'
+  command -v sed  &> /dev/null      || { echo >&2 'ERROR: sed not installed. Please install sed.4.2 (or later) to continue - Aborting'; exit 1; }
+fi
+if [[ "$MACOS_ON" == "yes" ]]; then
+  macshed=no
+  command -v sed  &> /dev/null && SED='sed'  && macshed=yes
+  command -v gsed &> /dev/null && SED='gsed' && macshed=yes
+  [[ "$macshed" == "no" ]] && echo >&2 'ERROR: gsed not installed. Please install GNU sed.4.8 (or later)  to continue - Aborting' && exit 1
+  unset macshed
+fi
 command -v java &> /dev/null     || { echo >&2 'ERROR: JAVA not installed. Please install JAVA.8 to continue - Aborting'; exit 1; }
 command -v unzip &> /dev/null    || { echo >&2 'ERROR: UNZIP not installed. Please install UNZIP to continue - Aborting'; exit 1; }
 command -v sqlite3 &> /dev/null  || { echo >&2 'ERROR: SQLite not installed. Please install SQLite to continue - Aborting'; exit 1; }
@@ -65,18 +76,17 @@ unset tmp javaspec goon
 if [[ "$MACOS_ON" == "yes" ]]; then
   macsed=no
   macstatus=256
-  sed --version &> sed.out; macstatus=$?
+  "$SED" --version &> /dev/null; macstatus=$?
   if [[ "$macstatus" -eq 0 ]]; then
-    maxv=$(sed --version | head -1 | awk '{print $NF}' | cut -d'.' -f 1)
-    minv=$(sed --version | head -1 | awk '{print $NF}' | cut -d'.' -f 2)
+    maxv=$("$SED" --version | head -1 | awk '{print $NF}' | cut -d'.' -f 1)
+    minv=$("$SED" --version | head -1 | awk '{print $NF}' | cut -d'.' -f 2)
     [[ "$maxv" -ge "4" ]] && [[ "$minv" -ge "8" ]] && macsed=yes
     unset maxv minv
   else
     macsed=no
   fi
-  [[ "$macsed" == "yes" ]] || { echo >&2 'ERROR: GNU sed not found. Please install GNU sed.4.8 (or latest) to continue - Aborting'; exit 2; }
+  [[ "$macsed" == "yes" ]] || { echo >&2 'ERROR: GNU sed not found. Please install GNU sed.4.8 (or later) to continue - Aborting'; exit 2; }
   unset macsed macstatus
-  rm -f sed.out
 fi
 
 #
@@ -207,7 +217,7 @@ function bigString() {
 
 function log() {
   # printf "%s\n" "$@" | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g" >> "pam-setup.log"
-  printf "%s\n" "$@" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' >> "$LOGFILE"
+  printf "%s\n" "$@" | $SED 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' >> "$LOGFILE"
 }
 function sout() {
   declare -a arr=("$@")
@@ -717,7 +727,7 @@ function modifyConfiguration() {
     rm -f $TMP_FILE
     # comma-separated CLV needs special handling
     tmpclv="${nodeConfig['controllerUrl']}"
-    sed -i "s]@@CLV@@]$tmpclv]" "$EAP_HOME/standalone/configuration/standalone.xml"
+    "$SED" -i "s]@@CLV@@]$tmpclv]" "$EAP_HOME/standalone/configuration/standalone.xml"
     unset tmpclv
   popd &> /dev/null
   if [[ "$nodedir" != "standalone" ]]; then
@@ -730,15 +740,15 @@ function modifyConfiguration() {
   l=$(grep -H -n '<interface name="management">' $xmlConfig | head -1 | cut -d':' -f$dc);
   #  modify management interface, should already be 127.0.0.1 but making sure
   let lno=$((l+1))
-  sed -i "${lno}s/:.*}/:127.0.0.1}/" "$xmlConfig"
+  "$SED" -i "${lno}s/:.*}/:127.0.0.1}/" "$xmlConfig"
   sync
   # - modify public interface
   let lno=$((l+4))
-  sed -i "${lno}s/:.*}/:$nodeIP}/" "$xmlConfig"
+  "$SED" -i "${lno}s/:.*}/:$nodeIP}/" "$xmlConfig"
   sync
   # - modify private interface
   let lno=$((l+7))
-  sed -i "${lno}s/:.*}/:$nodeIP}/" "$xmlConfig"
+  "$SED" -i "${lno}s/:.*}/:$nodeIP}/" "$xmlConfig"
   sync
 }
 
@@ -883,12 +893,12 @@ function createOraDS() {
     for okey in $oracle_keys; do
       local tmp="${configOptions[$okey]}"
       if [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]]; then
-        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | sed 's]\\]\\\\]g')
+        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | "$SED" 's]\\]\\\\]g')
         # when mac is going to get a proper bash?
         local skey='@@'`echo $okey | awk '{ print toupper($0); }'`'@@'
-        o1=$(echo "$o1" | sed --expression="s]$skey]$tmp]g")
-        o2=$(echo "$o2" | sed --expression="s]$skey]$tmp]g")
-        o3=$(echo "$o3" | sed --expression="s]$skey]$tmp]g")
+        o1=$(echo "$o1" | "$SED" --expression="s]$skey]$tmp]g")
+        o2=$(echo "$o2" | "$SED" --expression="s]$skey]$tmp]g")
+        o3=$(echo "$o3" | "$SED" --expression="s]$skey]$tmp]g")
       fi
     done
     [[ "$nodedir" == "standalone" ]] && ncfg+=( "$o1" )
@@ -916,12 +926,12 @@ function createPgDS() {
     for okey in $postgresql_keys; do
       local tmp="${configOptions[$okey]}"
       if [[ "$tmp" != "1" ]] && [[ -n "$tmp" ]]; then
-        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | sed 's]\\]\\\\]g')
+        [[ "$okey" == "ojdbc_location" ]] && [[ "$CYGWIN_ON" == "yes" ]] && tmp=$(cygpath -w "${tmp}") && tmp=$(echo "$tmp" | "$SED" 's]\\]\\\\]g')
         # when mac is going to get a proper bash?
         local skey='@@'`echo $okey | awk '{ print toupper($0); }'`'@@'
-        o1=$(echo "$o1" | sed --expression="s]$skey]$tmp]g")
-        o2=$(echo "$o2" | sed --expression="s]$skey]$tmp]g")
-        o3=$(echo "$o3" | sed --expression="s]$skey]$tmp]g")
+        o1=$(echo "$o1" | "$SED" --expression="s]$skey]$tmp]g")
+        o2=$(echo "$o2" | "$SED" --expression="s]$skey]$tmp]g")
+        o3=$(echo "$o3" | "$SED" --expression="s]$skey]$tmp]g")
       fi
     done
     [[ "$nodedir" == "standalone" ]] && ncfg+=( "$o1" )
