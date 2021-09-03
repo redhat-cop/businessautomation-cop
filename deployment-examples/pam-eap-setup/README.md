@@ -31,8 +31,8 @@ Supported (i.e. tested) versions:
 	 - patch level 7.3.3, 7.3.4 supported for PAM.7.9 and PAM.7.9.1
    - patch JBEAP-20659 for EAP.7.3.4 to restore password vault functionality
   - patch level 7.3.5+ for RHPAM/RHDM 7.10 onwards
-- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1
-- DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1
+- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1, 7.11.0, 7.11.1
+- DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1, 7.11.0, 7.11.1
 
 For details about node configuration check out [Nodes configuration](#nodes-configuration) section at the end of this document. Also:
 
@@ -149,7 +149,8 @@ Depending on PAM version the following files are required:
         | 7.9       | rhpam-7.9.0-business-central-eap7-deployable.zip, rhpam-7.9.0-kie-server-ee8.zip    |
         | 7.9.1     | rhpam-7.9.1-business-central-eap7-deployable.zip, rhpam-7.9.1-kie-server-ee8.zip    |
         | 7.10.0    | rhpam-7.10.0-business-central-eap7-deployable.zip, rhpam-7.10.0-kie-server-ee8.zip  |
-        | 7.10.1    | rhpam-7.10.1-business-central-eap7-deployable.zip, rhpam-7.10.1-kie-server-ee8.zip  |
+        | 7.11.0    | rhpam-7.11.0-business-central-eap7-deployable.zip, rhpam-7.11.0-kie-server-ee8.zip  |
+        | 7.11.1    | rhpam-7.11.1-business-central-eap7-deployable.zip, rhpam-7.11.1-kie-server-ee8.zip  |
 
         |DM Version| Files                                                                             |
         |----------|-----------------------------------------------------------------------------------|
@@ -162,6 +163,8 @@ Depending on PAM version the following files are required:
         | 7.9.1    | rhdm-7.9.1-decision-central-eap7-deployable.zip, rhdm-7.9.1-kie-server-ee8.zip    |
         | 7.10.0   | rhdm-7.10.0-decision-central-eap7-deployable.zip, rhdm-7.10.0-kie-server-ee8.zip  |
         | 7.10.1   | rhdm-7.10.1-decision-central-eap7-deployable.zip, rhdm-7.10.1-kie-server-ee8.zip  |
+        | 7.11.0   | rhdm-7.11.0-decision-central-eap7-deployable.zip, rhdm-7.11.0-kie-server-ee8.zip  |
+        | 7.11.1   | rhdm-7.11.1-decision-central-eap7-deployable.zip, rhdm-7.11.1-kie-server-ee8.zip  |
 
 ## Usage
 
@@ -256,6 +259,8 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
 
                  - logfile=file      : create a log file of the installation.
                                        If 'file' is missing defaults to 'pam-setup.log'.
+
+                 - emotion           : if present will display a 'I [heart] PAM' message
 
                 Configuring an Oracle datasource
 

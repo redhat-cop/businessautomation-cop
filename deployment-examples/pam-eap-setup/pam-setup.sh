@@ -66,7 +66,7 @@ command -v basename &> /dev/null || { echo >&2 'ERROR: basename not installed. P
 
 # - check java version
 tmp=$(java -XshowSettings:all -version 2>&1| grep version | grep specification | grep -v vm | awk -F'=' '{print $2}')
-tmp="${tmp#"${tmp%%[![:space:]]*}"}" && tmp="${tmp%"${k##*[![:space:]]}"}"
+tmp="${tmp#"${tmp%%[![:space:]]*}"}" && tmp="${tmp%"${tmp##*[![:space:]]}"}"
 javaspec="$tmp"
 goon=no && ( [[ "$javaspec" == "1.8" ]] || [[ "$javaspec" == "11" ]] ) && goon=yes
 [[ "$goon" == "no"  ]] && { echo >&2 "ERROR: JAVA VERSION not supported. Please install version 8 or 11, found version $javascped - Aborting"; exit 1; }
@@ -407,6 +407,8 @@ Options:
                                
          - logfile=file      : create a log file of the installation.
                                If 'file' is missing defaults to 'pam-setup.log'.
+
+         - emotion           : if present will display a 'I [heart] PAM' message
 
          Configuring an Oracle datasource
 
@@ -1170,25 +1172,6 @@ else
   exit 1
 fi
 
-cat << "__END_OF_DATA"
-            _____           _____
-88      ,ad8PPPP88b,     ,d88PPPP8ba,     88888888ba      db         88b           d88
-88     d8P"      "Y8b, ,d8P"      "Y8b    88      "8b    d88b        888b         d888
-88    dP'           "8a8"           `Yd   88      ,8P   d8'`8b       88`8b       d8'88
-88    8(              "              )8   88aaaaaa8P'  d8'  `8b      88 `8b     d8' 88
-88    I8                             8I   88""""""'   d8YaaaaY8b     88  `8b   d8'  88
-88     Yb,                         ,dP    88         d8""""""""8b    88   `8b d8'   88
-88      "8a,                     ,a8"     88        d8'        `8b   88    `888'    88
-88        "8a,                 ,a8"       88       d8'          `8b  88     `8'     88 
-            "Yba             adP"
-              `Y8a         a8P'
-                `88,     ,88'
-                  "8b   d8"  
-                   "8b d8"   
-                    `888'
-                      "
-__END_OF_DATA
-
 rm -f $MASTER_CONFIG $TARGET_CONFIG
 
 prepareConfigDB
@@ -1259,6 +1242,27 @@ if [ "$pamInstall" == "kie" ] && [ ${#controllerListAr[@]} -lt 1 ]; then
 fi
 smartRouter="$optS"
 summary "Using Smart Router location :- ${smartRouter:-NOT INSTALLED}"
+#
+if [[ ! -z "${configOptions[emotion]}" ]]; then
+cat << "__END_OF_DATA"
+            _____           _____
+88      ,ad8PPPP88b,     ,d88PPPP8ba,     88888888ba      db         88b           d88
+88     d8P"      "Y8b, ,d8P"      "Y8b    88      "8b    d88b        888b         d888
+88    dP'           "8a8"           `Yd   88      ,8P   d8'`8b       88`8b       d8'88
+88    8(              "              )8   88aaaaaa8P'  d8'  `8b      88 `8b     d8' 88
+88    I8                             8I   88""""""'   d8YaaaaY8b     88  `8b   d8'  88
+88     Yb,                         ,dP    88         d8""""""""8b    88   `8b d8'   88
+88      "8a,                     ,a8"     88        d8'        `8b   88    `888'    88
+88        "8a,                 ,a8"       88       d8'          `8b  88     `8'     88 
+            "Yba             adP"
+              `Y8a         a8P'
+                `88,     ,88'
+                  "8b   d8"  
+                   "8b d8"   
+                    `888'
+                      "
+__END_OF_DATA
+fi
 #
 [[ ! -r $EAP7_ZIP ]]      && sout "ERROR: Cannot read EAP.7 ZIP file $EAP7_ZIP -- exiting"          && exit 1;
 patchEAP=yes
