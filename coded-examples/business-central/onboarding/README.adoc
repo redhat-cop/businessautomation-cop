@@ -3,5 +3,4 @@
 
 = Onboarding quick start demo
 
-* Test 123!!!
 
