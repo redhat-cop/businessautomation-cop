@@ -605,6 +605,7 @@ function modifyConfiguration() {
   prepareConfigLine "org.uberfire.nio.git.dir"              '${jboss.server.base.dir}/git'
   prepareConfigLine "org.uberfire.metadata.index.dir"       '${jboss.server.base.dir}/metaindex'
   prepareConfigLine "org.guvnor.m2repo.dir"                 '${jboss.server.base.dir}/kie'
+  prepareConfigLine "org.appformer.m2repo.url"              'file:///${jboss.server.base.dir}/kie'
   if [[ "${configOptions[run_mode]}" == "development" ]]; then
     prepareConfigLine "org.guvnor.project.gav.check.disabled" 'true'
     prepareConfigLine "org.kie.server.mode"                   'development'
