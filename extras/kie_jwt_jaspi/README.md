@@ -80,6 +80,7 @@ To proceed with the installation, place the following files in the current direc
 - rhpam-7.7.1-kie-server-ee8.zip
 - rhpam-7.7.1-business-central-eap7-deployable.zip
 
+[7.2.9]: The [7.7.1.GA QE Sign-off document](https://source.redhat.com/groups/public/baqe/mojo_migrated/red_hat_business_automation_771ga_qe_sign_off) mentions Jboss EAP 7.2.8 as the version used and indeed it seems that with 7.2.9 there are some unresolved issues.
 
 and execute the `demo_step1.sh` script
 > The `demo_step1.sh` script will delete previous installations so re-running it will provide you with a clean start up environment
@@ -96,7 +97,6 @@ Upon successful completion you can check that the artefacts have been correctly 
 
 ![]( images/bc_maven_repo_dm_project.png)
 
-[7.2.9]: The [7.7.1.GA QE Sign-off document](https://source.redhat.com/groups/public/baqe/mojo_migrated/red_hat_business_automation_771ga_qe_sign_off) mentions Jboss EAP 7.2.8 as the version used and indeed it seems that with 7.2.9 there are some unresolved issues.
 
 > Written with [StackEdit](https://stackedit.io/).
 
