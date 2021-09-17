@@ -1098,6 +1098,10 @@ done
 #   option1=value1:option2=value2:
 #
 declare -A configOptions
+# - default to development mode for BC
+tmp="${configOptions[run_mode]}"
+configOptions[run_mode]="development" && [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
+unset tmp
 if [[ ! -z "$optO" ]]; then
   declare -a multiOptions
   while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
@@ -1110,10 +1114,7 @@ if [[ ! -z "$optO" ]]; then
     [[ -n "$k" ]] && configOptions["$k"]="${v}"
     unset tmpar
   done
-  tmp="${configOptions[run_mode]}"
-  configOptions[run_mode]="development"
-  [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
-  unset tmp tmpar multiOptions
+  unset tmpar multiOptions
   [[ "${configOptions[git_hook]}" == "bcgithook" ]] && checkEnv git && checkEnv curl
   [[ "${configOptions[git_hook]}" == "kiegroup" ]] && checkEnv git && checkEnv curl && checkEnv mvn
 fi
