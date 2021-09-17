@@ -1098,6 +1098,10 @@ done
 #   option1=value1:option2=value2:
 #
 declare -A configOptions
+# - default to development mode for BC
+tmp="${configOptions[run_mode]}"
+configOptions[run_mode]="development" && [[ "$tmp" == "production" ]] && configOptions[run_mode]="$tmp"
+unset tmp
 if [[ ! -z "$optO" ]]; then
   declare -a multiOptions
   while read -rd:; do multiOptions+=("$REPLY"); done <<<"${optO}:"
