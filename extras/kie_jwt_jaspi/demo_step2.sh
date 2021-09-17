@@ -33,7 +33,7 @@ goon=nay
 pushd dm_project/parent &> /dev/null
   mvn clean deploy -PLOCAL_BC -s../../settings.xml
   result="$?"
-  pushd rules &> /dev/null
+  pushd ../rules &> /dev/null
     PRJ_GAV=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.groupId}:${project.artifactId}:${project.version}' --non-recursive exec:exec 2>/dev/null)
   popd &> /dev/null
   goon=nay && [[ "x$result" == "x0" ]] && goon=aye

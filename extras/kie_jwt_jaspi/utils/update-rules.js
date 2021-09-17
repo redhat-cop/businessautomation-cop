@@ -193,12 +193,12 @@ if (bpmsOK) {
     // print(JSON.stringify(jon,null,'\t'));
     var srvId = jon['server-template'][0]['server-id'];
     var srvName = jon['server-template'][0]['server-name'];
-    var srvTemplate =jon['server-template'][0]['server-instances'][0]['server-template-id']; 
-    var srvUrl =jon['server-template'][0]['server-instances'][0]['server-url']; 
+    // var srvTemplate =jon['server-template'][0]['server-instances'][0]['server-template-id']; 
+    // var srvUrl =jon['server-template'][0]['server-instances'][0]['server-url']; 
     pout('Server Details:');
     pout('\t         ID:'+srvId);
     pout('\t       Name:'+srvName);
-    pout('\t TemplateID:'+srvTemplate);
+    // pout('\t TemplateID:'+srvTemplate);
     //pout('\t        URL:'+srvUrl);
   } else {
     FAIL('No KIE Execution Server found on this controller');
