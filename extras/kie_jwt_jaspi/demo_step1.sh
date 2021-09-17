@@ -45,4 +45,4 @@ read -p "Press ENTER to start the installation ..."
 echo; echo
 
 ln -sf ../../deployment-examples/pam-eap-setup/settings.xml
-../../deployment-examples/pam-eap-setup/pam-setup.sh -b multi=2
+../../deployment-examples/pam-eap-setup/pam-setup.sh -b multi=2 

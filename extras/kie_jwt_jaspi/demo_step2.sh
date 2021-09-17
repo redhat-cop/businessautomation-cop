@@ -29,8 +29,25 @@ echo "STEP 2 - BUILD DM_PROJECT"
 result=$(curl -s http://localhost:8080/business-central/rest/ready | jq -r '.success')
 [[ "x$result" != "xtrue" ]] && echo "ERROR - Please start BusinessCentral with './go_pam.sh' before running this script" && exit 1
 
+goon=nay
 pushd dm_project/parent &> /dev/null
   mvn clean deploy -PLOCAL_BC -s../../settings.xml
+  result="$?"
+  pushd rules &> /dev/null
+    PRJ_GAV=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.groupId}:${project.artifactId}:${project.version}' --non-recursive exec:exec 2>/dev/null)
+  popd &> /dev/null
+  goon=nay && [[ "x$result" == "x0" ]] && goon=aye
 popd &> /dev/null
+
+if [[ "$goon" == "aye" ]]; then
+  echo
+  echo "Sample Drools project built and artefacts deployed to Business Central"
+  echo
+  echo "Artefact version deployed $PRJ_GAV"
+  echo
+  echo "Deploying artefact to KIE Server with KIE Container ID 'geo_location'"
+  ./utils/update-rules.js "remote-kieserver:geo_location:$PRJ_GAV"
+fi
+
 
 

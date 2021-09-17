@@ -1,4 +1,4 @@
-package com.example.sacams;
+package com.example.maven;
 
 public final class Version {
 

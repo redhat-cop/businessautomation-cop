@@ -40,7 +40,7 @@ public class RuleTest {
     LOG.info("There should be rules: ");
     for (KiePackage kp : kieBase.getKiePackages()) {
       for (Rule rule : kp.getRules()) {
-        LOG.info("kp " + kp + " rule " + rule.getName());
+        LOG.info("Rule Package " + kp + " Rule Name '" + rule.getName() + "'");
       }
     }
 
