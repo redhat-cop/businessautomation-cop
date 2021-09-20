@@ -130,6 +130,15 @@ function httpPost(theUrl, data, requestProperties){
     return asResponse(con);
 }
 
+function getKieServerContainerRelease(kieUrl,bpmsAuth,containerId) {
+  propConfig = { };
+  propConfig = { 'Accept':'application/json', 'Content-Type':'application/json' };
+  propConfig['Authorization'] = bpmsAuth;
+  response = httpGetWithHeaders("${kieUrl}/containers/${containerId}/release-id",propConfig);
+  jon = JSON.parse(response.data);
+  return jon;
+}
+
 if (verbose!=true) verbose=false;
 function logit(s,err) { if (verbose||err) print(s); }
 function pout(s) { logit(s,false); }
@@ -142,11 +151,11 @@ function END_RUN(exitCode) { logit('--- END-RUN',exitCode); exit((exitCode?exitC
 pout("");
 pout("--- BEGIN");
 pout("");
-pout("Server ID is          : "+serverId);
-pout("KIE Container Name is : "+containerName);
-pout("GAV_Group is          : "+GAV_Group);
-pout("GAV_Artifact is       : "+GAV_Artifact);
-pout("GAV_Version is        : "+GAV_Version);
+pout("Attempting deployment of ");
+pout("     Deployment Unit (KJAR): ${GAV_Group}:${GAV_Artifact}:${GAV_Version}");
+pout("           to KIE Container: ${containerName}");
+pout("            for KIE Servers: ${serverId}");
+pout("");
 
 invokedOK=true
 invokedOK=(invokedOK && (baseURL.length()>0))
@@ -174,45 +183,59 @@ eapOK=false;
 bpmsOK=false;
 
 scCode = httpGet(baseURL).statusCode;
-if (scCode==200) { PASS("EAP is available at "+baseURL); eapOK=true; } else FAIL('EAP is unreachable');
+if (scCode==200) { PASS("EAP reachable at "+baseURL); eapOK=true; } else FAIL('EAP is unreachable at '+baseURL);
 
 if (eapOK) {
-  scCode = httpGet("${baseURL}/${controllerPrefix}").statusCode;
-  if (scCode==200) { PASS('BPMS / Business-Central is reachable'); bpmsOK=true; } else FAIL('BPMS is unreachable');
+  bcurl="${baseURL}/${controllerPrefix}"
+  scCode = httpGet("${bcurl}").statusCode;
+  if (scCode==200) { PASS("Business Central is reachable at ${bcurl}"); bpmsOK=true; } else FAIL("Business Central is unreachable at ${bcurl}");
 }
 
 if (bpmsOK) {
-  sout('Testing available KIE Execution Servers for this controller...');
+  sout('Looking for KIE Servers managed by this controller...');
   propConfig = { };
   propConfig = { 'Accept':'application/json', 'Content-Type':'application/json' };
   propConfig['Authorization'] = bpmsAuth;
   response = httpGetWithHeaders("${baseURL}/${controllerPrefix}/rest/controller/management/servers",propConfig);
-  if (response.statusCode==200) {
-    PASS();
+  jon = [];
+  kieServerNo=0;
+  if (response.statusCode=200) {
     jon = JSON.parse(response.data);
+    kieServerNo=jon['server-template'].length;
+  }
+  if (kieServerNo>0) {
     // print(JSON.stringify(jon,null,'\t'));
-    var srvId = jon['server-template'][0]['server-id'];
-    var srvName = jon['server-template'][0]['server-name'];
-    // var srvTemplate =jon['server-template'][0]['server-instances'][0]['server-template-id']; 
-    // var srvUrl =jon['server-template'][0]['server-instances'][0]['server-url']; 
+    pout("KIE Servers found : ${kieServerNo}");
+    var kiefound = false;
+    var jonsrv = jon['server-template'];
     pout('Server Details:');
-    pout('\t         ID:'+srvId);
-    pout('\t       Name:'+srvName);
+    for (var i=0;i<jonsrv.length;i++) {
+      var kies = jonsrv[i];
+      var srvId = kies['server-id'];
+      var srvName = kies['server-name'];
+      pout('\t ID:'+srvId+'\t Name:'+srvName);
+      if (srvId==serverId) {
+        kiefound = true;
+      }
+    }
+    if (!kiefound) {
+      FAIL("KIE Server ${serverId} could not be found");
+    }
     // pout('\t TemplateID:'+srvTemplate);
     //pout('\t        URL:'+srvUrl);
   } else {
-    FAIL('No KIE Execution Server found on this controller');
+    FAIL('No KIE Servers found on this controller');
   }
   srvId=serverId
 
-  sout("Deleting container ${containerName} on the Controller");
+  sout("Deleting container ${containerName} from the controller");
   propConfig = { };
   propConfig = { 'Accept':'application/json', 'Content-Type':'application/json' };
   propConfig['Authorization'] = bpmsAuth; 
   response = httpDeleteWithHeaders("${baseURL}/${controllerPrefix}/rest/controller/management/servers/${srvId}/containers/${containerName}",propConfig);
-  pout('ResponseCode: ['+response.statusCode+']');
+  pout('HTTP ResponseCode: ['+response.statusCode+']');
 
-  sout("Trying to creating container ${containerName} at Business Central ...");
+  sout("Creating container ${containerName} at the controller");
   var putData = [
                   '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
                   '<container-spec-details>',
@@ -251,29 +274,46 @@ if (bpmsOK) {
   propConfig = { 'Accept':'application/json', 'Content-Type':'application/xml' };
   propConfig['Authorization'] = bpmsAuth;
   response = httpPutWithHeaders("${baseURL}/${controllerPrefix}/rest/controller/management/servers/${srvId}/containers/${containerName}",propConfig,putData);
+  pout('HTTP ResponseCode: ['+response.statusCode+']');
+  pout("");
   if (response.statusCode==201) {
-    PASS();
-    sout("Associating with remote server ... ");
-    var putData = [
-                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
-                    '<kie-container container-id="'+"${containerName}"+'">',
-                    '  <release-id>',
-                    "    <group-id>${GAV_Group}</group-id>",
-                    "    <artifact-id>${GAV_Artifact}</artifact-id>",
-                    "    <version>${GAV_Version}</version>",
-                    '  </release-id>',
-                    '</kie-container>'].join('');
-    propConfig = { };
-    propConfig = { 'Accept':'application/json', 'Content-Type':'application/xml' };
-    propConfig['Authorization'] = bpmsAuth;
+    PASS("KIE Container ${containerName} has been created for deployment unit (KJAR) ${GAV_Group}:${GAV_Artifact}:${GAV_Version}");
+    var jonsrv=jon['server-template'];
+    for (var i=0;i<jonsrv.length;i++) {
+      pout('');
+      var kies = jonsrv[i];
+      var srvId = kies['server-id'];
+      var srvName = kies['server-name'];
+      if (srvId==serverId) {
+        pout('KIE Server ID:'+srvId+'\t Name:'+srvName);
+        var kieremotes = kies['server-instances'];
+        for (var j=0; j<kieremotes.length; j++) {
+          var remoteId = kieremotes[j]['server-instance-id'];
+          var remoteUrl = kieremotes[j]['server-url'];
+          var deployed = false;
+          var reljon = getKieServerContainerRelease(remoteUrl,bpmsAuth,containerName);
+          if (reljon.type=="FAILURE") {
+            deployed = false;
+          } else {
+            var realrel = reljon['result']['release-id']['group-id']+':'+reljon['result']['release-id']['artifact-id']+':'+reljon['result']['release-id']['version'];
+            var wishrel = GAV_Group+':'+GAV_Artifact+':'+GAV_Version;
+            if (realrel==wishrel) {
+              deployed = true;
+            } else {
+              deployed = false;
+            }
+          }
+          var ds = (deployed?" DEPLOYED ":"DEPLOYMENT FAILURE");
+          pout("    ${remoteId} at ${remoteUrl}  ${ds}");
+        }
+      }
+    }
   } else {
     pout('ResponseCode: ['+response.statusCode+']');
     FAIL("ERR11 Could NOT create ${containerName} updated with ${GAV_Group}:${GAV_Artifact}:${GAV_Version}");
   }
+}
 
-
- }
-
-eout("${containerName} updated with ${GAV_Group}:${GAV_Artifact}:${GAV_Version}");
+pout("");
 END_RUN();
 
