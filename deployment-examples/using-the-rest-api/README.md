@@ -12,12 +12,12 @@ The scripts in this repo attempt to automate the process of KJAR deployment acro
 
 ## Deployment using Business Central
 
-The `update-rules.js` script in this repo attempts to automate the process of KJAR deployment across KIE Servers that are managed by Business Central headless or not.
+The `deploy-kjar-bc.js` script in this repo attempts to automate the process of KJAR deployment across KIE Servers that are managed by Business Central headless or not.
 
 Usage:
 
 ```
-./update-rules.js <kie-server-id>:<container-id>:<group>:<artifact>:<version>
+./deploy-kjar-bc.js <kie-server-id>:<container-id>:<group>:<artifact>:<version>
 ```
 
 where :
@@ -29,8 +29,10 @@ where :
 Example:
 
 ```
-./update-rules.js remote-kieserver:geo_location:com.bacop.rules_project:rules:2.3-SNAPSHOT
+./deploy-kjar-bc.js remote-kieserver:geo_location:com.bacop.rules_project:rules:2.3-SNAPSHOT
 ```
+
+Additional configuration should be specified in the `config.properties` file.
 
 Pre-requisites:
 
@@ -53,7 +55,7 @@ The following actions will be performed:
 A sample output would be as follows:
 
 ```
-#> ./utils/update-rules.js remote-kieserver:geo_location:com.bacop.jwt_dm_project:rules:2.3-SNAPSHOT
+#> ./deploy-kjar-bc.js remote-kieserver:geo_location:com.bacop.jwt_dm_project:rules:2.3-SNAPSHOT
 
 --- BEGIN
 
