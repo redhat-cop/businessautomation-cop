@@ -30,7 +30,12 @@ require_bpmn=false
 require_planner=false
 
 #
-# - configure BPMS installation details
+# - specify configuration file
+#
+configFile='config.properties';
+
+#
+# - configure RHPAM installation details
 #
 baseURL='http://localhost:8080';
 bpmsAdminName='pamAdmin';
@@ -157,6 +162,21 @@ pout("           to KIE Container: ${containerName}");
 pout("            for KIE Servers: ${serverId}");
 pout("");
 
+#
+# - load configuration values from file
+#
+var configPath = java.nio.file.Paths.get(configFile);
+if (java.nio.file.Files.exists(configPath)) {
+  var configuration = new java.util.Properties();
+  configuration.load(new java.io.FileInputStream(configFile));
+  baseURL = configuration.getProperty('baseURL',baseURL);
+  bpmsAdminName = configuration.getProperty('pamAdminName',bpmsAdminName);
+  bpmsAdminPasswd = configuration.getProperty('pamAdminPasswd',bpmsAdminPasswd);
+  controllerPrefix = configuration.getProperty('controllerPrefix',controllerPrefix);
+} else {
+  eout("WARNING: Configuration file cannot be read, using default values") ;
+}
+
 invokedOK=true
 invokedOK=(invokedOK && (baseURL.length()>0))
 invokedOK=(invokedOK && (bpmsAdminName.length()>0))
@@ -166,7 +186,7 @@ invokedOK=(invokedOK && (GAV_Group.length()>0))
 invokedOK=(invokedOK && (GAV_Artifact.length()>0))
 invokedOK=(invokedOK && (GAV_Version.length()>0))
 if (!invokedOK) {
-  eout('ERROR: Mising configuration, please provide values for the following:');
+  eout('FAIL: Mising configuration, please provide values for the following:');
   eout('               baseURL: the URL where the Business Central is reachable,');
   eout('                        eg. http://localhost:8080/business-central');
   eout('         bpmsAdminName: the name of the BPMS administrator, e.g. bpmsAmdin');
@@ -221,8 +241,6 @@ if (bpmsOK) {
     if (!kiefound) {
       FAIL("KIE Server ${serverId} could not be found");
     }
-    // pout('\t TemplateID:'+srvTemplate);
-    //pout('\t        URL:'+srvUrl);
   } else {
     FAIL('No KIE Servers found on this controller');
   }
@@ -277,6 +295,8 @@ if (bpmsOK) {
   pout('HTTP ResponseCode: ['+response.statusCode+']');
   pout("");
   if (response.statusCode==201) {
+    var cycleDone = true;
+    var cycleCounter = 0;
     PASS("KIE Container ${containerName} has been created for deployment unit (KJAR) ${GAV_Group}:${GAV_Artifact}:${GAV_Version}");
     var jonsrv=jon['server-template'];
     for (var i=0;i<jonsrv.length;i++) {
@@ -287,25 +307,33 @@ if (bpmsOK) {
       if (srvId==serverId) {
         pout('KIE Server ID:'+srvId+'\t Name:'+srvName);
         var kieremotes = kies['server-instances'];
-        for (var j=0; j<kieremotes.length; j++) {
-          var remoteId = kieremotes[j]['server-instance-id'];
-          var remoteUrl = kieremotes[j]['server-url'];
-          var deployed = false;
-          var reljon = getKieServerContainerRelease(remoteUrl,bpmsAuth,containerName);
-          if (reljon.type=="FAILURE") {
-            deployed = false;
-          } else {
-            var realrel = reljon['result']['release-id']['group-id']+':'+reljon['result']['release-id']['artifact-id']+':'+reljon['result']['release-id']['version'];
-            var wishrel = GAV_Group+':'+GAV_Artifact+':'+GAV_Version;
-            if (realrel==wishrel) {
-              deployed = true;
-            } else {
+        do {
+          if (!cycleDone) { java.lang.Thread.sleep(2000); }
+          cycleCounter++;
+          cycleDone = true;
+          for (var j=0; j<kieremotes.length; j++) {
+            // allow kie server to fetch artefact
+            java.lang.Thread.sleep(1000);
+            var remoteId = kieremotes[j]['server-instance-id'];
+            var remoteUrl = kieremotes[j]['server-url'];
+            var deployed = false;
+            var reljon = getKieServerContainerRelease(remoteUrl,bpmsAuth,containerName);
+            if (reljon.type=="FAILURE") {
               deployed = false;
+            } else {
+              var realrel = reljon['result']['release-id']['group-id']+':'+reljon['result']['release-id']['artifact-id']+':'+reljon['result']['release-id']['version'];
+              var wishrel = GAV_Group+':'+GAV_Artifact+':'+GAV_Version;
+              if (realrel==wishrel) {
+                deployed = true;
+              } else {
+                deployed = false;
+              }
             }
+            var ds = (deployed?" DEPLOYED ":"DEPLOYMENT FAILURE");
+            pout("    ${remoteId} at ${remoteUrl}  ${ds}");
+            if (!deployed) { cycleDone=false; }
           }
-          var ds = (deployed?" DEPLOYED ":"DEPLOYMENT FAILURE");
-          pout("    ${remoteId} at ${remoteUrl}  ${ds}");
-        }
+        } while ((!cycleDone) && (cycleCounter<3))
       }
     }
   } else {
