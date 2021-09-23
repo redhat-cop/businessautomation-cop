@@ -12,7 +12,7 @@ The scripts in this repo attempt to automate the process of KJAR deployment acro
 
 ## Deployment using Business Central
 
-The `deploy-kjar-bc.js` script in this repo attempts to automate the process of KJAR deployment across KIE Servers that are managed by Business Central headless or not.
+The [deploy-kjar-bc.js](deploy-kjar-bc.js) script in this repo attempts to automate the process of KJAR deployment across KIE Servers that are managed by Business Central headless or not.
 
 Usage:
 
