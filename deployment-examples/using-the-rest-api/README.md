@@ -1,4 +1,4 @@
-# KJAR deployment using the REST API of Business Central and KIE Server
+﻿# KJAR deployment using the REST API of Business Central and KIE Server
 
 Both Business Central and KIE Server offer REST endpoints that allow deployment of KJARs. In the case of Business Central acting as a controller, headless or not, a KJAR can be deployed to the group of KIE Servers that it manages by a single REST command.
 
@@ -12,7 +12,7 @@ The scripts in this repo attempt to automate the process of KJAR deployment acro
 
 ## Deployment using Business Central
 
-The `deploy-kjar-bc.js` script in this repo attempts to automate the process of KJAR deployment across KIE Servers that are managed by Business Central headless or not.
+The [deploy-kjar-bc.js](deploy-kjar-bc.js) script in this repo attempts to automate the process of KJAR deployment across KIE Servers that are managed by Business Central headless or not.
 
 Usage:
 
@@ -26,13 +26,13 @@ where :
 * The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment
 * The GAV coordinates of the KJAR, i.e. a (Group,Artifact,Vector) tuple that will be used by the KIE Servers to fetch the KJAR and deployed it
 
+Additional configuration is needed to specify the relevant URLs as well as credentials for accessing Business Central and KIE Servers. Refer to [Additional Configuration](#additional-configuraton) section for more details.
+
 Example:
 
 ```
 ./deploy-kjar-bc.js remote-kieserver:geo_location:com.bacop.rules_project:rules:2.3-SNAPSHOT
 ```
-
-Additional configuration should be specified in the `config.properties` file.
 
 Pre-requisites:
 
@@ -89,6 +89,24 @@ KIE Server ID:remote-kieserver	 Name:remote-kieserver
 ```
 
 If the word **FAIL** is found in the output then something did not work as expected and the KJAR could not be deployed. In such a case, please refer to the output of the command for more information.
+
+### Additional configuration
+
+The [deploy-kjar-bc.js](deploy-kjar-bc.js) script requires additional configuration that is specified in the `config.properties` file. Follow the Java Properties conventions when specifying values in this file. The following configuration variables need to be specified:
+
+| Variable | Value |
+|-|-|
+| `baseURL` | default : `http://localhost:8080` specifies the URL of the EAP Business Central is deployed |
+| `controllerPrefix` | default : `business-central` specifies the particular RHPAM component that has been deployed. One of the following values shoule be used: <br>* `business-central` for the Business Central component of RHPAM<br>* `decision-central` for the Decision Central component of RHDM<br>* `controller` for the headless controller of RHPAM/RHDM
+| `pamAdminName` | default : `pamAdmin` specify the name of a user that has enough privileges that would allow the deletion and deployment of a KJAR
+| `pamAdminPasswd` | specify the password for the `pamAdminName` user
+
+
+### Why jjs
+
+The [deploy-kjar-bc.js](deploy-kjar-bc.js) script relies on the [jjs](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jjs.html) Java Javascript engine (Nashorn). Yes, it is marked as deprecated in JDK.11 and it will even emit a warning to that effect when executed under that JDK. However, it is fully functional in both JDK.8 and JDK.11, it is part of the JDK therefore it is available in any Java JDK installation (one is needed anyway for RHPAM) and does not require any external dependencies. 
+
+These qualities allow the [deploy-kjar-bc.js](deploy-kjar-bc.js) script for straightforward integration into any workflow that involves a JDK, be it on a local development environment or a pipeline.
 
 ---
 
