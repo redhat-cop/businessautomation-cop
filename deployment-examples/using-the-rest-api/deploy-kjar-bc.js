@@ -44,6 +44,17 @@ bpmsAdminPasswd='S3cr3tK3y#';
 controllerPrefix='business-central';
 
 #
+# - configure KIE Server credentials
+#
+kieServerUser='kieServerUser';
+kieServerPass='kieServerUser1234;';
+
+#
+# - delay(ms) in checking with KIE Server
+#
+kieServerDelay=2000
+
+#
 # - configure verbosity
 #     true : will print all messages
 #    false : will print only errors, defaults to false
@@ -140,7 +151,12 @@ function getKieServerContainerRelease(kieUrl,bpmsAuth,containerId) {
   propConfig = { 'Accept':'application/json', 'Content-Type':'application/json' };
   propConfig['Authorization'] = bpmsAuth;
   response = httpGetWithHeaders("${kieUrl}/containers/${containerId}/release-id",propConfig);
-  jon = JSON.parse(response.data);
+  // print(JSON.stringify(response,null,'\t'));
+  if (response.statusCode==200) {
+    jon = JSON.parse(response.data);
+  } else {
+    jon = { type:'KIE_SERVER_UNREACHABLE' };
+  }
   return jon;
 }
 
@@ -173,6 +189,9 @@ if (java.nio.file.Files.exists(configPath)) {
   bpmsAdminName = configuration.getProperty('pamAdminName',bpmsAdminName);
   bpmsAdminPasswd = configuration.getProperty('pamAdminPasswd',bpmsAdminPasswd);
   controllerPrefix = configuration.getProperty('controllerPrefix',controllerPrefix);
+  kieServerUser = configuration.getProperty('kieServerUser',kieServerUser);
+  kieServerPass = configuration.getProperty('kieServerPass',kieServerPass);
+  kieServerDelay = configuration.getProperty('kieServerDelay',kieServerDelay);
 } else {
   eout("WARNING: Configuration file cannot be read, using default values") ;
 }
@@ -198,6 +217,7 @@ if (!invokedOK) {
 }
 
 bpmsAuth='Basic '+java.util.Base64.getEncoder().encodeToString((bpmsAdminName+':'+bpmsAdminPasswd).getBytes('utf-8'));
+kieServerAuth='Basic '+java.util.Base64.getEncoder().encodeToString((kieServerUser+':'+kieServerPass).getBytes('utf-8'));
 
 eapOK=false;
 bpmsOK=false;
@@ -308,7 +328,7 @@ if (bpmsOK) {
         pout('KIE Server ID:'+srvId+'\t Name:'+srvName);
         var kieremotes = kies['server-instances'];
         do {
-          if (!cycleDone) { java.lang.Thread.sleep(2000); }
+          if (!cycleDone) { java.lang.Thread.sleep(kieServerDelay); }
           cycleCounter++;
           cycleDone = true;
           for (var j=0; j<kieremotes.length; j++) {
@@ -317,9 +337,12 @@ if (bpmsOK) {
             var remoteId = kieremotes[j]['server-instance-id'];
             var remoteUrl = kieremotes[j]['server-url'];
             var deployed = false;
-            var reljon = getKieServerContainerRelease(remoteUrl,bpmsAuth,containerName);
+            var reljon = getKieServerContainerRelease(remoteUrl,kieServerAuth,containerName);
             if (reljon.type=="FAILURE") {
               deployed = false;
+            } else if (reljon.type=="KIE_SERVER_UNREACHABLE") {
+              deployed = false;
+              eout('WARNING: '+reljon.type);
             } else {
               var realrel = reljon['result']['release-id']['group-id']+':'+reljon['result']['release-id']['artifact-id']+':'+reljon['result']['release-id']['version'];
               var wishrel = GAV_Group+':'+GAV_Artifact+':'+GAV_Version;

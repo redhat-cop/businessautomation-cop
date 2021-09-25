@@ -6,7 +6,7 @@
     <!-- parent coordinates -->
     <groupId>com.bacop.jwt_dm_project</groupId>
     <artifactId>parent</artifactId>
-    <version>2.3-SNAPSHOT</version>
+    <version>2.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>parent</name>

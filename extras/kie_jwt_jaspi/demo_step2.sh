@@ -46,8 +46,10 @@ if [[ "$goon" == "aye" ]]; then
   echo "Artefact version deployed $PRJ_GAV"
   echo
   echo "Deploying artefact to KIE Server with KIE Container ID 'geo_location'"
-  echo ../../deployment-examples/using-the-rest-api/deploy-kjar-bc.js "remote-kieserver:geo_location:$PRJ_GAV"
-  ../../deployment-examples/using-the-rest-api/deploy-kjar-bc.js "remote-kieserver:geo_location:$PRJ_GAV"
+  pushd utils &> /dev/null
+    echo ../../../deployment-examples/using-the-rest-api/deploy-kjar-bc.js "remote-kieserver:geo_location:$PRJ_GAV"
+    ../../../deployment-examples/using-the-rest-api/deploy-kjar-bc.js "remote-kieserver:geo_location:$PRJ_GAV"
+  popd &> /dev/null
 fi
 
 
