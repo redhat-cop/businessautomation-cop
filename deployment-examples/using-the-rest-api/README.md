@@ -100,7 +100,10 @@ The [deploy-kjar-bc.js](deploy-kjar-bc.js) script requires additional configurat
 | `controllerPrefix` | default : `business-central` specifies the particular RHPAM component that has been deployed. One of the following values shoule be used: <br>* `business-central` for the Business Central component of RHPAM<br>* `decision-central` for the Decision Central component of RHDM<br>* `controller` for the headless controller of RHPAM/RHDM
 | `pamAdminName` | default : `pamAdmin` specify the name of a user that has enough privileges that would allow the deletion and deployment of a KJAR
 | `pamAdminPasswd` | specify the password for the `pamAdminName` user
+| `kieServerUser` | default : `kieServerUser` specify the name of a user that can issue REST requests on KIE Server. Used to validate deployment of a KJAR
+| `kieServerPass` | specify the password for the `kieServerUser` user
 
+> NOTE: The *default* values in the table above correspond to the values that are used if the [pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/tree/master/deployment-examples/pam-eap-setup) script is used to install RHPAM.
 
 ### Why jjs
 
