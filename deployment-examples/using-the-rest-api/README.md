@@ -10,6 +10,11 @@ All available REST endpoints can be found at (replace `localhost` appropriately)
 
 The scripts in this repo attempt to automate the process of KJAR deployment across KIE Servers.
 
+* [Deployment using Business Central](#deployment-using-business-central)
+	* [Additional configuration](#additional-configuration)
+	* [Why jjs](#why-jjs)
+	* [REST endpoints used](#rest-endpoints-used)
+
 ## Deployment using Business Central
 
 The [deploy-kjar-bc.js](deploy-kjar-bc.js) script in this repo attempts to automate the process of KJAR deployment across KIE Servers that are managed by Business Central headless or not.
@@ -216,6 +221,109 @@ curl --request PUT \
 	<status>STARTED</status>
 </container-spec-details>'
 ```
+
+#### Checking with KIE Server for the deployed KIE Container
+
+When a KJAR is deployed into a KIE Container for a KIE Server template using Business Central it is only after the deployment has been finished by each KIE Server managed by Business Central for this KIE Server template that the KJAR will be really available for use. It is prudent to check with the actual KIE Servers to verify that the deployment has indeed happened.
+
+There are two REST endpoints offered by KIE Server that can be used to this end.
+
+The first one will return information about all the KIE Containers that are deployed into a KIE Server. Navigating through the JSON structure returned will prove the deployment of a KIE Cotnainer. An invocation of this REST endpoint could take the following form:
+
+```
+curl --request GET \
+  --url http://localhost:8080/kie-server/services/rest/server/containers \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWRxxx' \
+  --header 'content-type: application/json'
+```
+
+with a result indicating success would have the following form:
+
+```
+{
+  "type": "SUCCESS",
+  "msg": "List of created containers",
+  "result": {
+    "kie-containers": {
+      "kie-container": [
+        {
+          "container-id": "geo_location",
+          "release-id": {
+            "group-id": "com.bacop.jwt_dm_project",
+            "artifact-id": "rules",
+            "version": "2.4-SNAPSHOT"
+          },
+          "resolved-release-id": {
+            "group-id": "com.bacop.jwt_dm_project",
+            "artifact-id": "rules",
+            "version": "2.4-SNAPSHOT"
+          },
+          "status": "STARTED",
+          "scanner": {
+            "status": "DISPOSED",
+            "poll-interval": null
+          },
+          "config-items": [
+          ],
+          "messages": [
+            {
+              "severity": "INFO",
+              "timestamp": {
+                "java.util.Date": 1632701224517
+              },
+              "content": [
+                "Container geo_location successfully created with module com.bacop.jwt_dm_project:rules:2.4-SNAPSHOT."
+              ]
+            }
+          ],
+          "container-alias": "geo_location"
+        }
+      ]
+    }
+  }
+}
+```
+
+An alternate REST endpoint is also available that returns a simpler JSON structure. This second REST endpoint is specific to a particular KIE Container and returns information only relevant to that. The request would take a form similar to the following:
+
+```
+curl --request GET \
+  --url http://localhost:8080/kie-server/services/rest/server/containers/geo_location/release-id \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWRtxxxx' \
+  --header 'content-type: application/json'
+```
+
+and a response indicating success would be similar to the following:
+
+```
+{
+  "type": "SUCCESS",
+  "msg": "ReleaseId for container geo_location",
+  "result": {
+    "release-id": {
+      "group-id": "com.bacop.jwt_dm_project",
+      "artifact-id": "rules",
+      "version": "2.4-SNAPSHOT"
+    }
+  }
+}
+```
+
+Please note that in case of an unsuccessful deployment the HTTP response code would still be `200`, but the JSON response would be changed to indicate the deployment failure as in:
+
+```
+{
+  "type": "FAILURE",
+  "msg": "Container geo_location2 is not instantiated.",
+  "result": null
+}
+```
+
+
+
+
 
 
 ---
