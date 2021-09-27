@@ -10,6 +10,11 @@ All available REST endpoints can be found at (replace `localhost` appropriately)
 
 The scripts in this repo attempt to automate the process of KJAR deployment across KIE Servers.
 
+* [Deployment using Business Central](#deployment-using-business-central)
+	* [Additional configuration](#additional-configuration)
+	* [Why jjs](#why-jjs)
+	* [REST endpoints used](#rest-endpoints-used)
+
 ## Deployment using Business Central
 
 The [deploy-kjar-bc.js](deploy-kjar-bc.js) script in this repo attempts to automate the process of KJAR deployment across KIE Servers that are managed by Business Central headless or not.
@@ -110,6 +115,212 @@ The [deploy-kjar-bc.js](deploy-kjar-bc.js) script requires additional configurat
 The [deploy-kjar-bc.js](deploy-kjar-bc.js) script relies on the [jjs](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jjs.html) Java Javascript engine (Nashorn). Yes, it is marked as deprecated in JDK.11 and it will even emit a warning to that effect when executed under that JDK. However, it is fully functional in both JDK.8 and JDK.11, it is part of the JDK therefore it is available in any Java JDK installation (one is needed anyway for RHPAM) and does not require any external dependencies. 
 
 These qualities allow the [deploy-kjar-bc.js](deploy-kjar-bc.js) script for straightforward integration into any workflow that involves a JDK, be it on a local development environment or a pipeline.
+
+### REST endpoints used
+
+The [deploy-kjar-bc.js](deploy-kjar-bc.js) is using the following REST endpoints offered by Business Central and KIE Server.
+
+#### Enumerate the KIE Servers managed by a Business Central instance
+
+```
+curl --request GET \
+  --url http://localhost:8080/business-central/rest/controller/management/servers \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWRxxxx' \
+  --header 'content-type: application/json'
+```
+
+#### Delete a KIE Container from a KIE Server template
+
+```
+curl --request DELETE \
+  --url http://localhost:8080/business-central/rest/controller/management/servers/remote-kieserver/containers/geo_location \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWxxxx' \
+  --header 'content-type: application/json'
+```
+
+* If successful a `204` HTTP response code will be returned
+* In the above request `remote-kieserver` is the KIE Server template whete the KIE Container `geo_location` will be deleted from.
+
+#### Deploy a KJAR into a KIE Container for a KIE Server template
+
+When using JSON as the payload serialisation format the request takes the following form:
+
+```
+curl --request PUT \
+  --url http://localhost:8080/business-central/rest/controller/management/servers/remote-kieserver/containers/geo_location \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWxxxx' \
+  --header 'content-type: application/json' \
+  --data '{
+	"container-id" : "geo_location",
+	"container-name" : "geo_location",
+	  "release-id" : {
+        "group-id" : "com.bacop.jwt_dm_project",
+        "artifact-id" : "rules",
+        "version" : "2.3-SNAPSHOT"
+    },
+	"config-items": [
+    {
+      "itemName": "RuntimeStrategy",
+      "itemValue": "SINGLETON"
+    },
+    {
+      "itemName": "MergeMode",
+      "itemValue": "MERGE_COLLECTIONS"
+    }
+  ],
+	"scanner": {
+    "poll-interval": "5000",
+    "status": "STOPPED"
+  },
+	"status" : "STARTED"
+}'
+```
+
+When using the XML format for the payload, the request would take the following format:
+
+```
+curl --request PUT \
+  --url http://localhost:8080/business-central/rest/controller/management/servers/remote-kieserver/containers/geo_location \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWxxxx' \
+  --header 'application/xml' \
+  --data '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<container-spec-details>
+	<container-id>geo_location</container-id>
+	<container-name>geo_location</container-name>
+	<server-template-key>
+		<server-id>remote-kieserver</server-id>
+	</server-template-key>
+	<release-id>
+		<group-id>com.bacop.jwt_dm_project</group-id>
+		<artifact-id>rules</artifact-id>
+		<version>2.3-SNAPSHOT</version>
+	</release-id>
+	<configs>
+		<entry>
+			<key>PROCESS</key>
+			<value xsi:type="processConfig"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+             <runtimeStrategy>SINGLETON</runtimeStrategy>
+             <kbase></kbase>
+             <ksession></ksession>
+             <mergeMode>MERGE_COLLECTIONS</mergeMode>
+			</value>
+		</entry>
+		<entry>
+			<key>RULE</key>
+			<value xsi:type="ruleConfig"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<scannerStatus>STOPPED</scannerStatus>
+			</value>
+		</entry>
+	</configs>
+	<status>STARTED</status>
+</container-spec-details>'
+```
+
+#### Checking with KIE Server for the deployed KIE Container
+
+When a KJAR is deployed into a KIE Container for a KIE Server template using Business Central it is only after the deployment has been finished by each KIE Server managed by Business Central for this KIE Server template that the KJAR will be really available for use. It is prudent to check with the actual KIE Servers to verify that the deployment has indeed happened.
+
+There are two REST endpoints offered by KIE Server that can be used to this end.
+
+The first one will return information about all the KIE Containers that are deployed into a KIE Server. Navigating through the JSON structure returned will prove the deployment of a KIE Cotnainer. An invocation of this REST endpoint could take the following form:
+
+```
+curl --request GET \
+  --url http://localhost:8080/kie-server/services/rest/server/containers \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWRxxx' \
+  --header 'content-type: application/json'
+```
+
+with a result indicating success would have the following form:
+
+```
+{
+  "type": "SUCCESS",
+  "msg": "List of created containers",
+  "result": {
+    "kie-containers": {
+      "kie-container": [
+        {
+          "container-id": "geo_location",
+          "release-id": {
+            "group-id": "com.bacop.jwt_dm_project",
+            "artifact-id": "rules",
+            "version": "2.4-SNAPSHOT"
+          },
+          "resolved-release-id": {
+            "group-id": "com.bacop.jwt_dm_project",
+            "artifact-id": "rules",
+            "version": "2.4-SNAPSHOT"
+          },
+          "status": "STARTED",
+          "scanner": {
+            "status": "DISPOSED",
+            "poll-interval": null
+          },
+          "config-items": [
+          ],
+          "messages": [
+            {
+              "severity": "INFO",
+              "timestamp": {
+                "java.util.Date": 1632701224517
+              },
+              "content": [
+                "Container geo_location successfully created with module com.bacop.jwt_dm_project:rules:2.4-SNAPSHOT."
+              ]
+            }
+          ],
+          "container-alias": "geo_location"
+        }
+      ]
+    }
+  }
+}
+```
+
+An alternate REST endpoint is also available that returns a simpler JSON structure. This second REST endpoint is specific to a particular KIE Container and returns information only relevant to that. The request would take a form similar to the following:
+
+```
+curl --request GET \
+  --url http://localhost:8080/kie-server/services/rest/server/containers/geo_location/release-id \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWRtxxxx' \
+  --header 'content-type: application/json'
+```
+
+and a response indicating success would be similar to the following:
+
+```
+{
+  "type": "SUCCESS",
+  "msg": "ReleaseId for container geo_location",
+  "result": {
+    "release-id": {
+      "group-id": "com.bacop.jwt_dm_project",
+      "artifact-id": "rules",
+      "version": "2.4-SNAPSHOT"
+    }
+  }
+}
+```
+
+Please note that in case of an unsuccessful deployment the HTTP response code would still be `200`, but the JSON response would be changed to indicate the deployment failure as in:
+
+```
+{
+  "type": "FAILURE",
+  "msg": "Container geo_location2 is not instantiated.",
+  "result": null
+}
+```
+
 
 ---
 
