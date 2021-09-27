@@ -111,6 +111,113 @@ The [deploy-kjar-bc.js](deploy-kjar-bc.js) script relies on the [jjs](https://do
 
 These qualities allow the [deploy-kjar-bc.js](deploy-kjar-bc.js) script for straightforward integration into any workflow that involves a JDK, be it on a local development environment or a pipeline.
 
+### REST endpoints used
+
+The [deploy-kjar-bc.js](deploy-kjar-bc.js) is using the following REST endpoints offered by Business Central and KIE Server.
+
+#### Enumerate the KIE Servers managed by a Business Central instance
+
+```
+curl --request GET \
+  --url http://localhost:8080/business-central/rest/controller/management/servers \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWRxxxx' \
+  --header 'content-type: application/json'
+```
+
+#### Delete a KIE Container from a KIE Server template
+
+```
+curl --request DELETE \
+  --url http://localhost:8080/business-central/rest/controller/management/servers/remote-kieserver/containers/geo_location \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWxxxx' \
+  --header 'content-type: application/json'
+```
+
+* If successful a `204` HTTP response code will be returned
+* In the above request `remote-kieserver` is the KIE Server template whete the KIE Container `geo_location` will be deleted from.
+
+#### Deploy a KJAR into a KIE Container for a KIE Server template
+
+When using JSON as the payload serialisation format the request takes the following form:
+
+```
+curl --request PUT \
+  --url http://localhost:8080/business-central/rest/controller/management/servers/remote-kieserver/containers/geo_location \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWxxxx' \
+  --header 'content-type: application/json' \
+  --data '{
+	"container-id" : "geo_location",
+	"container-name" : "geo_location",
+	  "release-id" : {
+        "group-id" : "com.bacop.jwt_dm_project",
+        "artifact-id" : "rules",
+        "version" : "2.3-SNAPSHOT"
+    },
+	"config-items": [
+    {
+      "itemName": "RuntimeStrategy",
+      "itemValue": "SINGLETON"
+    },
+    {
+      "itemName": "MergeMode",
+      "itemValue": "MERGE_COLLECTIONS"
+    }
+  ],
+	"scanner": {
+    "poll-interval": "5000",
+    "status": "STOPPED"
+  },
+	"status" : "STARTED"
+}'
+```
+
+When using the XML format for the payload, the request would take the following format:
+
+```
+curl --request PUT \
+  --url http://localhost:8080/business-central/rest/controller/management/servers/remote-kieserver/containers/geo_location \
+  --header 'accept: application/json' \
+  --header 'authorization: Basic cGFtQWxxxx' \
+  --header 'application/xml' \
+  --data '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<container-spec-details>
+	<container-id>geo_location</container-id>
+	<container-name>geo_location</container-name>
+	<server-template-key>
+		<server-id>remote-kieserver</server-id>
+	</server-template-key>
+	<release-id>
+		<group-id>com.bacop.jwt_dm_project</group-id>
+		<artifact-id>rules</artifact-id>
+		<version>2.3-SNAPSHOT</version>
+	</release-id>
+	<configs>
+		<entry>
+			<key>PROCESS</key>
+			<value xsi:type="processConfig"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+             <runtimeStrategy>SINGLETON</runtimeStrategy>
+             <kbase></kbase>
+             <ksession></ksession>
+             <mergeMode>MERGE_COLLECTIONS</mergeMode>
+			</value>
+		</entry>
+		<entry>
+			<key>RULE</key>
+			<value xsi:type="ruleConfig"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<scannerStatus>STOPPED</scannerStatus>
+			</value>
+		</entry>
+	</configs>
+	<status>STARTED</status>
+</container-spec-details>'
+```
+
+
 ---
 
 > Written with [StackEdit](https://stackedit.io/).
