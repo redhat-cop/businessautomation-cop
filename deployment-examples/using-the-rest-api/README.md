@@ -321,11 +321,6 @@ Please note that in case of an unsuccessful deployment the HTTP response code wo
 }
 ```
 
-
-
-
-
-
 ---
 
 > Written with [StackEdit](https://stackedit.io/).
