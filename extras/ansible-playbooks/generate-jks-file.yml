@@ -1,0 +1,17 @@
+---
+- name: Use Expect
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: install expect
+      pip: name=pexpect
+      
+    - name: Generate JKS file
+      expect:
+       command: keytool -genkeypair -alias jboss -keyalg RSA -keystore keystore.jks -storepass mykeystorepass --dname "CN=jsmith,OU=Engineering,O=mycompany.com,L=Raleigh,S=NC,C=US"
+       responses:
+         Enter key password for \<jboss\>\r\n\t\(RETURN if same as keystore password\):  "jkspassword"
+         Re-enter new password: "jkspassword"
+         Enter source keystore password: "password"
