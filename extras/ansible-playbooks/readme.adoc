@@ -1,0 +1,3 @@
+# Ansible playbooks for Business Automation (RHPAM,RHDB)
+
+## example
