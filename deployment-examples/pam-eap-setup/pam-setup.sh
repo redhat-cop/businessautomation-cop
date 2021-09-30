@@ -202,7 +202,7 @@ function extractConfiguration() {
 function randomid() {
   # longer version, seems overkill
   # echo `od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}'`
-  echo $(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3$4}')
+  echo $(od -x /dev/urandom | head -1 | awk '{print $2$3$4}')
 }
 
 function bigString() {
@@ -315,6 +315,14 @@ function prepareConfigLine() {
     pamConfigList+=( "end-if" )
     pamConfigList+=( "/system-property=$key:add(value=$result) > $TMP_FILE" )
   fi
+}
+
+declare -a split_result
+function split() {
+  local str="${1:-_NULL_}"
+  local delim="${2:-_NULL_}"
+  split_result=()
+  while read -rd"$delim"; do split_result+=("$REPLY"); done <<<"${str}${delim}"
 }
 
 function usage() {
@@ -633,7 +641,7 @@ function modifyConfiguration() {
   prepareConfigLine "kie.keystore.keyStoreURL"                   'file:///${jboss.server.config.dir}/eigg.jceks'
   prepareConfigLine "kie.keystore.keyStorePwd"                   'eiggPass'
 
-  if [ "$pamInstall" != "kie" ]; then
+  if [[ "$pamInstall" != "kie" ]]; then
     # properties for controller/business-central in a managed KIE Server setup
     prepareConfigLine "org.kie.server.user"                        "$kieServerUserName"
     #
@@ -644,7 +652,7 @@ function modifyConfiguration() {
     prepareConfigLine "kie.keystore.key.server.pwd"                'kieServerUserPasswd'
   fi
 
-  if [ "$pamInstall" != "controller" ]; then
+  if [[ "$pamInstall" != "controller" ]]; then
     # - build clv based on controllerListAr
     clv=''
     # NOTE: Controller List is a list of IPs or FQDN and ports, every other value would result in a misconfiguration. Quoting the variable does not guard against this
@@ -663,12 +671,11 @@ function modifyConfiguration() {
       prepareConfigLine "org.jbpm.ui.server.ext.disabled"          'false'
     fi
     prepareConfigLine "org.optaplanner.server.ext.disabled"        'false'
-    if [ "$pamInstall" == "kie" ] || [ "$pamInstall" == "both" ]; then
+    prepareConfigLine "org.kie.server.id"                          "$serverId"
+    if [[ "$pamInstall" == "kie" ]]; then
       #local sedclv=$(echo ${clv} | sed -e "s#/#\\\/#g")
       # properties for managed KIE Server
-      prepareConfigLine "org.kie.server.id"                        "$serverId"
       prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"
-      # prepareConfigLine "org.kie.server.controller"                "${clv}"
       prepareConfigLine "org.kie.server.controller"                "@@CLV@@"
       prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"
       # overcome 256 character limitation in process variable values
@@ -1204,7 +1211,25 @@ if [[ "$optB" =~ ^multi.* ]]; then
   unset multiArgs multiOption
   [[ "$multiNode" -lt 2 ]] && echo "${bold}${red}*** ERROR ***${normal} : multi node cannot be less than 2 - ABORTING " && exit 1
 fi
-declare -a validPAMInstall=(kie controller both multi)
+declare -a installModuleAr
+installModuleAr=()
+if [[ "$optB" =~ ^custom.* ]]; then
+  # custom=controller,kie,ukie,ukie
+  pamInstall=custom
+  # declare -a customArgs
+  # customArgs=()
+  # while read -rd=; do customArgs+=("$REPLY"); done <<<"${optB}="
+  # customOption=${multiArgs[0]}
+  # customNode=${multiArgs[1]}
+  # echo "customOption=$customOption      customNode=$multiNode"
+  # unset customOption  customArgs
+  split "${optB}" "="
+  split "${split_result[1]}" ","
+  installModuleAr=("${split_result[@]}")
+  # declare -p installModuleAr
+  multiNode="${#installModuleAr[@]}"
+fi
+declare -a validPAMInstall=(kie controller both multi custom)
 for i in "${validPAMInstall[@]}"; do
   if [ "$pamInstall" == "$i" ]; then
     pamValid=yes
@@ -1212,13 +1237,22 @@ for i in "${validPAMInstall[@]}"; do
 done
 if [ "$pamValid" != "yes" ]; then
   echo "${bold}${red}*** ERROR ***${normal} : Invalid mode for PAM installation [$pamInstall]"
-  usage
+#  usage
   exit 1
 else
   if [[ "$pamInstall" != "multi" ]]; then
-    sout "PAM Installation mode : ${bold}${yellow}$pamInstall${normal}"
-    summary "PAM Installation mode :- $pamInstall"
-  else
+    custom_sout=""
+    custom_sum=""
+    joined=""
+    if [[ "${#installModuleAr[@]}" -gt 0 ]]; then
+      printf -v joined '%s,' "${installModuleAr[@]}"
+      custom_sout="with ${bold}${yellow}${multiNode}${normal} nodes as ${bold}${yellow}${joined%,}${normal}"
+      custom_sum="with ${multiNode} nodes as ${joined%,}"
+    fi
+    sout "PAM Installation mode : ${bold}${yellow}$pamInstall${normal} $custom_sout"
+    summary "PAM Installation mode :- $pamInstall $custom_sum"
+    unset joined custom_sout custom_sum
+  else 
     sout "PAM Installation mode : ${bold}${yellow}$pamInstall${normal} with ${bold}${yellow}$multiNode${normal} nodes"
     summary "PAM Installation mode :- $pamInstall with $multiNode nodes"
   fi
@@ -1357,8 +1391,10 @@ if [ "$skip_install" != "yes" ]; then
       declare -A pamConfigAr
       declare -A nodeConfig
       save_pamInstall=$pamInstall
-      [[ "$node" -eq 1 ]] && [[ "$pamInstall" == "multi" ]] && pamInstall=both
-      [[ "$node" -gt 1 ]] && [[ "$pamInstall" == "multi" ]] && pamInstall=kie && nodeParam=node${node}
+      [[ "$node" -eq 1 ]] && [[ "$pamInstall" == "multi" ]]  && pamInstall=both
+      [[ "$node" -gt 1 ]] && [[ "$pamInstall" == "multi" ]]  && pamInstall=kie 
+      [[ "$pamInstall" == "custom" ]] && pamInstall="${installModuleAr[$((node-1))]}"
+      [[ "$node" -gt 1 ]] && nodeParam=node${node}
       nodeConfig['pamInstall']=" "
       nodeParam=${nodeParam:-standalone}
       nodeConfig['nodeName']=${nodeParam}_$(randomid)
@@ -1371,7 +1407,7 @@ if [ "$skip_install" != "yes" ]; then
       nodeConfig['nodePort']=$nodePort
       nodeConfig['eap_location']="$EAP_LOCATION"
       jvm_memory=${configOptions[jvm_memory]} && [[ ! -z "$jvm_memory" ]] && nodeConfig['jvm_memory']="$jvm_memory"
-      sout "Installing ${bold}${blue}node${node}${normal} as ${bold}${blue}${nodeConfig[nodeName]}${normal}"
+      sout "Installing ${bold}${cyan}${pamInstall}${normal} in ${bold}${cyan}node${node}${normal} as ${bold}${cyan}${nodeConfig[nodeName]}${normal}"
       summary "--- Node instalation node${node} as $nodeParam : ${nodeConfig[nodeName]}"
       ( [[ "$pamInstall" == "controller" ]] || [[ "$pamInstall" == "both" ]] ) && installBC && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} controller"
       ( [[ "$pamInstall" == "kie" ]]        || [[ "$pamInstall" == "both" ]] ) && [[ -r $KIE_ZIP ]] && installKIE $nodeParam  && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} kie"
@@ -1399,15 +1435,10 @@ if [ "$skip_install" != "yes" ]; then
       [[ $f -ne 0 ]] && echo "$f=Error Code $f" >> Messages.properties
     done
     cp Messages.properties Messages_en.properties
-    if [[ ! -r ../../post-commit ]]; then
-      : > post-commit
-      echo "#!/bin/sh" >> post-commit
-      echo "git push origin +master" >> post-commit
-      chmod 744 post-commit
-    else
-      cp ../../post-commit .
-      chmod 744 post-commit
-    fi
+    : > post-commit
+    echo "#!/bin/sh" >> post-commit
+    echo "git push origin +master" >> post-commit
+    chmod 744 post-commit
   popd &> /dev/null
   # copy to EAP_LOCATION if defined
   if [[ ! -z "$EAP_LOCATION" ]]; then
