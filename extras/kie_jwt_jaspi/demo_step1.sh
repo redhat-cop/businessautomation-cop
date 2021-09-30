@@ -41,9 +41,9 @@ in the current directory
 
 "
 
-read -p "Press ENTER to start the installation ..."
+# read -p "Press ENTER to start the installation ..."
 echo; echo
 
 ln -sf ../../deployment-examples/pam-eap-setup/settings.xml
-../../deployment-examples/pam-eap-setup/pam-setup.sh -b multi=3
+../../deployment-examples/pam-eap-setup/pam-setup.sh -b custom=controller,kie,ukie
 

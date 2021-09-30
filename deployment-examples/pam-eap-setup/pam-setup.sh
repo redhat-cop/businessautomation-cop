@@ -332,7 +332,7 @@ node that will be part of the cluster.
 
 usage: $(basename "$0") [-h help]
                      -n ip[:node]
-                     -b [kie|controller|both|multi=2...], defaults to 'both'
+                     -b [kie|controller|both|multi=2|custom=controller,kie,ukie,...], defaults to 'both'
                      [-c ip1:port1,ip2:port2,...]
                      [-s smart_router_ip:port]
                      [-o option1=value1[:option2=value2...]], specify additional options
@@ -357,6 +357,14 @@ Options:
                    Startup scripts will be generated according to the number of nodes specified
                    Node 1 will use the IP:PORT specified with '-n' with each subsequent node
                    using a port offset of 100
+                   
+          custom : Allow for custom topologies mixing managed and unamanged KIE Servers.
+                   Values recognized are :
+                     controller : for business or decision-central
+                            kie : for managed KIE Servers, will be managed by the 'controller'
+                           ukie : for un-managed KIE Servers
+                   Example:
+                     custom=controller,kie,kie,ukie
 
     -c :  Manadatory for 'kie' mode of PAM installation, ignored in other modes
           Specify list of controllers that this KIE ES should connect to.
@@ -641,7 +649,8 @@ function modifyConfiguration() {
   prepareConfigLine "kie.keystore.keyStoreURL"                   'file:///${jboss.server.config.dir}/eigg.jceks'
   prepareConfigLine "kie.keystore.keyStorePwd"                   'eiggPass'
 
-  if [[ "$pamInstall" != "kie" ]]; then
+#  if [[ "$pamInstall" != "kie" ]]; then
+  if [[ "${pamInstall/kie/}" == "$pamInstall" ]]; then
     # properties for controller/business-central in a managed KIE Server setup
     prepareConfigLine "org.kie.server.user"                        "$kieServerUserName"
     #
@@ -652,7 +661,8 @@ function modifyConfiguration() {
     prepareConfigLine "kie.keystore.key.server.pwd"                'kieServerUserPasswd'
   fi
 
-  if [[ "$pamInstall" != "controller" ]]; then
+#  if [[ "$pamInstall" != "controller" ]]; then
+  if [[ "${pamInstall/controller/}" == "$pamInstall" ]]; then
     # - build clv based on controllerListAr
     clv=''
     # NOTE: Controller List is a list of IPs or FQDN and ports, every other value would result in a misconfiguration. Quoting the variable does not guard against this
@@ -672,22 +682,20 @@ function modifyConfiguration() {
     fi
     prepareConfigLine "org.optaplanner.server.ext.disabled"        'false'
     prepareConfigLine "org.kie.server.id"                          "$serverId"
-    if [[ "$pamInstall" == "kie" ]]; then
+    if [[ "${pamInstall/kie/}" != "$pamInstall" ]] || [[ "$pamInstall" == "both" ]]; then
       #local sedclv=$(echo ${clv} | sed -e "s#/#\\\/#g")
       # properties for managed KIE Server
-      prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"
-      prepareConfigLine "org.kie.server.controller"                "@@CLV@@"
-      prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"
-      # overcome 256 character limitation in process variable values
-      # if you uncomment the following parameter, remember to alter your database column accordingly
-      # see also: https://issues.redhat.com/browse/JBPM-4221
-      # prepareConfigLine "COMMENT:org.jbpm.var.log.length"          "1000"
-      #
-      # deprecated after RHPAM.7.4
-      # echo '<!-- UNIQ_MARK_1 --><property name="org.kie.server.controller.pwd"  value="REPLACE_ME"/>' | sed s/REPLACE_ME/"$kieControllerUserPasswd"/g >>
-      #
-      prepareConfigLine "kie.keystore.key.ctrl.alias"              "kieControllerUser"
-      prepareConfigLine "kie.keystore.key.ctrl.pwd"                "kieControllerUserPasswd"
+      if [[ "$pamInstall" != "ukie" ]]; then
+        prepareConfigLine "org.kie.server.location"                  "$BASE_URL/kie-server/services/rest/server"
+        prepareConfigLine "org.kie.server.controller"                "@@CLV@@"
+        prepareConfigLine "org.kie.server.controller.user"           "$kieControllerUserName"
+        #
+        # deprecated after RHPAM.7.4
+        # echo '<!-- UNIQ_MARK_1 --><property name="org.kie.server.controller.pwd"  value="REPLACE_ME"/>' | sed s/REPLACE_ME/"$kieControllerUserPasswd"/g >>
+        #
+        prepareConfigLine "kie.keystore.key.ctrl.alias"              "kieControllerUser"
+        prepareConfigLine "kie.keystore.key.ctrl.pwd"                "kieControllerUserPasswd"
+      fi
       if [[ ! -z $smartRouter ]]; then
         prepareConfigLine "org.kie.server.router"                  "http://${smartRouter}"
       fi
@@ -695,6 +703,11 @@ function modifyConfiguration() {
       prepareConfigLine "org.kie.prometheus.server.ext.disabled"   "true"
       # provide custom prediction service
       # prepareConfigLine "org.jbpm.task.prediction.service" 'SMILERandomForest'
+      #
+      # overcome 256 character limitation in process variable values
+      # if you uncomment the following parameter, remember to alter your database column accordingly
+      # see also: https://issues.redhat.com/browse/JBPM-4221
+      # prepareConfigLine "COMMENT:org.jbpm.var.log.length"          "1000"
     fi
   fi
 
@@ -1409,8 +1422,8 @@ if [ "$skip_install" != "yes" ]; then
       jvm_memory=${configOptions[jvm_memory]} && [[ ! -z "$jvm_memory" ]] && nodeConfig['jvm_memory']="$jvm_memory"
       sout "Installing ${bold}${cyan}${pamInstall}${normal} in ${bold}${cyan}node${node}${normal} as ${bold}${cyan}${nodeConfig[nodeName]}${normal}"
       summary "--- Node instalation node${node} as $nodeParam : ${nodeConfig[nodeName]}"
-      ( [[ "$pamInstall" == "controller" ]] || [[ "$pamInstall" == "both" ]] ) && installBC && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} controller"
-      ( [[ "$pamInstall" == "kie" ]]        || [[ "$pamInstall" == "both" ]] ) && [[ -r $KIE_ZIP ]] && installKIE $nodeParam  && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} kie"
+      ( [[ "$pamInstall" == "controller" ]]         || [[ "$pamInstall" == "both" ]] ) && installBC && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} controller"
+      ( [[ "${pamInstall/kie/}" != "$pamInstall" ]] || [[ "$pamInstall" == "both" ]] ) && [[ -r $KIE_ZIP ]] && installKIE $nodeParam  && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} kie"
       installUsers $nodeParam
       applyAdditionalNodeConfig $nodeParam
       modifyConfiguration $nodeParam
