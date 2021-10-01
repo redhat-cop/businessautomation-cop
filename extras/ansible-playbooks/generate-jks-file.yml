@@ -17,4 +17,4 @@
        responses:
          Enter key password for \<jboss\>\r\n\t\(RETURN if same as keystore password\): "{{ jks_password }}"
          Re-enter new password: "{{ jks_password }}" 
-         Enter source keystore password: "password"
+         Enter source keystore password: "{{ jks_password }}"
