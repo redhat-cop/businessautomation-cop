@@ -4,6 +4,9 @@
   connection: local
   gather_facts: false
 
+  vars:
+    jks_password: "{{ jkspassword }}"
+
   tasks:
     - name: install expect
       pip: name=pexpect
@@ -12,6 +15,5 @@
       expect:
        command: keytool -genkeypair -alias jboss -keyalg RSA -keystore keystore.jks -storepass mykeystorepass --dname "CN=jsmith,OU=Engineering,O=mycompany.com,L=Raleigh,S=NC,C=US"
        responses:
-         Enter key password for \<jboss\>\r\n\t\(RETURN if same as keystore password\):  "jkspassword"
-         Re-enter new password: "jkspassword"
-         Enter source keystore password: "password"
+         Enter key password for \<jboss\>\r\n\t\(RETURN if same as keystore password\): "{{ jks_password }}"
+         Re-enter new password: "{{ jks_password }}"
