@@ -1,0 +1,115 @@
+pipeline {
+    agent { 
+		label 'maven' 
+	}
+    parameters {
+        string(name: 'PROJECT_NAMESPACE', defaultValue: '', description: 'Your Paas(Openshift namespace) project name:')
+        string(name: 'APP_NAME', defaultValue: '', description: 'Your App monitoring name: e.i: my-app')
+        credentials credentialType: 'com.openshift.jenkins.plugins.OpenShiftTokenCredentials', name: 'rhpamsa', defaultValue: '', description: '', required: true
+    }
+   
+    options {
+        
+        disableConcurrentBuilds()
+       
+        timeout(time: 15, unit: 'MINUTES')
+    }
+    environment {
+        PORT = 8080;
+    }
+    stages {
+       
+       stage("Create Image Builder") {
+	      	  when {
+                expression {
+                        openshift.withCluster() {
+                            openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                                openshift.withCredentials("${rhpamsa}"){
+                                    echo '# Checking if selector bc exist...'
+                                    return !openshift.selector("bc", "${params.APP_NAME}-kieserver").exists();
+                                }
+                            }
+                           
+                        }
+                    }
+              }
+              steps {
+                 	script {
+		            	openshift.withCluster() {
+                                    openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                                        openshift.withCredentials("${rhpamsa}"){
+                                           sh '''
+                                                oc new-app -f openshift/templates/rhpam711-kieserver-postgresql.yaml \
+                                                -p KIE_SERVER_HTTPS_SECRET=kieserver-app-secret \
+                                                -p APPLICATION_NAME=${params.APP_NAME} \
+                                                -p CREDENTIALS_SECRET=rhpam-credentials \
+                                                -p KIE_SERVER_CONTAINER_DEPLOYMENT=Single-UserTask-1.0.0-SNAPSHOT=com.single-usertask:Single-UserTask:1.0.0-SNAPSHOT \
+                                                -p IMAGE_STREAM_NAMESPACE=openshift \
+                                               
+                                            '''
+                                    
+                                    }
+                                }
+                            }
+		                	
+		         	}
+	      	}
+    	}
+    	stage("rhpam-monitor-build") {
+        	steps {
+           	echo '### Create Linux Container Image from package ###'
+           	script {
+                    openshift.withCluster() {
+                        openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                            openshift.withCredentials("${rhpamsa}"){
+                                echo 'Start build...'
+                                sh "oc describe build ${params.APP_NAME}-kieserver"
+                                echo 'Describe end...'
+                                openshift.selector("bc", "${params.APP_NAME}-kieserver").startBuild("--wait=true","--build-loglevel=5").logs('-f')
+                                }
+                            }   
+                        }
+            	}
+        	}
+    	}      	 
+   	 
+    	stage("rhpam-monitor-deploy") {
+        	when {
+            	expression {
+                	openshift.withCluster() {                     
+                            openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                                openshift.withCredentials("${rhpamsa}"){
+                                return !openshift.selector('dc', "${params.APP_NAME}-kieserver").exists()
+                            }
+                        }
+                	}
+            	}
+        	}
+        	steps {
+            	echo '### to do deploy steps ###'
+            	script {
+                	openshift.withCluster() {
+                        openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                            openshift.withCredentials("${rhpamsa}"){
+                                    def app = openshift.newApp("${params.APP_NAME}-kieserver:latest")
+                                    app.narrow("svc").expose("--port=${env.PORT}");
+                                    def dc = openshift.selector("dc", "${params.APP_NAME}-kieserver")
+                                    dc.rollout().status("--watch=true")
+                                    dc.related('pods').logs()
+                                    while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
+                                        sleep 10
+                                    }
+                                }
+                            }
+                        }
+                    	
+            	}
+        	}
+    	}
+    	stage ('Verify Service') {
+            steps {
+                openshiftVerifyService(svcName: "${params.APP_NAME}-kieserver", verbose: 'true')
+            }
+    	}
+    }
+}
