@@ -1,0 +1,128 @@
+pipeline {
+    agent { 
+		label 'maven' 
+	}
+    parameters {
+        string(name: 'PROJECT_NAMESPACE', defaultValue: '', description: 'Your Paas(Openshift namespace) project name:')
+        string(name: 'APP_NAME', defaultValue: '', description: 'Your App monitoring name: e.i: my-app')
+        credentials credentialType: 'com.openshift.jenkins.plugins.OpenShiftTokenCredentials', name: 'rhpamsa', defaultValue: '', description: '', required: true
+    }
+   
+    options {
+        
+        disableConcurrentBuilds()
+       
+        timeout(time: 15, unit: 'MINUTES')
+    }
+    environment {
+        PORT = 8080;
+    }
+    stages {
+       
+       stage("Create New App") {
+	      	  when {
+                expression {
+                        openshift.withCluster() {
+                            openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                                openshift.withCredentials("${rhpamsa}"){
+                                    return !openshift.selector("bc", "${params.APP_NAME}-rhpamcentrmon").exists();
+                                }
+                            }
+                           
+                        }
+                    }
+              }
+              steps {
+                    echo '### New App for RHPAM monitoring ###'
+                 	script {
+		            	openshift.withCluster() {
+                                    openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                                        openshift.withCredentials("${rhpamsa}"){
+                                         /*   def bcmap = readYaml file: 'openshift/templates/rhpam711-prod-immutable-monitor.yaml';
+                                            def bcmap2 = openshift.process(bcmap, "-p", "APPLICATION_NAME=${params.APP_NAME}", 
+                                            "-p", "KIE_SERVER_CONTROLLER_OPENSHIFT_GLOBAL_DISCOVERY_ENABLED=true",
+                                            "-p", "CREDENTIALS_SECRET=rhpam-credentials",
+                                            "-p", "KIE_SERVER_ROUTER_HTTPS_SECRET=kieserver-app-secret",
+                                            "-p", "BUSINESS_CENTRAL_HTTPS_SECRET=businesscentral-app-secret")
+                                            openshift.apply(bcmap2)
+                                            openshift.newApp(bcmap2)
+                                        */
+                                        sh '''
+                                            oc new-app -f openshift/templates/rhpam711-prod-immutable-monitor.yaml \
+                                            -p APPLICATION_NAME=${params.APP_NAME} \
+                                            -p KIE_SERVER_CONTROLLER_OPENSHIFT_GLOBAL_DISCOVERY_ENABLED=true \
+                                            -p CREDENTIALS_SECRET=rhpam-credentials \
+                                            -p KIE_SERVER_ROUTER_HTTPS_SECRET=kieserver-app-secret \
+                                            -p BUSINESS_CENTRAL_HTTPS_SECRET=businesscentral-app-secret
+                                        '''
+                                    
+                                    }
+                                }
+                            }
+		                	
+		         	}
+	      	}
+    	}
+    	stage("rhpam-monitor-build") {
+        	steps {
+           	echo '### Create Build ###'
+           	script {
+                    openshift.withCluster() {
+                        openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                            openshift.withCredentials("${rhpamsa}"){
+                                echo 'Start build...'
+                                def builds = openshift.selector("bc", "${params.APP_NAME}-rhpamcentrmon").related('builds')
+                                        timeout(5) { 
+                                            builds.untilEach(1) {
+                                            return (it.object().status.phase == "Complete")
+                                            }
+                                        }
+
+
+
+                                }
+                            }   
+                        }
+            	}
+        	}
+    	}      	 
+   	 
+    	stage("rhpam-monitor-deploy") {
+        	when {
+            	expression {
+                	openshift.withCluster() {                     
+                            openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                                openshift.withCredentials("${rhpamsa}"){
+                                return !openshift.selector('dc', "${params.APP_NAME}-rhpamcentrmon").exists()
+                            }
+                        }
+                	}
+            	}
+        	}
+        	steps {
+            	echo '### to do deploy steps ###'
+            	script {
+                	openshift.withCluster() {
+                        openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                            openshift.withCredentials("${rhpamsa}"){
+                                    def rm = openshift.selector("dc", "${params.APP_NAME}-rhpamcentrmon").rollout()
+                                    timeout(5) { 
+                                        openshift.selector("dc", "${params.APP_NAME}-rhpamcentrmon").related('pods').untilEach(1) {
+                                            return (it.object().status.phase == "Running")
+                                        }   
+                                    }
+
+                                }
+                            }
+                        }
+                    	
+            	}
+        	}
+    	}
+    	stage ('Verify Service') {
+            steps {
+                openshiftVerifyService(svcName: "${params.APP_NAME}-rhpamcentrmon", verbose: 'true')
+            }
+    	}
+    }
+}
