@@ -110,7 +110,7 @@ The [deploy-kjar-bc.js](deploy-kjar-bc.js) script requires additional configurat
 
 > NOTE: The *default* values in the table above correspond to the values that are used if the [pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/tree/master/deployment-examples/pam-eap-setup) script is used to install RHPAM.
 
-> CAUTION: The SINGLETON runtime strategy is used for deployments. It is probably a good idea to review the supported runtime strategies and choose one that better suits your requirements. More information about runtime strategies can be found at [Runtime manager strategies for RHPAM 7](https://access.redhat.com/solutions/6357062) and at [Runtime Strategy: Choose wisely](https://karinavarela.me/2020/06/16/runtime-strategy-choose-wisely/)
+> **CAUTION**: The SINGLETON runtime strategy is used for deployments. It is probably a good idea to review the supported runtime strategies and choose one that better suits your requirements. More information about runtime strategies can be found at [Runtime manager strategies for RHPAM 7](https://access.redhat.com/solutions/6357062) and at [Runtime Strategy: Choose wisely](https://karinavarela.me/2020/06/16/runtime-strategy-choose-wisely/)
 
 ### Why jjs
 
