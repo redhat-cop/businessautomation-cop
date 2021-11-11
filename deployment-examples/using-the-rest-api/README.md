@@ -110,6 +110,8 @@ The [deploy-kjar-bc.js](deploy-kjar-bc.js) script requires additional configurat
 
 > NOTE: The *default* values in the table above correspond to the values that are used if the [pam-eap-setup](https://github.com/redhat-cop/businessautomation-cop/tree/master/deployment-examples/pam-eap-setup) script is used to install RHPAM.
 
+> CAUTION: The SINGLETON runtime strategy is used for deployments. It is probably a good idea to review the supported runtime strategies and choose one that better suits your requirements. More information about runtime strategies can be found at [Runtime manager strategies for RHPAM 7](https://access.redhat.com/solutions/6357062) and at [Runtime Strategy: Choose wisely](https://karinavarela.me/2020/06/16/runtime-strategy-choose-wisely/)
+
 ### Why jjs
 
 The [deploy-kjar-bc.js](deploy-kjar-bc.js) script relies on the [jjs](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jjs.html) Java Javascript engine (Nashorn). Yes, it is marked as deprecated in JDK.11 and it will even emit a warning to that effect when executed under that JDK. However, it is fully functional in both JDK.8 and JDK.11, it is part of the JDK therefore it is available in any Java JDK installation (one is needed anyway for RHPAM) and does not require any external dependencies. 
