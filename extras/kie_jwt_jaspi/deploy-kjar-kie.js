@@ -4,55 +4,27 @@
 #
 
 
-
 #
-# - configuration variables
-#
-
-#
-# arguments should be: KIE_SERVER_ID:CONTAINER_ID:GROUP:ARTEFACT:VERSION
+# - arguments should be: IP:PORT:CONTAINER_ID:GROUP:ARTEFACT:VERSION
 #
 gavar=arguments[0].split(/:/);
 
-serverId=gavar[0];
-containerName=gavar[1];
-GAV_Group=gavar[2];
-GAV_Artifact=gavar[3];
-GAV_Version=gavar[4];
-
-
-#
-# - configure application details
-#
-// serverId='remote-kieserver';
-// containerName='geo_location';
-// GAV_Group='com.example.simple_rule';
-// GAV_Artifact='SimpleRules_dm771';
-// GAV_Version='20210212.003';
+kieIP=gavar[0];
+kiePort=gavar[1];
+containerName=gavar[2];
+GAV_Group=gavar[3];
+GAV_Artifact=gavar[4];
+GAV_Version=gavar[5];
 
 #
-# - configure required capabilities with true or false
+# - configure credentials
 #
-require_rules=true
-require_bpmn=false
-require_planner=false
+kieAdminName='pamAdmin';
+kieAdminPasswd='S3cr3tK3y#';
 
-#
-# - configure BPMS installation details
-#
-baseURL='http://192.168.0.100:8080';
-bpmsAdminName='pamAdmin';
-bpmsAdminPasswd='S3cr3tK3y#';
 
-controllerPrefix='business-central';
-controllerPrefix='decision-central';
+baseURL='http://'+kieIP+':'+kiePort+'/kie-server/services/rest/server';
 
-#
-# - configure verbosity
-#     true : will print all messages
-#    false : will print only errors, defaults to false
-#
-verbose=true
 
 #
 # - do not modify below this line
@@ -139,7 +111,7 @@ function httpPost(theUrl, data, requestProperties){
     return asResponse(con);
 }
 
-if (verbose!=true) verbose=false;
+verbose=true;
 function logit(s,err) { if (verbose||err) print(s); }
 function pout(s) { logit(s,false); }
 function eout(s) { logit(s,true); }
@@ -153,36 +125,36 @@ pout("--- BEGIN");
 
 invokedOK=true
 invokedOK=(invokedOK && (baseURL.length()>0))
-invokedOK=(invokedOK && (bpmsAdminName.length()>0))
-invokedOK=(invokedOK && (bpmsAdminPasswd.length()>0))
+invokedOK=(invokedOK && (kieAdminName.length()>0))
+invokedOK=(invokedOK && (kieAdminPasswd.length()>0))
 invokedOK=(invokedOK && (containerName.length()>0))
 invokedOK=(invokedOK && (GAV_Group.length()>0))
 invokedOK=(invokedOK && (GAV_Artifact.length()>0))
 invokedOK=(invokedOK && (GAV_Version.length()>0))
 if (!invokedOK) {
   eout('ERROR: Mising configuration, please provide values for the following:');
-  eout('               baseURL: the URL where the Business Central is reachable,');
-  eout('                        eg. http://localhost:8080/business-central');
-  eout('         bpmsAdminName: the name of the BPMS administrator, e.g. bpmsAmdin');
-  eout('       bpmsAdminPasswd: the password of the BPMS administrator, e.g. s3cr3tp4ss');
+  eout('               baseURL: the URL where the KIE Server is reachable,');
+  eout('                        eg. http://localhost:8080/kie-server/services/rest/server');
+  eout('         kieAdminName: a user able to perform administrative tasks on KIE Server, e.g. pamAdmin');
+  eout('       kieAdminPasswd: the password of said user, e.g. s3cr3tp4ss');
   eout('             GAV_Group: the GROUP part of the Maven GAV vector, e.g. com.example.rules');
   eout('          GAV_Artifact: the ARTIFACT part of the Maven GAV vector, e.g. validation');
   eout('           GAV_Version: the VERSION part of the Maven GAV vector, e.g. 1.0-SNAPSHOT or 2.5.1');
   END_RUN(1);
 }
 
-bpmsAuth='Basic '+java.util.Base64.getEncoder().encodeToString((bpmsAdminName+':'+bpmsAdminPasswd).getBytes('utf-8'));
+kieAuth='Basic '+java.util.Base64.getEncoder().encodeToString((kieAdminName+':'+kieAdminPasswd).getBytes('utf-8'));
 
-eapOK=false;
-bpmsOK=false;
+kieOK=false;
 
-scCode = httpGet(baseURL).statusCode;
-if (scCode==200) { PASS("EAP is available at "+baseURL); eapOK=true; } else FAIL('EAP is unreachable');
+propConfig = { };
+propConfig = { 'Accept':'application/json', 'Content-Type':'application/json' };
+propConfig['Authorization'] = kieAuth;
+response = httpGetWithHeaders("${baseURL}",propConfig);
+scCode = response.statusCode;
+if (scCode==200) { PASS("Verified that KIE Server is reachable at ${baseURL}"); bpmsOK=true; } else FAIL("KIE Server is unreachable at ${baseURL}");
 
-if (eapOK) {
-  scCode = httpGet("${baseURL}/${controllerPrefix}").statusCode;
-  if (scCode==200) { PASS('BPMS / Business-Central is reachable'); bpmsOK=true; } else FAIL('BPMS is unreachable');
-}
+END_RUN()
 
 if (bpmsOK) {
   sout('Testing available KIE Execution Servers for this controller...');
