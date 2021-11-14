@@ -111,7 +111,7 @@ function httpPost(theUrl, data, requestProperties){
     return asResponse(con);
 }
 
-verbose=true;
+verbose=false;
 function logit(s,err) { if (verbose||err) print(s); }
 function pout(s) { logit(s,false); }
 function eout(s) { logit(s,true); }
@@ -154,101 +154,45 @@ response = httpGetWithHeaders("${baseURL}",propConfig);
 scCode = response.statusCode;
 if (scCode==200) { PASS("Verified that KIE Server is reachable at ${baseURL}"); bpmsOK=true; } else FAIL("KIE Server is unreachable at ${baseURL}");
 
+
+# - delete container before deploying
+eout("Deleting container ${containerName}");
+response = httpDeleteWithHeaders("${baseURL}/containers/${containerName}",propConfig);
+pout('ResponseCode: ['+response.statusCode+']');
+
+# - deploy container
+var putData = [
+                '{',
+                ' "container-id" : "'+containerName+'",',
+                ' "container-name" : "'+containerName+'",',
+                '	  "release-id" : {',
+                '        "group-id" : "'+GAV_Group+'",',
+                '        "artifact-id" : "'+GAV_Artifact+'",',
+                '        "version" : "'+GAV_Version+'"',
+                '    },',
+                '	"config-items": [',
+                '    {',
+                '      "itemName": "RuntimeStrategy",',
+                '      "itemValue": "SINGLETON"',
+                '    },',
+                '    {',
+                '      "itemName": "MergeMode",',
+                '      "itemValue": "MERGE_COLLECTIONS"',
+                '    }',
+                '  ],',
+                '	"scanner": {',
+                '    "poll-interval": "5000",',
+                '    "status": "STOPPED"',
+                '  },',
+                '	"status" : "STARTED"',
+                '}'
+              ].join('');
+response = httpPutWithHeaders("${baseURL}/containers/${containerName}",propConfig,putData);
+pout('ResponseCode: ['+response.statusCode+']');
+if (response.statusCode==201) {
+  eout("${containerName} has been deployed with ${GAV_Group}:${GAV_Artifact}:${GAV_Version}");  
+} else {
+  eout("ERROR - NOT DEPLOYED ${containerName} with ${GAV_Group}:${GAV_Artifact}:${GAV_Version} HAT NOT BEEN DEPLOYED");
+}
+
 END_RUN()
-
-if (bpmsOK) {
-  sout('Testing available KIE Execution Servers for this controller...');
-  propConfig = { };
-  propConfig = { 'Accept':'application/json', 'Content-Type':'application/json' };
-  propConfig['Authorization'] = bpmsAuth;
-  response = httpGetWithHeaders("${baseURL}/${controllerPrefix}/rest/controller/management/servers",propConfig);
-  if (response.statusCode==200) {
-    PASS();
-    jon = JSON.parse(response.data);
-    // print(JSON.stringify(jon,null,'\t'));
-    var srvId = jon['server-template'][0]['server-id'];
-    var srvName = jon['server-template'][0]['server-name'];
-    var srvTemplate =jon['server-template'][0]['server-instances'][0]['server-template-id']; 
-    var srvUrl =jon['server-template'][0]['server-instances'][0]['server-url']; 
-    pout('Server Details:');
-    pout('\t         ID:'+srvId);
-    pout('\t       Name:'+srvName);
-    pout('\t TemplateID:'+srvTemplate);
-    //pout('\t        URL:'+srvUrl);
-  } else {
-    FAIL('No KIE Execution Server found on this controller');
-  }
-  srvId=serverId
-
-  sout("Deleting container ${containerName} on the Controller");
-  propConfig = { };
-  propConfig = { 'Accept':'application/json', 'Content-Type':'application/json' };
-  propConfig['Authorization'] = bpmsAuth; 
-  response = httpDeleteWithHeaders("${baseURL}/${controllerPrefix}/rest/controller/management/servers/${srvId}/containers/${containerName}",propConfig);
-  pout('ResponseCode: ['+response.statusCode+']');
-
-  sout("Trying to creating container ${containerName} at Business Central ...");
-  var putData = [
-                  '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
-                  '<container-spec-details>',
-                  '	<container-id>'+"${containerName}"+'</container-id>',
-                  '	<container-name>'+"${containerName}"+'</container-name>',
-                  '	<server-template-key>',
-                  '		<server-id>'+"${srvId}"+'</server-id>',
-                  '	</server-template-key>',
-                  '	<release-id>',
-                  "		<group-id>${GAV_Group}</group-id>",
-                  "		<artifact-id>${GAV_Artifact}</artifact-id>",
-                  "		<version>${GAV_Version}</version>",
-                  '	</release-id>',
-                  '	<configs>',
-                  '		<entry>',
-                  '			<key>PROCESS</key>',
-                  '			<value xsi:type="processConfig"',
-                  '				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',
-                  '             <runtimeStrategy>SINGLETON</runtimeStrategy>',
-                  '             <kbase></kbase>',
-                  '             <ksession></ksession>',
-                  '             <mergeMode>MERGE_COLLECTIONS</mergeMode>',
-                  '			</value>',
-                  '		</entry>',
-                  '		<entry>',
-                  '			<key>RULE</key>',
-                  '			<value xsi:type="ruleConfig"',
-                  '				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',
-                  '				<scannerStatus>STOPPED</scannerStatus>',
-                  '			</value>',
-                  '		</entry>',
-                  '	</configs>',
-                  '	<status>STARTED</status>',
-                  '</container-spec-details>'].join('');
-  propConfig = { };
-  propConfig = { 'Accept':'application/json', 'Content-Type':'application/xml' };
-  propConfig['Authorization'] = bpmsAuth;
-  response = httpPutWithHeaders("${baseURL}/${controllerPrefix}/rest/controller/management/servers/${srvId}/containers/${containerName}",propConfig,putData);
-  if (response.statusCode==201) {
-    PASS();
-    sout("Associating with remote server ... ");
-    var putData = [
-                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
-                    '<kie-container container-id="'+"${containerName}"+'">',
-                    '  <release-id>',
-                    "    <group-id>${GAV_Group}</group-id>",
-                    "    <artifact-id>${GAV_Artifact}</artifact-id>",
-                    "    <version>${GAV_Version}</version>",
-                    '  </release-id>',
-                    '</kie-container>'].join('');
-    propConfig = { };
-    propConfig = { 'Accept':'application/json', 'Content-Type':'application/xml' };
-    propConfig['Authorization'] = bpmsAuth;
-  } else {
-    pout('ResponseCode: ['+response.statusCode+']');
-    FAIL("ERR11 Could NOT create ${containerName} updated with ${GAV_Group}:${GAV_Artifact}:${GAV_Version}");
-  }
-
-
- }
-
-eout("${containerName} updated with ${GAV_Group}:${GAV_Artifact}:${GAV_Version}");
-END_RUN();
-
