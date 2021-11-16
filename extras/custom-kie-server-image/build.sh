@@ -25,19 +25,19 @@ while (($#))
 do
     case $1 in
         --registry=*)
-            registry=${1#*=}
+            registry="${1#*=}"
         ;;
         --artifact-repo=*)
-            artifact_repo=${1#*=}
+            artifact_repo="${1#*=}"
         ;;
         --image-tag=*)
-            image_tag=${1#*=}
+            image_tag="${1#*=}"
         ;;
         --namespace=*)
-            namespace=${1#*=}
+            namespace="${1#*=}"
         ;;	
         --env-target=*)
-            env_target=${1#*=}
+            env_target="${1#*=}"
         ;;	
         -h)
             print_help
@@ -58,12 +58,12 @@ then
     exit 1
 fi
 
-current_dir=${PWD##*/}
+current_dir="${PWD##*/}"
 current_dir=oracle-driver-image
 driver=$(echo $current_dir | cut -d '-' -f 1)
-image_tag=${image_tag:-1.1}
-namespace=${namespace:-openshift}
-env_target=${env_target:-dev}
+image_tag="${image_tag:-1.1}"
+namespace="${namespace:-openshift}"
+env_target="${env_target:-dev}"
 
 registry=${registry:-image-registry.openshift-image-registry.svc:5000}
 
@@ -132,7 +132,7 @@ docker_login
 
 
 image_name=$driver-image
-image_name=${driver}-${env_target}
+image_name="${driver}-${env_target}"
 version=$(grep version $current_dir/Dockerfile | awk -F"=" '{print $2}' | sed 's/"//g')
 echo ":: IMAGE_NAME: $image_name"
 echo ":: DRIVER: $driver"
