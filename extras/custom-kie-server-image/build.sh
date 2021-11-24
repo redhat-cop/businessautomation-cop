@@ -72,14 +72,14 @@ function docker_login() {
         echo "You must be logged in"
         exit 1
     fi
-     docker login -u `oc whoami` -p `oc whoami -t` $registry
+     docker login -u $(oc whoami) -p $(oc whoami -t) "$registry"
 }
 
 function build() {
-    local driver=$1
-    local tag=$2
-    local artifact_repo=${3:-}
-    echo Building $driver
+    local driver="$1"
+    local tag="$2"
+    local artifact_repo="${3:-}"
+    echo "Building $driver"
     if [[ -n $artifact_repo ]]
     then
         echo "docker build -f $current_dir/Dockerfile . -t $tag --build-arg ARTIFACT_MVN_REPO=$artifact_repo"
