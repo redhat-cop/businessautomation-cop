@@ -72,40 +72,40 @@ function docker_login() {
         echo "You must be logged in"
         exit 1
     fi
-     docker login -u `oc whoami` -p `oc whoami -t` $registry
+     docker login -u "$(oc whoami)" -p "$(oc whoami -t)" "$registry"
 }
 
 function build() {
-    local driver=$1
-    local tag=$2
-    local artifact_repo=${3:-}
-    echo Building $driver
+    local driver="$1"
+    local tag="$2"
+    local artifact_repo="${3:-}"
+    echo "Building $driver"
     if [[ -n $artifact_repo ]]
     then
         echo "docker build -f $current_dir/Dockerfile . -t $tag --build-arg ARTIFACT_MVN_REPO=$artifact_repo"
-        docker build -f $current_dir/Dockerfile . -t $tag --build-arg ARTIFACT_MVN_REPO=$artifact_repo
+        docker build -f "$current_dir/Dockerfile" . -t $tag --build-arg ARTIFACT_MVN_REPO="$artifact_repo"
     else
         echo "docker build -f $current_dir/Dockerfile . -t $tag"
-        docker build -f $current_dir/Dockerfile . -t $tag
+        docker build -f "$current_dir/Dockerfile" . -t "$tag"
     fi
-    echo Finished bulding $tag
+    echo "Finished bulding $tag"
 }
 
 function push() {
-    local tag=$1
-    echo Pushing $tag
-    docker push $tag
-    echo Pushed $tag
+    local tag="$1"
+    echo Pushing "$tag"
+    docker push "$tag"
+    echo Pushed "$tag"
 }
 
 function create_build() {
-    local driver=$1
-    local version=$2
-    local namespace=$3
+    local driver="$1"
+    local version="$2"
+    local namespace="$3"
 
     # Delete previous BuildConfig in case we are running an update of the base image
     echo "oc delete bc rhpam-kieserver-rhel8-$image_name"
-    oc delete bc rhpam-kieserver-rhel8-$image_name || echo "BuildConfig rhpam-kieserver-rhel8-$image_name not found for deletion"
+    oc delete bc "rhpam-kieserver-rhel8-$image_name" || echo "BuildConfig rhpam-kieserver-rhel8-$image_name not found for deletion"
     
     echo "oc new-build -n $namespace \
         --name rhpam-kieserver-rhel8-$image_name \
@@ -115,13 +115,13 @@ function create_build() {
         --to=rhpam-kieserver-rhel8-$image_name:$image_tag \
         -e CUSTOM_INSTALL_DIRECTORIES=$driver-driver/extensions"
 
-    oc new-build -n $namespace \
-        --name rhpam-kieserver-rhel8-$image_name \
-        --image-stream=$namespace/rhpam-kieserver-rhel8:$image_tag \
-        --source-image=$namespace/$image_name:$version \
-        --source-image-path=/extensions:$driver-driver/ \
-        --to=rhpam-kieserver-rhel8-$image_name:$image_tag \
-        -e CUSTOM_INSTALL_DIRECTORIES=$driver-driver/extensions
+    oc new-build -n "$namespace" \
+        --name "rhpam-kieserver-rhel8-$image_name" \
+        --image-stream="$namespace/rhpam-kieserver-rhel8:$image_tag" \
+        --source-image="$namespace/$image_name:$version" \
+        --source-image-path="/extensions:$driver-driver/" \
+        --to="rhpam-kieserver-rhel8-$image_name:$image_tag" \
+        -e CUSTOM_INSTALL_DIRECTORIES="$driver-driver/extensions"
 }
 
 docker_login
@@ -131,16 +131,16 @@ docker_login
 # pushd .. &> /dev/null
 
 
-image_name=$driver-image
+image_name="$driver-image"
 image_name="${driver}-${env_target}"
-version=$(grep version $current_dir/Dockerfile | awk -F"=" '{print $2}' | sed 's/"//g')
+version=$(grep version "$current_dir/Dockerfile" | awk -F"=" '{print $2}' | sed 's/"//g')
 echo ":: IMAGE_NAME: $image_name"
 echo ":: DRIVER: $driver"
 echo ":: VERSION: $version"
-tag=$registry/$namespace/$image_name:$version
-build $image_name $tag ${artifact_repo:-}
-push $tag
-create_build $driver $version $namespace
+tag="$registry/$namespace/$image_name:$version"
+build "$image_name" "$tag" "${artifact_repo:-}"
+push "$tag"
+create_build "$driver" "$version" "$namespace"
 
 
 # popd &> /dev/null
