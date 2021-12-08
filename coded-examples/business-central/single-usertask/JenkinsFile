@@ -18,7 +18,18 @@ pipeline {
         PORT = 8080;
     }
     stages {
-       
+        stage('Checkout branch') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Maven build'){
+            steps {
+                echo 'Building..'
+                echo '### compiling  ###'
+                sh "mvn -s settings.xml deploy -DSkipTests"
+            }
+        }
        stage("Create Image Builder") {
 	      	  when {
                 expression {
