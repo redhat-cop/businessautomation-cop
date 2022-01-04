@@ -27,7 +27,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 echo '### compiling  ###'
-                sh "mvn -s settings.xml deploy -DSkipTests"
+                sh "mvn -s settings.xml deploy -DskipTests"
             }
         }
        stage("Create Image Builder") {
