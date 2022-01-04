@@ -83,7 +83,7 @@ function build() {
     if [[ -n $artifact_repo ]]
     then
         echo "docker build -f $current_dir/Dockerfile . -t $tag --build-arg ARTIFACT_MVN_REPO=$artifact_repo"
-        docker build -f "$current_dir/Dockerfile" . -t $tag --build-arg ARTIFACT_MVN_REPO="$artifact_repo"
+        docker build -f "$current_dir/Dockerfile" . -t "$tag" --build-arg ARTIFACT_MVN_REPO="$artifact_repo"
     else
         echo "docker build -f $current_dir/Dockerfile . -t $tag"
         docker build -f "$current_dir/Dockerfile" . -t "$tag"
