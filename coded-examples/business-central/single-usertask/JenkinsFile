@@ -34,10 +34,10 @@ pipeline {
 	      	  when {
                 expression {
                         openshift.withCluster() {
-                            openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                            openshift.withProject("${PROJECT_NAMESPACE}") {
                                 openshift.withCredentials("${rhpamsa}"){
                                     echo '# Checking if selector bc exist...'
-                                    return !openshift.selector("bc", "${params.APP_NAME}-kieserver").exists();
+                                    return !openshift.selector("bc", "${APP_NAME}-kieserver").exists();
                                 }
                             }
                            
@@ -47,7 +47,7 @@ pipeline {
               steps {
                  	script {
 		            	openshift.withCluster() {
-                                    openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                                    openshift.withProject("${PROJECT_NAMESPACE}") {
                                         openshift.withCredentials("${rhpamsa}"){
                                            sh '''
                                                 oc new-app -f openshift/templates/rhpam711-kieserver-postgresql.yaml \
@@ -71,12 +71,12 @@ pipeline {
            	echo '### Create Linux Container Image from package ###'
            	script {
                     openshift.withCluster() {
-                        openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                        openshift.withProject("${PROJECT_NAMESPACE}") {
                             openshift.withCredentials("${rhpamsa}"){
                                 echo 'Start build...'
-                                sh "oc describe build ${params.APP_NAME}-kieserver"
+                                sh "oc describe build ${APP_NAME}-kieserver"
                                 echo 'Describe end...'
-                                openshift.selector("bc", "${params.APP_NAME}-kieserver").startBuild("--wait=true","--build-loglevel=5").logs('-f')
+                                openshift.selector("bc", "${APP_NAME}-kieserver").startBuild("--wait=true","--build-loglevel=5").logs('-f')
                                 }
                             }   
                         }
@@ -88,9 +88,9 @@ pipeline {
         	when {
             	expression {
                 	openshift.withCluster() {                     
-                            openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                            openshift.withProject("${PROJECT_NAMESPACE}") {
                                 openshift.withCredentials("${rhpamsa}"){
-                                return !openshift.selector('dc', "${params.APP_NAME}-kieserver").exists()
+                                return !openshift.selector('dc', "${APP_NAME}-kieserver").exists()
                             }
                         }
                 	}
@@ -100,11 +100,11 @@ pipeline {
             	echo '### to do deploy steps ###'
             	script {
                 	openshift.withCluster() {
-                        openshift.withProject("${params.PROJECT_NAMESPACE}") {
+                        openshift.withProject("${PROJECT_NAMESPACE}") {
                             openshift.withCredentials("${rhpamsa}"){
-                                    def app = openshift.newApp("${params.APP_NAME}-kieserver:latest")
+                                    def app = openshift.newApp("${APP_NAME}-kieserver:latest")
                                     app.narrow("svc").expose("--port=${env.PORT}");
-                                    def dc = openshift.selector("dc", "${params.APP_NAME}-kieserver")
+                                    def dc = openshift.selector("dc", "${APP_NAME}-kieserver")
                                     dc.rollout().status("--watch=true")
                                     dc.related('pods').logs()
                                     while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
@@ -119,7 +119,7 @@ pipeline {
     	}
     	stage ('Verify Service') {
             steps {
-                openshiftVerifyService(svcName: "${params.APP_NAME}-kieserver", verbose: 'true')
+                openshiftVerifyService(svcName: "${APP_NAME}-kieserver", verbose: 'true')
             }
     	}
     }
