@@ -76,7 +76,7 @@
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.11.1-redhat-00001</version>
+            <version>1.4.19</version>
         </dependency>
     </dependencies>
 
