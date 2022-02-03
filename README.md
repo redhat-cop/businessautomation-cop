@@ -12,6 +12,9 @@ business rules management (BRM), Decision Model and Notation (DMN), and business
 # Red Hat Decision Manager (DM)
 DM is a platform to developing and authoring business rules management (BRM), and business resource optimization and complex event processing (CEP).
 
+## Decision Model and Notation (DMN) 
+It is a standard established by the Object Management Group (OMG) for describing and modeling operational decisions.
+
 ## Business Process Management (BPM)
 It's a tool to help model, analyze, measure, improve, automate business processes and decisions based on jbpm framework.
 
