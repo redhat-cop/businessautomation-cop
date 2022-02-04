@@ -834,6 +834,8 @@ pushd \${JBOSS_HOME}/bin/ &> /dev/null
 popd &> /dev/null
 __GOPAM
   chmod u+x $startScript
+  # move script to the $EAP_HOME root dir
+  mv $startScript $nodeInstallLocation/
   summary "Startup script :- $startScript"
 }
 
@@ -851,10 +853,12 @@ function applyAdditionalNodeConfig() {
   : > "$ADDITIONAL_NODE_CONFIG"
   # have logging to CONSOLE as well as to FILE
   ncfg+=( "batch" )
-  ncfg+=( "/subsystem=logging/console-handler=CONSOLE:add" )
-  ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)" )
-  ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)" )
-  ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])' )
+  ncfg+=( "if (outcome == failed) of /subsystem=logging/console-handler=CONSOLE:read-resource" )
+  ncfg+=( "  /subsystem=logging/console-handler=CONSOLE:add" )
+  ncfg+=( "  /subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)" )
+  ncfg+=( "  /subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)" )
+  ncfg+=( '  /subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])' )
+  ncfg+=( "end-if" )
   ncfg+=( "/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=INFO)" )
   ncfg+=( '/subsystem=logging/logger=org.jbpm.workbench.wi.backend.server.workitem.RepositoryStorageVFSImpl/:add(category=org.jbpm.workbench.wi.backend.server.workitem.RepositoryStorageVFSImpl,level=DEBUG)' )
   # CORS
