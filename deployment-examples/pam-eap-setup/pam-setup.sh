@@ -760,7 +760,7 @@ function modifyConfiguration() {
     cat "$ADDITIONAL_NODE_CONFIG" >> $pamConfigFile
     # echo 'run-batch' >> $pamConfigFile
     echo 'stop-embedded-server' >> $pamConfigFile
-    ./jboss-cli.sh --file=$pamConfigFile
+    ./jboss-cli.sh --file=$pamConfigFile &> /dev/null
     rm -f $TMP_FILE
     # comma-separated CLV needs special handling
     tmpclv="${nodeConfig['controllerUrl']}"
@@ -852,7 +852,7 @@ function applyAdditionalNodeConfig() {
   local -a ncfg
   : > "$ADDITIONAL_NODE_CONFIG"
   # have logging to CONSOLE as well as to FILE
-  ncfg+=( "batch" )
+  #ncfg+=( "batch" ) #if/try/catch does not work on batch mode
   ncfg+=( "if (outcome == failed) of /subsystem=logging/console-handler=CONSOLE:read-resource" )
   ncfg+=( "  /subsystem=logging/console-handler=CONSOLE:add" )
   ncfg+=( "  /subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)" )
@@ -911,7 +911,7 @@ function applyAdditionalNodeConfig() {
     createPgDS
   fi
 
-  ncfg+=( "run-batch" )
+  #ncfg+=( "run-batch" )
   printf '%s\n' "${ncfg[@]}"  >> "$ADDITIONAL_NODE_CONFIG"
  }
 
