@@ -27,8 +27,8 @@ Usage:
 
 where :
 
-* The `kie-server-id` where the KJAR is going to be deployed to
-* The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment
+* The `kie-server-id` refers to the KIE Server where the KJAR is going to be deployed to
+* The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment. The (kie)container will be deleted if it already exists and a new one will be created.
 * The GAV coordinates of the KJAR, i.e. a (Group,Artifact,Vector) tuple that will be used by the KIE Servers to fetch the KJAR and deployed it
 
 Additional configuration is needed to specify the relevant URLs as well as credentials for accessing Business Central and KIE Servers. Refer to [Additional Configuration](#additional-configuraton) section for more details.
@@ -38,6 +38,11 @@ Example:
 ```
 ./deploy-kjar-bc.js remote-kieserver:geo_location:com.bacop.rules_project:rules:2.3-SNAPSHOT
 ```
+where:
+
+* `remote-kieserver` is the KIE Server Id 
+* `geo_location` is the name of the (kie)container that is going to be created as the execution environment of the KJAR
+* `com.bacop.rules_project:rules:2.3-SNAPSHOT` is the "group:artefact:version" of the KJAR to be deployed and has to already been deposited to a maven repository that the KIE Server can reach
 
 Pre-requisites:
 
