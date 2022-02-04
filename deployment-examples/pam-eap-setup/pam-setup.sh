@@ -561,6 +561,7 @@ function checkConfiguration() {
   cd "$WORKDIR"
   xmlConfig="$EAP_HOME"/${nodedir}/configuration/standalone.xml
   xmlConfigHA="$EAP_HOME"/${nodedir}/configuration/standalone-full-ha.xml
+  xmlConfigFullNonHA="$EAP_HOME"/${nodedir}/configuration/standalone-full.xml
   if [ ! -r "$xmlConfig" ]; then
     sout "ERROR: Cannot read configuration $xmlConfig -- exiting"
     exit 1;
@@ -570,7 +571,9 @@ function checkConfiguration() {
     exit 1;
   fi
   cp "$xmlConfig" "$xmlConfig"-orig
-  cp "$xmlConfigHA" "$xmlConfig"
+  [[ "$TARGET_TYPE" == "PAM" ]] && cp "$xmlConfigHA" "$xmlConfig"
+  # HA does not mak much sense for a DM setup
+  [[ "$TARGET_TYPE" == "DM" ]] && cp "$xmlConfigFullNonHA" "$xmlConfig"
   [[ "$CYGWIN_ON" == "yes" ]] && xmlConfig="$(cygpath -w "${xmlConfig}")"
   #
   # custom directories to accommodate multinode installation
