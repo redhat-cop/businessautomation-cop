@@ -33,6 +33,8 @@ where :
 
 Additional configuration is needed to specify the relevant URLs as well as credentials for accessing Business Central and KIE Servers. Refer to [Additional Configuration](#additional-configuraton) section for more details.
 
+> **NOTE** : HTTP is used to communicate with Business Central and KIE Servers. HTTPS is NOT used.
+
 Example:
 
 ```
@@ -350,7 +352,7 @@ where :
 * The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment. The (kie)container will be deleted if it already exists and a new one will be created.
 * The GAV coordinates of the KJAR, i.e. a (Group,Artifact,Vector) tuple that will be used by the KIE Servers to fetch the KJAR and deployed it
 
-> **NOTE** : HTTP is used to communicate with KIE Server. HTTPS is NOT supported.
+> **NOTE** : HTTP is used to communicate with KIE Server. HTTPS is NOT used.
 
 
 ### REST endpoints used
