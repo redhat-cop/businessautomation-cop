@@ -328,6 +328,27 @@ Please note that in case of an unsuccessful deployment the HTTP response code wo
 }
 ```
 
+## Direct Deployment to a KIE Server
+
+If unmanaged KIE Servers are deployed the REST API exposed can be used to manage KJAR deployments. Deployment has to be managed for each KIE Server separately since with Business Central out of the picture there is no controlling entity to manage deployments across a group of KIE Servers.
+
+The [deploy-kjar-kie.js](deploy-kjar-kie.js) script in this repo attempts to
+automate the process of KJAR deployment across individual KIE Servers. Please note that using this script against KIE Servers in managed mode is not recommended. Although deployment of a KJAR is possible, that deployment will be overridden upon the (managed) KIE Server restart as any configuration will be provided by the Business Central.
+
+Usage is the same as before, refer to [Deployment using Business Central](#deployment-using-business-central) for more details.
+
+Summary:
+
+```
+./deploy-kjar-kie.js <kie-server-id>:<container-id>:<group>:<artifact>:<version>
+```
+
+where :
+
+* The `kie-server-id` refers to the KIE Server where the KJAR is going to be deployed to
+* The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment. The (kie)container will be deleted if it already exists and a new one will be created.
+* The GAV coordinates of the KJAR, i.e. a (Group,Artifact,Vector) tuple that will be used by the KIE Servers to fetch the KJAR and deployed it
+
 
 ---
 
