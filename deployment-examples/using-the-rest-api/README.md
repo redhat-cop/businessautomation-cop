@@ -350,7 +350,7 @@ where :
 * The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment. The (kie)container will be deleted if it already exists and a new one will be created.
 * The GAV coordinates of the KJAR, i.e. a (Group,Artifact,Vector) tuple that will be used by the KIE Servers to fetch the KJAR and deployed it
 
-> HTTP is used to communicate with KIE Server. HTTPS is NOT supported.
+> **NOTE** : HTTP is used to communicate with KIE Server. HTTPS is NOT supported.
 
 
 ### REST endpoints used
