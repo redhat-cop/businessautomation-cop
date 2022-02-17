@@ -14,6 +14,9 @@ The scripts in this repo attempt to automate the process of KJAR deployment acro
 	* [Additional configuration](#additional-configuration)
 	* [Why jjs](#why-jjs)
 	* [REST endpoints used](#rest-endpoints-used)
+* [Direct Deployment to a KIE Server](#direct-deployment-to-a-kie-server)
+  * [REST endpoints used for direct deployment](#rest-endpoints-used-for-direct-deployment)
+
 
 ## Deployment using Business Central
 
@@ -355,7 +358,7 @@ where :
 > **NOTE** : HTTP is used to communicate with KIE Server. HTTPS is NOT used.
 
 
-### REST endpoints used
+### REST endpoints used for direct deployment
 
 The [deploy-kjar-kie.js](deploy-kjar-kie.js) is using the following REST endpoints offered by KIE Server.
 
