@@ -337,7 +337,7 @@ automate the process of KJAR deployment across individual KIE Servers. Please no
 
 Usage is the same as before, refer to [Deployment using Business Central](#deployment-using-business-central) for more details.
 
-Summary:
+Usage summary:
 
 ```
 ./deploy-kjar-kie.js <kie-server-id>:<container-id>:<group>:<artifact>:<version>
