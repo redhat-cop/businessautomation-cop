@@ -359,6 +359,42 @@ where :
 
 The [deploy-kjar-kie.js](deploy-kjar-kie.js) is using the following REST endpoints offered by KIE Server.
 
+
+#### Delete an existing KIE Container
+
+```
+curl --request DELETE \
+  --url http://localhost:8080/kie-server/services/rest/server/containers/mo_vrm \
+  --header 'Accept: application/json' \
+  --header 'Authorization: Basic cGFtQWxxxx' \
+  --header 'Content-Type: application/json'
+```
+
+* If successful a `204` HTTP response will be returned
+* In the above request `mo_vrm` is the KIE Container that will be deleted
+
+
+#### Deploy a KIE Container
+
+The following request has a JSON payload, but an XML one can be used as well.
+
+```
+curl --request PUT \
+  --url http://localhost:8080/kie-server/services/rest/server/containers/mo_vrm \
+  --header 'Accept: application/json' \
+  --header 'Authorization: Basic cGFtQWxxxx' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "container-id" : "mo_vrm",
+    "release-id" : {
+        "group-id" : "com.example.simple_rule",
+        "artifact-id" : "SimpleRules_dm771",
+        "version" : "20210211.020"
+    }
+}'
+```
+
+
 ---
 
 > Written with [StackEdit](https://stackedit.io/).
