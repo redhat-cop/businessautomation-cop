@@ -335,20 +335,30 @@ If unmanaged KIE Servers are deployed the REST API exposed can be used to manage
 The [deploy-kjar-kie.js](deploy-kjar-kie.js) script in this repo attempts to
 automate the process of KJAR deployment across individual KIE Servers. Please note that using this script against KIE Servers in managed mode is not recommended. Although deployment of a KJAR is possible, that deployment will be overridden upon the (managed) KIE Server restart as any configuration will be provided by the Business Central.
 
-Usage is the same as before, refer to [Deployment using Business Central](#deployment-using-business-central) for more details.
+Usage is the mostly the same as before with the addition of the KIE Server `IP` (can also be the DNS name) and `PORT`, refer to [Deployment using Business Central](#deployment-using-business-central) for more details.
 
 Usage summary:
 
 ```
-./deploy-kjar-kie.js <kie-server-id>:<container-id>:<group>:<artifact>:<version>
+./deploy-kjar-kie.js <kie-server-ip>:<kie-server-port>:<container-id>:<group>:<artifact>:<version>
 ```
 
 where :
 
-* The `kie-server-id` refers to the KIE Server where the KJAR is going to be deployed to
+* The `kie-server-ip` must be either the IP of the KIE Server or its DNS name
+* The `kie-server-port` must be the TCP port that KIE Server listens to
 * The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment. The (kie)container will be deleted if it already exists and a new one will be created.
 * The GAV coordinates of the KJAR, i.e. a (Group,Artifact,Vector) tuple that will be used by the KIE Servers to fetch the KJAR and deployed it
 
+[NOTE]
+====
+HTTP is used to communicate with KIE Server. HTTPS is NOT supported.
+====
+
+
+### REST endpoints used
+
+The [deploy-kjar-kie.js](deploy-kjar-kie.js) is using the following REST endpoints offered by KIE Server.
 
 ---
 
