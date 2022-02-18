@@ -153,6 +153,8 @@ MASTER_CONFIG=master.conf
 # versions supported
 #
 cat << "__CONFIG" > $MASTER_CONFIG
+PAM7120 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.12.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.12.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
+DM7120  | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhdm-7.12.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.12.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=DM
 PAM7111 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.11.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.11.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
 DM7111  | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhdm-7.11.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.11.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=DM
 PAM7110 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.11.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.11.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
@@ -510,6 +512,15 @@ function installUsers() {
       ./add-user.sh -sc "$scPath" -s -a --user "$u" --password "${uPass[$u]}" --role "${uRole[$u]}"
       summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
     done
+
+    #check if the Elytron filesystem based Domain is present (default on v7.12.0+) in th standalone.xml, 
+    # which means Elytron is being used intead of Legacy Security
+    elytronRealmCheck=$(grep "kie-fs-realm-users" $scPath/standalone.xml)
+    if [[ ! -z "$elytronRealmCheck" ]]; then
+      ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file $scPath/application-users.properties --roles-file $scPath/application-roles.properties --output-location $scPath/kie-fs-realm-users    
+      # fix the elytron simple-role-decoder to use the correct role attribute name
+      "$SED" -i "s]name=\"from-roles-attribute\" attribute=\"role\"]name=\"from-roles-attribute\" attribute=\"roles\"]" $scPath/standalone*.xml
+    fi
   popd &> /dev/null
 }
 
@@ -550,6 +561,7 @@ function checkConfiguration() {
   cd "$WORKDIR"
   xmlConfig="$EAP_HOME"/${nodedir}/configuration/standalone.xml
   xmlConfigHA="$EAP_HOME"/${nodedir}/configuration/standalone-full-ha.xml
+  xmlConfigFullNonHA="$EAP_HOME"/${nodedir}/configuration/standalone-full.xml
   if [ ! -r "$xmlConfig" ]; then
     sout "ERROR: Cannot read configuration $xmlConfig -- exiting"
     exit 1;
@@ -559,7 +571,9 @@ function checkConfiguration() {
     exit 1;
   fi
   cp "$xmlConfig" "$xmlConfig"-orig
-  cp "$xmlConfigHA" "$xmlConfig"
+  [[ "$TARGET_TYPE" == "PAM" ]] && cp "$xmlConfigHA" "$xmlConfig"
+  # HA does not mak much sense for a DM setup
+  [[ "$TARGET_TYPE" == "DM" ]] && cp "$xmlConfigFullNonHA" "$xmlConfig"
   [[ "$CYGWIN_ON" == "yes" ]] && xmlConfig="$(cygpath -w "${xmlConfig}")"
   #
   # custom directories to accommodate multinode installation
@@ -746,7 +760,7 @@ function modifyConfiguration() {
     cat "$ADDITIONAL_NODE_CONFIG" >> $pamConfigFile
     # echo 'run-batch' >> $pamConfigFile
     echo 'stop-embedded-server' >> $pamConfigFile
-    ./jboss-cli.sh --file=$pamConfigFile
+    ./jboss-cli.sh --file=$pamConfigFile &> /dev/null
     rm -f $TMP_FILE
     # comma-separated CLV needs special handling
     tmpclv="${nodeConfig['controllerUrl']}"
@@ -820,6 +834,8 @@ pushd \${JBOSS_HOME}/bin/ &> /dev/null
 popd &> /dev/null
 __GOPAM
   chmod u+x $startScript
+  # move script to the $EAP_HOME root dir
+  mv $startScript $nodeInstallLocation/
   summary "Startup script :- $startScript"
 }
 
@@ -836,11 +852,13 @@ function applyAdditionalNodeConfig() {
   local -a ncfg
   : > "$ADDITIONAL_NODE_CONFIG"
   # have logging to CONSOLE as well as to FILE
-  ncfg+=( "batch" )
-  ncfg+=( "/subsystem=logging/console-handler=CONSOLE:add" )
-  ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)" )
-  ncfg+=( "/subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)" )
-  ncfg+=( '/subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])' )
+  #ncfg+=( "batch" ) #if/try/catch does not work on batch mode
+  ncfg+=( "if (outcome == failed) of /subsystem=logging/console-handler=CONSOLE:read-resource" )
+  ncfg+=( "  /subsystem=logging/console-handler=CONSOLE:add" )
+  ncfg+=( "  /subsystem=logging/console-handler=CONSOLE/:write-attribute(name=level,value=INFO)" )
+  ncfg+=( "  /subsystem=logging/console-handler=CONSOLE/:write-attribute(name=named-formatter,value=COLOR-PATTERN)" )
+  ncfg+=( '  /subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=["FILE","CONSOLE"])' )
+  ncfg+=( "end-if" )
   ncfg+=( "/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=INFO)" )
   ncfg+=( '/subsystem=logging/logger=org.jbpm.workbench.wi.backend.server.workitem.RepositoryStorageVFSImpl/:add(category=org.jbpm.workbench.wi.backend.server.workitem.RepositoryStorageVFSImpl,level=DEBUG)' )
   # CORS
@@ -893,7 +911,7 @@ function applyAdditionalNodeConfig() {
     createPgDS
   fi
 
-  ncfg+=( "run-batch" )
+  #ncfg+=( "run-batch" )
   printf '%s\n' "${ncfg[@]}"  >> "$ADDITIONAL_NODE_CONFIG"
  }
 

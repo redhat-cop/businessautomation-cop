@@ -14,6 +14,9 @@ The scripts in this repo attempt to automate the process of KJAR deployment acro
 	* [Additional configuration](#additional-configuration)
 	* [Why jjs](#why-jjs)
 	* [REST endpoints used](#rest-endpoints-used)
+* [Direct Deployment to a KIE Server](#direct-deployment-to-a-kie-server)
+  * [REST endpoints used for direct deployment](#rest-endpoints-used-for-direct-deployment)
+
 
 ## Deployment using Business Central
 
@@ -27,17 +30,24 @@ Usage:
 
 where :
 
-* The `kie-server-id` where the KJAR is going to be deployed to
-* The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment
+* The `kie-server-id` refers to the KIE Server where the KJAR is going to be deployed to
+* The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment. The (kie)container will be deleted if it already exists and a new one will be created.
 * The GAV coordinates of the KJAR, i.e. a (Group,Artifact,Vector) tuple that will be used by the KIE Servers to fetch the KJAR and deployed it
 
 Additional configuration is needed to specify the relevant URLs as well as credentials for accessing Business Central and KIE Servers. Refer to [Additional Configuration](#additional-configuraton) section for more details.
+
+> **NOTE** : HTTP is used to communicate with Business Central and KIE Servers. HTTPS is NOT used.
 
 Example:
 
 ```
 ./deploy-kjar-bc.js remote-kieserver:geo_location:com.bacop.rules_project:rules:2.3-SNAPSHOT
 ```
+where:
+
+* `remote-kieserver` is the KIE Server Id 
+* `geo_location` is the name of the (kie)container that is going to be created as the execution environment of the KJAR
+* `com.bacop.rules_project:rules:2.3-SNAPSHOT` is the "group:artefact:version" of the KJAR to be deployed and has to already been deposited to a maven repository that the KIE Server can reach
 
 Pre-requisites:
 
@@ -322,6 +332,72 @@ Please note that in case of an unsuccessful deployment the HTTP response code wo
   "result": null
 }
 ```
+
+=======
+## Direct Deployment to a KIE Server
+
+If unmanaged KIE Servers are deployed the REST API exposed can be used to manage KJAR deployments. Deployment has to be managed for each KIE Server separately since with Business Central out of the picture there is no controlling entity to manage deployments across a group of KIE Servers.
+
+The [deploy-kjar-kie.js](deploy-kjar-kie.js) script in this repo attempts to
+automate the process of KJAR deployment across individual KIE Servers. Please note that using this script against KIE Servers in managed mode is not recommended. Although deployment of a KJAR is possible, that deployment will be overridden upon the (managed) KIE Server restart as any configuration will be provided by the Business Central.
+
+Usage is the mostly the same as before with the addition of the KIE Server `IP` (can also be the DNS name) and `PORT`, refer to [Deployment using Business Central](#deployment-using-business-central) for more details.
+
+Usage summary:
+
+```
+./deploy-kjar-kie.js <kie-server-ip>:<kie-server-port>:<container-id>:<group>:<artifact>:<version>
+```
+
+where :
+
+* The `kie-server-ip` must be either the IP of the KIE Server or its DNS name
+* The `kie-server-port` must be the TCP port that KIE Server listens to
+* The (kie)`container-id` which is the ID of the container within the KIE Server that will serve as the KJARs execution environment. The (kie)container will be deleted if it already exists and a new one will be created.
+* The GAV coordinates of the KJAR, i.e. a (Group,Artifact,Vector) tuple that will be used by the KIE Servers to fetch the KJAR and deployed it
+
+> **NOTE** : HTTP is used to communicate with KIE Server. HTTPS is NOT used.
+
+
+### REST endpoints used for direct deployment
+
+The [deploy-kjar-kie.js](deploy-kjar-kie.js) is using the following REST endpoints offered by KIE Server.
+
+
+#### Delete an existing KIE Container
+
+```
+curl --request DELETE \
+  --url http://localhost:8080/kie-server/services/rest/server/containers/mo_vrm \
+  --header 'Accept: application/json' \
+  --header 'Authorization: Basic cGFtQWxxxx' \
+  --header 'Content-Type: application/json'
+```
+
+* If successful a `204` HTTP response will be returned
+* In the above request `mo_vrm` is the KIE Container that will be deleted
+
+
+#### Deploy a KIE Container
+
+The following request has a JSON payload, but an XML one can be used as well.
+
+```
+curl --request PUT \
+  --url http://localhost:8080/kie-server/services/rest/server/containers/mo_vrm \
+  --header 'Accept: application/json' \
+  --header 'Authorization: Basic cGFtQWxxxx' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "container-id" : "mo_vrm",
+    "release-id" : {
+        "group-id" : "com.example.simple_rule",
+        "artifact-id" : "SimpleRules_dm771",
+        "version" : "20210211.020"
+    }
+}'
+```
+
 
 ---
 

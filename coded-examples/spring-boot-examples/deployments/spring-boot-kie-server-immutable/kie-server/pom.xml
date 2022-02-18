@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.redhat</groupId>
+  <artifactId>spring-boot-kie-server-immutable</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+  <name>spring-boot-kie-server-immutable</name>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.3.10.RELEASE</version>
+  </parent>
+
+  <properties>
+    <version.org.kie>7.59.0.Final-redhat-00006</version.org.kie>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <narayana.version>5.9.0.Final</narayana.version>
+    <fabric8.version>3.5.40</fabric8.version>
+    <version.org.apache.cxf>3.4.5</version.org.apache.cxf>
+    <version.io.swagger>1.6.2</version.io.swagger>
+    <version.org.webjars>3.25.0</version.org.webjars>
+  </properties>
+
+  <dependencies>
+    
+<dependency>
+    <groupId>org.kie</groupId>
+    <artifactId>kie-server-spring-boot-starter</artifactId>
+    <version>${version.org.kie}</version>
+</dependency>
+
+
+    <!-- Swagger -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-service-description-swagger</artifactId>
+      <version>${version.org.apache.cxf}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-jaxrs</artifactId>
+      <version>${version.io.swagger}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>swagger-ui</artifactId>
+      <version>${version.org.webjars}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>  
+    
+<profile>
+  <id>h2</id>
+  <activation>
+    <activeByDefault>true</activeByDefault>
+  </activation>
+  <dependencies>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+  <plugins>
+  <plugin>
+    <groupId>org.kie</groupId>
+    <artifactId>kie-maven-plugin</artifactId>
+    <version>${version.org.kie}</version>
+    <executions>
+      <execution>
+        <id>copy</id>
+        <phase>prepare-package</phase>
+        <goals>
+          <goal>package-dependencies-kjar</goal>
+        </goals>
+      </execution>
+    </executions>
+    <configuration>
+      <artifactItems>
+        <artifactItem>
+          <groupId>org.redhat</groupId>
+          <artifactId>example-kjar</artifactId>
+          <version>1.0-SNAPSHOT</version>
+        </artifactItem>
+      </artifactItems>
+    </configuration>
+  </plugin>
+  </plugins>
+  </build>
+</profile>
+
+<profile>
+  <id>mysql</id>
+  <activation>
+    <property>
+      <name>mysql</name>
+    </property>
+  </activation>
+  <dependencies>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</profile>
+
+<profile>
+  <id>postgres</id>
+  <activation>
+    <property>
+      <name>postgres</name>
+    </property>
+  </activation>
+  <dependencies>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</profile>
+        
+    <profile>
+      <id>docker</id>
+      <activation>
+        <property>
+          <name>docker</name>
+        </property>
+      </activation>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>fabric8-maven-plugin</artifactId>
+            <version>${fabric8.version}</version>
+            <configuration>
+              <verbose>false</verbose>
+              <images>
+                <image>
+                  <name>apps/${project.artifactId}:${project.version}</name>
+                  <build>
+                    <from>fabric8/java-jboss-openjdk8-jdk</from>
+                    <assembly>
+                      <targetDir>/</targetDir>
+                      <inline>
+                        <files>
+                          <file>
+                            <source>${project.build.directory}/${project.build.finalName}.${project.packaging}</source>
+                            <outputDirectory>deployments</outputDirectory>
+                            <destName>${project.build.finalName}.${project.packaging}</destName>
+                          </file>
+                          <file>
+                            <source>${project.artifactId}.xml</source>
+                            <outputDirectory>deployments</outputDirectory>
+                            <destName>${project.artifactId}.xml</destName>
+                          </file>
+                        </files>
+                        <fileSet>
+                          <directory>src/main/docker</directory>
+                          <outputDirectory>opt/jboss/.m2</outputDirectory>
+                          <includes>
+                            <include>settings.xml</include>
+                          </includes>
+                        </fileSet>
+                        <fileSet>
+                          <directory>../none/target/local-repository/maven</directory>
+                          <outputDirectory>opt/jboss/.m2/repository</outputDirectory>        
+                        </fileSet>
+                      </inline>
+                      <user>jboss:jboss:jboss</user>
+                    </assembly>
+                  </build>
+                </image>
+              </images>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>resource</goal>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>openshift</id>
+      <activation>
+        <property>
+          <name>openshift</name>
+        </property>
+      </activation>
+
+      <properties>
+        <fabric8.mode>openshift</fabric8.mode>
+        <fabric8.build.strategy>docker</fabric8.build.strategy>
+      </properties>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>fabric8-maven-plugin</artifactId>
+            <version>${fabric8.version}</version>
+            <configuration>
+              <verbose>false</verbose>
+              <images>
+                <image>
+                  <name>apps/${project.artifactId}:${project.version}</name>
+                  <build>
+                    <from>fabric8/java-jboss-openjdk8-jdk</from>
+                    <assembly>
+                      <targetDir>/</targetDir>
+                      <inline>
+                        <files>
+                          <file>
+                            <source>${project.build.directory}/${project.build.finalName}.${project.packaging}</source>
+                            <outputDirectory>deployments</outputDirectory>
+                            <destName>${project.build.finalName}.${project.packaging}</destName>
+                          </file>
+                          <file>
+                            <source>${project.artifactId}.xml</source>
+                            <outputDirectory>deployments</outputDirectory>
+                            <destName>${project.artifactId}.xml</destName>
+                          </file>
+                        </files>
+                        <fileSet>
+                          <directory>src/main/docker</directory>
+                          <outputDirectory>opt/jboss/.m2</outputDirectory>
+                          <includes>
+                            <include>settings.xml</include>
+                          </includes>
+                        </fileSet>
+                        <fileSet>
+                          <directory>../none/target/local-repository/maven</directory>
+                          <outputDirectory>opt/jboss/.m2/repository</outputDirectory>        
+                        </fileSet>
+                      </inline>
+                      <user>jboss:jboss:jboss</user>
+                    </assembly>
+                    <ports>
+                      <port>8090</port>
+                    </ports>
+                  </build>
+                </image>
+              </images>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>resource</goal>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <repositories>    
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+</project>

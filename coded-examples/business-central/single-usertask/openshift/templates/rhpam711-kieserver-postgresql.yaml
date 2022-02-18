@@ -530,24 +530,6 @@ objects:
                 - name: kieserver-keystore-volume
                   mountPath: "/etc/kieserver-secret-volume"
                   readOnly: true
-              livenessProbe:
-                httpGet:
-                  path: /services/rest/server/healthcheck
-                  port: 8080
-                  scheme: HTTP
-                initialDelaySeconds: 300
-                timeoutSeconds: 120
-                periodSeconds: 90
-                failureThreshold: 3
-              readinessProbe:
-                httpGet:
-                  path: /services/rest/server/readycheck
-                  port: 8080
-                  scheme: HTTP
-                initialDelaySeconds: 60
-                timeoutSeconds: 120
-                periodSeconds: 90
-                failureThreshold: 36
               ports:
                 - name: jolokia
                   containerPort: 8778
