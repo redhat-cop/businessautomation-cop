@@ -512,6 +512,12 @@ function installUsers() {
       ./add-user.sh -sc "$scPath" -s -a --user "$u" --password "${uPass[$u]}" --role "${uRole[$u]}"
       summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
     done
+    
+    echo "Targeting $target"
+    
+    if [[ "x$target" == "xPAM7120" ]]; then
+      ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --security-domain-name "ApplicationDomain" --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
+    fi
 
     # check if the Elytron filesystem based Domain is present (default on v7.12.0+) in the standalone.xml, 
     # which means Elytron is being used instead of Legacy Security
