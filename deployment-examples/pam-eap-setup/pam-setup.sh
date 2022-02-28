@@ -513,14 +513,14 @@ function installUsers() {
       summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
     done
 
-    #check if the Elytron filesystem based Domain is present (default on v7.12.0+) in th standalone.xml, 
-    # which means Elytron is being used intead of Legacy Security
-    elytronRealmCheck=$(grep "kie-fs-realm-users" $scPath/standalone.xml)
-    if [[ ! -z "$elytronRealmCheck" ]]; then
-      ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file $scPath/application-users.properties --roles-file $scPath/application-roles.properties --output-location $scPath/kie-fs-realm-users    
-      # fix the elytron simple-role-decoder to use the correct role attribute name
-      "$SED" -i "s]name=\"from-roles-attribute\" attribute=\"role\"]name=\"from-roles-attribute\" attribute=\"roles\"]" $scPath/standalone*.xml
-    fi
+    # check if the Elytron filesystem based Domain is present (default on v7.12.0+) in the standalone.xml, 
+    # which means Elytron is being used instead of Legacy Security
+    ## if [[ $(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l) -ne 0 ]]; then
+    ##   echo "elytronRealmCheck is [$(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l)]"
+    ##   ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
+    ##   # fix the elytron simple-role-decoder to use the correct role attribute name
+    ##   "$SED" -i "s]name=\"from-roles-attribute\" attribute=\"role\"]name=\"from-roles-attribute\" attribute=\"roles\"]" "$scPath"/standalone*.xml
+    ## fi
   popd &> /dev/null
 }
 
@@ -571,9 +571,8 @@ function checkConfiguration() {
     exit 1;
   fi
   cp "$xmlConfig" "$xmlConfig"-orig
-  [[ "$TARGET_TYPE" == "PAM" ]] && cp "$xmlConfigHA" "$xmlConfig"
-  # HA does not mak much sense for a DM setup
-  [[ "$TARGET_TYPE" == "DM" ]] && cp "$xmlConfigFullNonHA" "$xmlConfig"
+  # use HA config - facilitate CEP for DM as well
+  cp "$xmlConfigHA" "$xmlConfig"
   [[ "$CYGWIN_ON" == "yes" ]] && xmlConfig="$(cygpath -w "${xmlConfig}")"
   #
   # custom directories to accommodate multinode installation
