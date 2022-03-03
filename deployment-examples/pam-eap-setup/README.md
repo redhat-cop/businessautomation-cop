@@ -200,6 +200,8 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                            Startup scripts will be generated according to the number of nodes specified
                            Node 1 will use the IP:PORT specified with '-n' with each subsequent node
                            using a port offset of 100
+                           
+                           Startup scripts will be placed to the directory specified by 'install_dir' option
 
             -c :  Mandatory for 'kie' mode of PAM installation, ignored in other modes
                   Specify list of controllers that this KIE ES should connect to.
@@ -231,6 +233,7 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                  - install_dir       : Installation directory. Defaults to 'pam7'.
                                        If specified, installation will first happen to default location
                                        and then moved to this one.
+                                       Startup scripts will be placed in the directory specified by this option.
 
                  - jvm_memory        : Configures the '-Xmx' parameter of JVM. Number is assumed to imply MB.
                                        Example 'jvm_memory=4096' will be '-Xmx4096m'
@@ -376,11 +379,16 @@ BC or KIE nodes will be created using the same EAP base installation, as per <ht
 
 ### Install location - Installation log
 
-By default PAM will be installed in a directory named `pam` in the current directory. `pam` will be created if it does not exist.  Installation location can be overridden by the `install_dir` option. The startup script will be named after the installation location with a `go_` prefix.
+By default PAM will be installed in a directory named `pam` in the current
+directory. `pam` will be created if it does not exist. Installation location can
+be overridden by the `install_dir` option. The startup script will be named
+after the installation location with a `go_` prefix.
+
+The `install_dir` value will be used to place the generated startup scripts.
 
 Example:
   - `./pam-setup.sh` will install PAM in a directory named `pam` and the startup script will be named `go_pam.sh`
-  - `./pam-setup.sh -o install_dir=wick` will install PAM in a directory named `wick` and the startup script will be named `go_wick.sh`
+  - `./pam-setup.sh -o install_dir=wick` will install PAM in a directory named `wick` and the startup script will be named `go_wick.sh` in the `wick` directory
 
 An installation log can be obtained by specifying the `-o logfile=file` option. `file` is optional and will default to `pam-setup.log` if not specified. An installation log will not overwrite existing contents of the `file` .
 
