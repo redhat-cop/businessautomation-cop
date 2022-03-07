@@ -1,0 +1,25 @@
+---
+- name: JBoss cli
+  hosts: localhost
+  tasks:
+    
+  - name: Validate if jboss is UP
+    tags: jbossvalidate
+    wait_for:
+      host: "localhost"
+      port: 8080
+      delay: 10
+      timeout: 30
+      state: started
+      msg: "JBoss server is not running"
+
+  - name: Jboss get log dir
+    shell: "{{jboss_home}}/bin/jboss-cli.sh --connect --commands='patch apply jboss-eap-7.4.1-patch.zip' > out.txt"
+    register: lsout
+    tags: lsout 
+  
+  - name: Display the file
+    shell: cat out.txt
+    register: displaylist
+
+  - debug: msg="{{displaylist.stdout_lines}}"
