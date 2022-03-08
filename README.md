@@ -13,20 +13,20 @@ business rules management (BRM), Decision Model and Notation (DMN), and business
 DM is a platform for developing and authoring business rules management (BRM), business resource optimization and complex event processing (CEP).
 
 ## Decision Model and Notation (DMN) 
-It is a standard established by the Object Management Group (OMG) for describing and modeling operational decisions.
+It is a standard established by the Object Management Group (OMG) for describing and modelling operational decisions.
 
 ## Business Process Management (BPM)
-It's a tool to help model, analyze, measure, improve, automate business processes and decisions based on jbpm framework.
+It's a tool to help model, analyze, measure, improve, automate business processes and decisions based on the JBPM framework.
 
 ## Business rules management (BRM)
 It provides a core Business Rules Engine (BRE) and full runtime support for Decision Model and Notation (DMN) models.
 
 ## Cloud Native - Kogito
-Kogito is a framework which compile your business process and business rules in a more cloud native approach taking advantage of the latest technologies (Quarkus, knative, etc.), you get amazingly fast boot times and instant scaling on orchestration platforms like Kubernetes.
+Kogito is a framework that compiles your business process and business rules in a more cloud-native approach taking advantage of the latest technologies (Quarkus, Knative, etc.), you get amazingly fast boot times and instant scaling on orchestration platforms like Kubernetes.
 
 
 ## What's In This Repo?
 
-This repo contains process automation(jbpm) and business rules(drools,dmn) related quickstarts of several different flavors.
+This repo contains process automation(JBPM) and business rules(Drools and DMN) related quickstarts of several different flavours.
 
 
