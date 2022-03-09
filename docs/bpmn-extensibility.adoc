@@ -1,7 +1,7 @@
 
 :data-uri:
 :encoding: UTF-8
-:imagesdir: businessautomation-cop/docs/images
+:imagesdir: docs/images
 :toc: left
 :toclevels: 3
 :sectanchors: true
