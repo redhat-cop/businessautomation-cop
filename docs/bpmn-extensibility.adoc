@@ -9,7 +9,7 @@
 :sectnums: true
 :icons: font
 :tip-caption: 💡
-:note-caption: 💡
+:note-caption: ℹ️
 
 == Design approaches for extensible BPMN models
 
