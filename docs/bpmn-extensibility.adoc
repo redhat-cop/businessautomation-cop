@@ -3,6 +3,7 @@
 :encoding: UTF-8
 :imagesdir: docs/images
 :toc: left
+:toclevels: 3
 :sectanchors: true
 :sectlinks: true
 :sectnums: true
