@@ -1,0 +1,186 @@
+
+:data-uri:
+:encoding: UTF-8
+:imagesdir: images
+:toc: left
+:toclevels: 3
+:sectanchors: true
+:sectlinks: true
+:sectnums: true
+:icons: font
+:tip-caption: 💡
+:note-caption: ℹ️
+
+== Design approaches for extensible BPMN models
+
+The main purpose of BPMN is to communicate process logic visually, through diagrams that can be shared and discussed collaboratively. It is a visual programming language for process automation that can be shared by business and IT. The process logic, how the process starts and ends, the order of its activities and its interactions with things outside should be clearly understandable to anyone from the diagrams alone and not just to those who already know how the process works. At the same time, the process logic captured in those diagrams should be precise and complete. To fulfil that objective BPMN process models should be:
+
+* _Correct_, according to the concepts, semantics and rules of the BPMN spec
+* _Clear_, so that the process logic is evident to anyone from the diagrams alone without reference to model information hidden in non-visual elements or in attached documents
+* _Complete_, revealing not only the order of process activities but how the process starts, its possible end states and all its interactions with things outside, such as other processes, the requester, service providers, etc
+* _Consistent_ in model structure
+
+BPMN process models are used both for process automation as well as documenting the current state of a process, analyze it for improvements or redesign it to make it better. It is from this perspective that he concept of creating extensible BPMN model comes into play. It is often required to redesign, rework or introduce new steps in a process in a non-disruptive manner without affecting the whole of the model. This can happen as a result of changes in the regulatory environment of a process, for instance, or to adapt a process model for a similar, but not quite the same, process. Although BPMN process models do not inherently contain extensible elements in the sense that other programming paradigms support features such as polymorphism or inheritance, there are ways to structure a BPMN model so as to allow for some degree of extensibility. Not every aspect of a process model can be extended however. There are times when nothing sort of a redesign would be needed.
+
+Unfortunately, some of the approaches that are called for creating extensible BPMN process models run contrary to the generic guidelines that govern a good model. Process logic fragmentation and difficulties in maintenance are required to be balanced against the extensibility goal. Middle ground can occasionally prove elusive.
+
+=== BPMN extensibility in the context of Infinity
+
+Creating extensible BPMN process models in the context of Infinity calls for allowing end customers to extend the BPMN process models provided without compromising systems design and operational status. Aspects that could be considered include:
+
+* Upgrading RHPAM
+* Upgrading BPMN models delivered by Infinity updates
+* Allowing for modifications and/or extensions to decision models used by the BPMN models
+* Introducing new variables without disrupting BPMN modelling or execution
+* Replacing nodes in the BPMN model 
+
+
+=== Upgrading RHPAM
+
+There is a separate task under way for establishing an automated procedure for creating and delivering images of required RHPAM components for various target environments. 
+
+BPMN diagrams as well as DMN diagrams designed by RHPAM supported tooling conform to the relevant OMG (Object Modelling Group) standards. Any upgrades to the execution environment either by upgrading to a newer RHPAM version or updating an existing one should have no effect on the BPMN and DMN models.
+
+Additional information for the standards supported by RHPAM can be found at:
+
+* https://access.redhat.com/articles/3642982[ - Red Hat Customer Portal: Red Hat Process Automation Manager Supported Standards]
+
+
+=== Upgrading BPMN and DMN models delivered by Infinity upgrades
+
+There is and established procedure for updating a BPMN model. In case of updating the BPMN models in the context of an Infinity update this procedure can be followed keeping in mind the particular business and operational requirements of the environment that is being applied. Such a procedure could be applied in the case of unmodified by the end customer BPMN process models. Should the originally provided BPMN models have been modified additional steps would be required to examine the modifications and assess the effect the update would have.
+
+The procedure for process migration is outlined at the official RHPAM documentation https://access.redhat.com/documentation/en-us/red_hat_process_automation_manager/7.12/html-single/developing_process_services_in_red_hat_process_automation_manager/index#process-instance-migration-con[Process instance migration]
+
+
+[NOTE]
+====
+In the context of RHPAM a BPMN process model is part of a deployment unit that often contains more components than just the BPMN process model. Such components may be any decision service models used by the process model, such as DMN models or DRL rules and custom Work Item Handlers to interact with service providers, etc. The migration procedure above should be followed whenever a deployment unit needs to be updated not only when the BPMN process model itself is updated.
+====
+
+=== Modifying and extending decision models in BPMN process models
+
+A BPMN process model can use decision tasks to invoke a decision service as part of the process execution. BPMN process models can be configured to invoke Decision Model and Notation (DMN) as well as Drools (DRL) decision models seamlessly during runtime. Business processes interact with these decision services by identifying the decision service and mapping business data between decision service inputs and the business process properties. The actual model of the decision service, the DMN model or the DRL rules are defined and maintained outside the BPMN model itself. So as long as the data contract remains intact any modification to the decision services implementation can be carried out without affecting the BPMN model.
+
+For example, in the following the "Approval" decision node can be updated to invoke a different decision implementation without affecting the BPMN model. Additionally, the existing decision implementation can be updated without and side effects to the BPMN process model.
+
+image::extending-dmn-01.png[Extending DMN]
+
+
+=== Introducing variables in a BPMN process model
+
+A BPMN process model defines variables that hold information specific to an execution instance of that model. Various nodes in the process model use these variables as a way to coordinate execution and pass information from one node to the other or to external service providers. The variables are predefined and highly typed during design time and cannot be altered at runtime. They also introduce dependencies between nodes as by being part of the data flow inherent in a process model. For example, the following is a sample of data input and output definitions for a node. The variables defined are specified in name, number as well as type.
+
+image::task-input-variables.png[Task variables definition]
+
+The static nature of variables definition does not allow for dynamic ad hoc modification of the number or name of variables without changes in the BPMN model itself. However, if a less strict data-typing approach to the data definition of a variable is employed then changes to the number and naming of variables can be achieved. 
+
+A special variable could potentially be used to encapsulate data values not known in design time. This special variable could hold the serialised version of a "key-value" data store. Tasks could be made aware of this special structure and refer to the values within using the "key".
+
+The following schema outlines such an approach.
+
+image::extending-variables.png[Extending Variables]
+
+The UI or other front end component introduces one or more variables on an ad hoc basis. These additional data point can perhaps be stored in a data store different than the one used for existing variables. When at a later stage the BPMN process model is invoked, the newly introduced data points can be encapsulated (a JSON data structure seems like a possible candidate) for data encapsulation) and injected into the BPMN model runtime through the special variable named `extended`, for instance. Subsequent tasks can look into the `extended` variable to extract the data required.
+
+|===
+| Pros | Cons 
+
+a| 
+- Generic approach, can encapsulate a wide variety of data types
+- Reduces design time dependencies between tasks, makes it easier to swap tasks or introduce new ones
+- Decision nodes in DMN or DRL can take advantage of this additional variable structure quite easily, both decision services have strong list processing capabilities
+a| 
+- Tasks should be coded to know how to handle data encapsulated in this way, no generic BPMN operation available
+- Data type of individual data items is often lost, everything converted to `String`. Adding data types might increase implementation complexity
+- Actual names of data points become hidden behind the `extended` variable, reduces process logic visibility, obfuscates the process model
+
+|===
+
+It should be noted that despite the considerable flexibility of this approach it cannot be used in all types of BPMN nodes. For example, gateway nodes need to define branches and conditions at design time. Introducing additional branches or conditions in gateway nodes during runtime is not possible.
+
+
+=== Dynamic branches, introducing branches at runtime
+
+The gateway node in a BPMN model is the primary node to model different execution paths for the process logic. It is however required to be fully defined at design time and therefore cannot be modified at runtime. A new execution path cannot be introduced.
+
+If branches need to be introduced at runtime an alternate design approach could be used that combines a decision node, DMN or DRL, a REST WIH and subprocesses in different deployments.
+
+The following schema outlines this approach whilst abusing the BPMN notation for illustration purposes.
+
+image::dynamic-branches.png[Dynamic process branches]
+
+
+Process branch logic is implemented in a decision node, in a DMN for instance, with the result being captured in a process variable. The value of that process variable is used by a subsequent REST WIH to invoke a "remote" BPMN process in a different deployment unit. With this approach the number of branches does not need to be known at design time nor does the branching logic need to be static. The design shown here is rather simplistic with no compensation handling, for example. It serves just to illustrate the approach and should not be used verbatim.
+
+* A better example of using a subprocess would be the https://github.com/jbossdemocentral/rhpam7-order-management-demo-repo#place-order-in-erp-sub-process[Place Order in ERP sub-process] in the https://github.com/jbossdemocentral/rhpam7-order-management-demo-repo[RHPAM Order Management Demo] repository.
+
+|===
+| Pros | Cons 
+
+a| 
+* The branching logic is easily changed without affecting the main BPMN model since it is captured in a decision node
+** By virtue of the decision node the branching logic can be a lot more complex than what can be captured in a regular gateway node.
+* The number of branches is not static and can change dynamically
+a| 
+* The branching logic is opaque. It is not even immediately visible in the BPMN process model that branching occurs at all. This leads runs contrary to the generic requirement of "clarity" in a BPMN model.
+* The increased number of REST calls might have an impact on performance, testing is required.
+* QE has to deal with the additional challenge of handling unknown branches whilst at design time.
+
+|===
+
+
+=== Replacing, reordering nodes
+
+Replacing or reordering nodes is possible, up to a point, provided that the BPMN model has been designed from the start with the intention of having nodes replaced or reordered. _Replacing_ or _reordering_ in this context has the meaning of changing the process logic without needing to redesign the BPMN model. 
+
+In order to plan for modifications in the BPMN model the subprocess should be regarded as the main building block. Encapsulating process logic in subprocesses allows for modifying the inner working of a subprocess without the need to modify the whole BPMN model.
+
+[NOTE]
+====
+Excessive use of subprocesses leads to process logic fragmentation and increases the maintainability barrier. Balancing this against the extensibility target has to be addressed on a case by cases basis.
+====
+
+In the following BPMN fragment, a subprocess is used. The BPMN model inside the subprocess could potentially be changed with minimal effect on the parent process.
+
+image::subprocess.png[Subprocess Sample]
+
+
+==== Using BPMN processes in a different deployment unit
+
+The BPMN model encapsulated by a subprocess could also be deployed in a different deployment unit. The parent BPMN process would then use a Work Item Handler (WIH) to invoke it and get back any results. A REST WIH is provided out of the box and is a good fit for invoking remote BPMN processes as all BPMN endpoints are exposed as REST endpoints by default in RHPAM.
+
+Such an approach, conceptually similar to subprocesses, allows for true decoupling between the parent BPMN process model and the invoked one. Using different deployment units also decouples lifecycle management.
+
+|===
+| Pros | Cons 
+
+a| 
+* Fully decoupled execution, each BPMN model is deployed and executed in a different execution environment
+** Different scalability or other NFRs can also be accommodated by virtue of different deployment targets
+* Flexibility in lifecycle management of each process model. Each process model can be upgraded independently without affecting the other as long as the data contract remains the same
+** If the `extended` variable approach is used, the actual data points used between the processes nay change without changing the data contract.
+a| 
+* Process logic becomes fragmented and maintainability may suffer.
+* Increased number of REST invocations may have an impact on performance, testing is required.
+* Tracing process execution becomes harder. Performance and operational monitoring would need to coalesce data from different deployments to piece together a view for the whole process.
+
+|===
+
+
+==== Generic guidelines when working with subprocesses from an extensibility point of view
+
+Regardless of the approach used for implementing subprocesses the following are generic guidelines that could be followed to maximise the extensibility aspect of a BPMN model. It should be noted that often designing for extensibility runs contrary to a "good" BPMN model. Judgement is advised to draw the line as required on a case by case basis.
+
+* Removing data dependencies from subprocesses
++
+Data inputs and outputs in a BPMN task or subprocess call for explicit naming of variables and their types. This creates a dependency between the subprocesses that could be hard to challenge if any of them needs to change. To counter that either the `extended` variable approach or a special-purpose task within a subprocess could be used. The `extended` variable approach would encapsulate data points in a single variable whilst the special-purpose task within the subprocess would fetch the data needed for the subprocess form and external service provider.
+
+* Identify subprocesses that are to be extended and name them or label them accordingly
++
+Employing a naming convention for subprocesses destined to be replaced or modified with minimal impact in the rest of the BPMN model would greatly help the BPMN designer in selecting and implementing required changes.
+
+* Consider the impact of upgrading a BPMN process in place in regards to other subprocesses used
++
+When upgrading a BPMN model that makes heavy use of subprocesses, local or remote ones, or is leveraging REST WIH for invoking BPMN models in different deployments time should be spent assessing the impact of upgrading to any in-flight processes. A long-running BPMN process in a different deployment would probably be adversely affected if the BPMN process that has invoked is upgraded.
+
