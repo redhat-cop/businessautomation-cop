@@ -7,7 +7,9 @@
 :sectanchors: true
 :sectlinks: true
 :sectnums: true
-// :icons: font
+:icons: font
+:tip-caption: 💡
+:note-caption: 💡
 
 == Design approaches for extensible BPMN models
 
