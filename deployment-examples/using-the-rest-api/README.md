@@ -333,6 +333,7 @@ Please note that in case of an unsuccessful deployment the HTTP response code wo
 }
 ```
 
+=======
 ## Direct Deployment to a KIE Server
 
 If unmanaged KIE Servers are deployed the REST API exposed can be used to manage KJAR deployments. Deployment has to be managed for each KIE Server separately since with Business Central out of the picture there is no controlling entity to manage deployments across a group of KIE Servers.
@@ -396,7 +397,6 @@ curl --request PUT \
     }
 }'
 ```
-
 
 
 ---

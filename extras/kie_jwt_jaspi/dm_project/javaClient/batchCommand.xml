@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<batch-execution lookup="restLess">
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Europe</continent>
+            <country>United Kingdom</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Europe</continent>
+            <country>France</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Europe</continent>
+            <country>Italy</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Europe</continent>
+            <country>Germany</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Europe</continent>
+            <country>Greece</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Asia</continent>
+            <country>India</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Asia</continent>
+            <country>Japan</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Asia</continent>
+            <country>Thailand</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Asia</continent>
+            <country>Indonesia</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="continentMap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <continent>Asia</continent>
+            <country>Maldives</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="country" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <country>France</country>
+        </object>
+    </insert>
+    <insert return-object="true" entry-point="DEFAULT" disconnected="false">
+        <object xsi:type="country" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <country>Maldives</country>
+        </object>
+    </insert>
+    <fire-all-rules max="-1" out-identifier="fireAll"/>
+</batch-execution>

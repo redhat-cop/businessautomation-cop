@@ -1,0 +1,143 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.bacop.jwt_jaspi</groupId>
+    <artifactId>kie_jwt_jaspi</artifactId>
+    <version>1.4-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>jwt_jaspi-module</name>
+
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <version.org.wildfly.security.wildfly-elytron>1.1.0.Final</version.org.wildfly.security.wildfly-elytron>
+        <version.jboss.spec.javaee.7.0>1.0.3.Final</version.jboss.spec.javaee.7.0>
+        <version.org.wildfly.security.elytron-web>1.4.0.Final-redhat-00001</version.org.wildfly.security.elytron-web>
+    </properties>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-7.0</artifactId>
+                <version>${version.jboss.spec.javaee.7.0}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- -->
+        
+        <dependency>
+            <groupId>org.wildfly.security</groupId>
+            <artifactId>wildfly-elytron</artifactId>
+            <version>${version.org.wildfly.security.wildfly-elytron}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-gson</artifactId>
+            <version>0.11.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.2.redhat-4</version>
+        </dependency>
+        <!-- <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId> 
+                <version>0.11.2</version>
+                <scope>runtime</scope>
+        </dependency> -->
+        <!-- Uncomment this next dependency if you are using JDK 10 or earlier and you also want to use -->
+        <!-- RSASSA-PSS (PS256, PS384, PS512) algorithms. JDK 11 or later does not require it for those algorithms: -->
+        <!-- <dependency> -->
+        <!-- <groupId>org.bouncycastle</groupId> -->
+        <!-- <artifactId>bcprov-jdk15on</artifactId> -->
+        <!-- <version>1.60</version> -->
+        <!-- <scope>runtime</scope> -->
+        <!-- </dependency> -->
+        <!-- -->
+        <!-- <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.9.5.redhat-2</version>
+        </dependency> -->
+        <!--        <dependency>
+            <groupId>org.jboss.spec.javax.servlet</groupId>
+            <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>org.wildfly.security.elytron-web</groupId>
+            <artifactId>undertow-server</artifactId>
+            <version>${version.org.wildfly.security.elytron-web}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.security.elytron-web</groupId>
+            <artifactId>undertow-server-servlet</artifactId>
+            <version>${version.org.wildfly.security.elytron-web}</version>
+        </dependency>
+<!--     -->
+<!--- maybe not needed -->
+<!--     -->
+<dependency>
+    <groupId>javax.security.auth.message</groupId>
+    <artifactId>javax.security.auth.message-api</artifactId>
+    <version>1.1.1</version>
+            <scope>runtime</scope>
+</dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/../modules/com/bacop/jwt_jaspi/kie_jwt_jaspi/main</outputDirectory>
+                </configuration>
+            </plugin>            
+
+        </plugins>
+    </build>
+</project>
