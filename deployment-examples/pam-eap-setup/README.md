@@ -26,13 +26,15 @@ Supported (i.e. tested) versions:
   - patch level 7.2.1 supported for PAM.7.3.1
   - patch level 7.2.2 supported for PAM.7.4
   - patch level 7.2.x onwards supported for 7.5 and later
- - EAP 7.3
+- EAP 7.3
 	 - patch level 7.3.2 supported for PAM.7.8
 	 - patch level 7.3.3, 7.3.4 supported for PAM.7.9 and PAM.7.9.1
    - patch JBEAP-20659 for EAP.7.3.4 to restore password vault functionality
   - patch level 7.3.5+ for RHPAM/RHDM 7.10 onwards
-- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1, 7.11.0, 7.11.1
-- DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1, 7.11.0, 7.11.1
+- EAP 7.4
+  - patch level 7.4.3+, to be used for RHPAM.7.12.0 onwards 
+- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1, 7.11.0, 7.11.1, 7.12.0
+- DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1, 7.11.0, 7.11.1, 7.12.0
 
 For details about node configuration check out [Nodes configuration](#nodes-configuration) section at the end of this document. Also:
 
@@ -151,6 +153,7 @@ Depending on PAM version the following files are required:
         | 7.10.0    | rhpam-7.10.0-business-central-eap7-deployable.zip, rhpam-7.10.0-kie-server-ee8.zip  |
         | 7.11.0    | rhpam-7.11.0-business-central-eap7-deployable.zip, rhpam-7.11.0-kie-server-ee8.zip  |
         | 7.11.1    | rhpam-7.11.1-business-central-eap7-deployable.zip, rhpam-7.11.1-kie-server-ee8.zip  |
+        | 7.11.1    | rhpam-7.12.0-business-central-eap7-deployable.zip, rhpam-7.12.0-kie-server-ee8.zip  |
 
         |DM Version| Files                                                                             |
         |----------|-----------------------------------------------------------------------------------|
@@ -165,6 +168,7 @@ Depending on PAM version the following files are required:
         | 7.10.1   | rhdm-7.10.1-decision-central-eap7-deployable.zip, rhdm-7.10.1-kie-server-ee8.zip  |
         | 7.11.0   | rhdm-7.11.0-decision-central-eap7-deployable.zip, rhdm-7.11.0-kie-server-ee8.zip  |
         | 7.11.1   | rhdm-7.11.1-decision-central-eap7-deployable.zip, rhdm-7.11.1-kie-server-ee8.zip  |
+        | 7.12.0   | rhdm-7.12.0-decision-central-eap7-deployable.zip, rhdm-7.12.0-kie-server-ee8.zip  |
 
 ## Usage
 
