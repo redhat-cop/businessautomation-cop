@@ -516,17 +516,18 @@ function installUsers() {
     echo "Targeting $target"
     
     if [[ "x$target" == "xPAM7120" ]]; then
+      echo "filesystem realm"
       ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --security-domain-name "ApplicationDomain" --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
     fi
 
     # check if the Elytron filesystem based Domain is present (default on v7.12.0+) in the standalone.xml, 
     # which means Elytron is being used instead of Legacy Security
-    ## if [[ $(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l) -ne 0 ]]; then
-    ##   echo "elytronRealmCheck is [$(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l)]"
-    ##   ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
-    ##   # fix the elytron simple-role-decoder to use the correct role attribute name
-    ##   "$SED" -i "s]name=\"from-roles-attribute\" attribute=\"role\"]name=\"from-roles-attribute\" attribute=\"roles\"]" "$scPath"/standalone*.xml
-    ## fi
+    if [[ $(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l) -ne 0 ]]; then
+      echo "elytronRealmCheck is [$(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l)]"
+      # ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
+      # fix the elytron simple-role-decoder to use the correct role attribute name
+      "$SED" -i "s]name=\"from-roles-attribute\" attribute=\"role\"]name=\"from-roles-attribute\" attribute=\"roles\"]" "$scPath"/standalone*.xml
+    fi
   popd &> /dev/null
 }
 
