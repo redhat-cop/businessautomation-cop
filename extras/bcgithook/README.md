@@ -273,7 +273,7 @@ No operation should be performed in the repository after it has been created. Fo
 
 ## Compatibility
 **bcgithook** should be compatible with all versions of [RHPAM](https://developers.redhat.com/products/rhpam/overview), [jBPM](https://www.jbpm.org/) and [Drools](https://www.drools.org/) but it had only been tested with the following:
-* RHPAM, versions 7.4, 7.4.1, 7.5, 7.6 and onwards to 7.10.1
+* RHPAM, versions 7.4, 7.4.1, 7.5, 7.6 and onwards to 7.12.0
 
 ## Other Implementations
 
