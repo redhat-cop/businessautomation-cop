@@ -8,6 +8,8 @@ This space intends to consolidate material and references that promote best prac
 
 Some approaches are discussed for designing BPMN models that would allow extending without requiring a drastic re-design of the whole model.
 
+* [Extensible BPMN models](bpmn-extensibility.adoc)
+
 
 ## Process Automation Manager KIE Server Swagger Spec
 
