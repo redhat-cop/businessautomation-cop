@@ -43,7 +43,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: maven-settings-xml-action
-        uses: whelk-io/maven-settings-xml-action@v4
+        uses: whelk-io/maven-settings-xml-action@v20
         with:
           repositories: '[{ "id": "redhat-ga-repository", "url": "https://maven.repository.redhat.com/ga/", "releases": {"enabled": "true"} }]'
           plugin_repositories: '[{ "id": "redhat-ga-repository", "url": "https://maven.repository.redhat.com/ga" }]'
