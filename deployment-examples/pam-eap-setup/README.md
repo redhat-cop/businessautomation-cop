@@ -124,6 +124,52 @@ All KIE Servers share the same KIE Server ID and are thus managed as a group fro
         +----------------+   +----------------+   +----------------+
 All KIE Servers share the same KIE Server ID and are thus managed as a group from Business Central
 
+
+### Unmanaged KIE Server installations alongside managed ones
+
+By default `pam-eap-setup` will install KIE Servers in managed mode. However it is possible to install one or more
+KIE Servers in unmanaged mode on their own or alongside managed ones.
+
+To do this, use the `-o custom` option. For example the following invocation
+will install a Business Central, two KIE Servers in managed mode using the
+Business Central as their controller and one KIE Server in _unmanaged_ mode.
+
+> NOTE: When specifying an unmanaged KIE Server node, all nodes are going to be
+> installed in separate EAP instances. EAP Instances will not be shared.
+
+
+    ./pam-setup.sh -n localhost -b custom=controller,kie,kie,ukie
+                             +----------------+
+                             | EAP            |
+                             | localhost:8080 |
+                             |                |
+                             | +-----------+  |
+                             | |           |  |
+                             | | Business  |  |
+                             | | Central   |  |
+                             | |           |  |
+                             | +-----------+  |
+                             +----------------+
+                                     |
+                                     |
+                +--------------------+
+                |                    |                     
+                |                    |                     
+        +-------+--------+   +-------+--------+   +-------+--------+
+        | EAP node 1     |   | EAP node 2     |   | EAP node 3     |
+        | localhost:8180 |   | loclahost:8280 |   | localhost:8380 |
+        |                |   |                |   |                |
+        | +------------+ |   | +------------+ |   | +------------+ |
+        | |            | |   | |            | |   | |            | |
+        | | KIE Server | |   | | KIE Server | |   | | KIE Server | |
+        | |            | |   | |            | |   | |            | |
+        | +------------+ |   | +------------+ |   | +------------+ |
+        +----------------+   +----------------+   +----------------+
+        
+The KIE Servers on EAP nodes 1 and 2 are going to have the KIE Server Id of
+"remote-kieserver" and are going to be deployed in managed mode. The KIE Server
+in EAP node 3, is going to have the Id of "ks1" and is going to be installed in unmanaged mode.
+        
 ## Prerequisites
 
 Download binaries and place them in the same directory as this script. Most recent version will be used depending on the files present.
