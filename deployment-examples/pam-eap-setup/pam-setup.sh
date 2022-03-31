@@ -153,6 +153,7 @@ MASTER_CONFIG=master.conf
 # versions supported
 #
 cat << "__CONFIG" > $MASTER_CONFIG
+PAM7121 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.12.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.12.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
 PAM7120 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.12.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.12.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
 DM7120  | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhdm-7.12.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.12.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=DM
 PAM7111 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.11.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.11.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
@@ -513,9 +514,10 @@ function installUsers() {
       summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
     done
     
-    echo "Targeting $target"
+    # echo "Targeting $target"
     
-    if [[ "x$target" == "xPAM7120" ]]; then
+    test="$target" && test="${test%?}"
+    if [[ "x$test" == "xPAM712" ]] || [[ "$test" == "xDM712" ]]; then
       echo "filesystem realm"
       ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --security-domain-name "ApplicationDomain" --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
     fi
@@ -523,8 +525,8 @@ function installUsers() {
     # check if the Elytron filesystem based Domain is present (default on v7.12.0+) in the standalone.xml, 
     # which means Elytron is being used instead of Legacy Security
     if [[ $(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l) -ne 0 ]]; then
-      echo "elytronRealmCheck is [$(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l)]"
-      # ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
+      # echo "elytronRealmCheck is [$(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l)]"
+      ### ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
       # fix the elytron simple-role-decoder to use the correct role attribute name
       "$SED" -i "s]name=\"from-roles-attribute\" attribute=\"role\"]name=\"from-roles-attribute\" attribute=\"roles\"]" "$scPath"/standalone*.xml
     fi
