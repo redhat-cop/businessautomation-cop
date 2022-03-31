@@ -1,1 +1,83 @@
-initial page
+# Ansible-jboss-cli
+
+## Ansible playbook to execute JBoss CLI
+
+You can run JBoss CLI commands from Ansible.
+These playbooks dynamically wrapped the JBoss CLI commands to give you the Ansible checking capabilities over the Wildfly command lines tool. 
+In addition, you can use Ansible Tower to integrate these playbooks creating an automatic order/flow and monitor it.
+
+In order to run all the playbook below you need to pass this an argument called `{{jboss-home}}` 
+e.g
+----
+ansible-playbook <playbook name> --extra-vars "<jboss path installation>"
+----
+
+Pre requirement to run these playbook is to have Wildfly running, it will check and failed if Wildfly/JBoss is not up and running
+
+### jboss-bound-address
+
+Return Wildfly ip address
+
+----
+ - name: Jboss get ip address
+    shell: "{{jboss_home}}/bin/jboss-cli.sh --connect --commands='ls -l socket-binding-group=standard-sockets/socket-binding=http | grep bound-port' > out.txt"
+    register: lsout
+    tags: lsout 
+----
+
+### jboss-bound-port
+
+Return Wildfly port
+
+----
+- name: Jboss get port
+    shell: "{{jboss_home}}/bin/jboss-cli.sh --connect --commands='ls -l socket-binding-group=standard-sockets/socket-binding=http | grep bound-port' > out.txt"
+    register: lsout
+    tags: lsout 
+----
+
+### jboss-log-level
+
+Return the log level set up for that Wildfly
+
+----
+ - name: Jboss get log level
+    shell: "{{jboss_home}}/bin/jboss-cli.sh --connect --commands='/subsystem=logging/root-logger=ROOT:change-root-log-level(level={{log_level}})' > out.txt"
+    register: lsout
+    tags: lsout 
+----
+
+### jboss-log-location
+
+Return the log directory location
+
+----
+ - name: Jboss get log location
+    shell: "{{jboss_home}}/bin/jboss-cli.sh --connect --commands='ls -l socket-binding-group=standard-sockets/socket-binding=http | grep bound-address' > out.txt"
+    register: lsout
+    tags: lsout 
+----
+
+### jboss-patch-apply
+
+Apply a Wildfly path to the current installation, you must restart the server after it successfully applied the patch.
+
+----
+- name: Jboss apply patch
+    shell: "{{jboss_home}}/bin/jboss-cli.sh --connect --commands='patch apply jboss-eap-7.4.1-patch.zip' > out.txt"
+    register: lsout
+    tags: lsout 
+----
+
+### jboss-version
+
+Return the current Wildfly version 
+
+----
+- name: Jboss get version
+    shell: "{{jboss_home}}/bin/jboss-cli.sh --connect --commands='ls -l | grep product-version' > out.txt"
+    register: lsout
+    tags: lsout 
+----
+
+
