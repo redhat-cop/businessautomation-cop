@@ -154,6 +154,7 @@ Depending on PAM version the following files are required:
         | 7.11.0    | rhpam-7.11.0-business-central-eap7-deployable.zip, rhpam-7.11.0-kie-server-ee8.zip  |
         | 7.11.1    | rhpam-7.11.1-business-central-eap7-deployable.zip, rhpam-7.11.1-kie-server-ee8.zip  |
         | 7.12.0    | rhpam-7.12.0-business-central-eap7-deployable.zip, rhpam-7.12.0-kie-server-ee8.zip  |
+        | 7.12.1    | rhpam-7.12.1-business-central-eap7-deployable.zip, rhpam-7.12.1-kie-server-ee8.zip  |
 
         |DM Version| Files                                                                             |
         |----------|-----------------------------------------------------------------------------------|
@@ -169,6 +170,7 @@ Depending on PAM version the following files are required:
         | 7.11.0   | rhdm-7.11.0-decision-central-eap7-deployable.zip, rhdm-7.11.0-kie-server-ee8.zip  |
         | 7.11.1   | rhdm-7.11.1-decision-central-eap7-deployable.zip, rhdm-7.11.1-kie-server-ee8.zip  |
         | 7.12.0   | rhdm-7.12.0-decision-central-eap7-deployable.zip, rhdm-7.12.0-kie-server-ee8.zip  |
+        | 7.12.1   | rhdm-7.12.1-decision-central-eap7-deployable.zip, rhdm-7.12.1-kie-server-ee8.zip  |
 
 ## Usage
 
