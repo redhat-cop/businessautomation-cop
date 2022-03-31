@@ -154,6 +154,7 @@ MASTER_CONFIG=master.conf
 #
 cat << "__CONFIG" > $MASTER_CONFIG
 PAM7121 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.12.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.12.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
+DM7121  | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhdm-7.12.1-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.12.1-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=DM
 PAM7120 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.12.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.12.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
 DM7120  | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhdm-7.12.0-decision-central-eap7-deployable.zip  | KIE_ZIP=rhdm-7.12.0-kie-server-ee8.zip  | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=DM
 PAM7111 | EAP7_ZIP=jboss-eap-7.3.0.zip | EAP_PATCH_ZIP=jboss-eap-7.3.*-patch.zip | PAM_ZIP=rhpam-7.11.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.11.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.3 | TARGET_TYPE=PAM
@@ -517,8 +518,8 @@ function installUsers() {
     # echo "Targeting $target"
     
     test="$target" && test="${test%?}"
-    if [[ "x$test" == "xPAM712" ]] || [[ "$test" == "xDM712" ]]; then
-      echo "filesystem realm"
+    if [[ "x$test" == "xPAM712" ]] || [[ "x$test" == "xDM712" ]]; then
+      # echo "filesystem realm"
       ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --security-domain-name "ApplicationDomain" --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
     fi
 
