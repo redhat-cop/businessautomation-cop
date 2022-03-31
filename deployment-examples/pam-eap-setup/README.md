@@ -157,7 +157,7 @@ Business Central as their controller and one KIE Server in _unmanaged_ mode.
                 |                    |                     
         +-------+--------+   +-------+--------+   +-------+--------+
         | EAP node 1     |   | EAP node 2     |   | EAP node 3     |
-        | localhost:8180 |   | loclahost:8280 |   | localhost:880  |
+        | localhost:8180 |   | loclahost:8280 |   | localhost:8380 |
         |                |   |                |   |                |
         | +------------+ |   | +------------+ |   | +------------+ |
         | |            | |   | |            | |   | |            | |
