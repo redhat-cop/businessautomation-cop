@@ -704,7 +704,12 @@ function modifyConfiguration() {
       prepareConfigLine "org.jbpm.ui.server.ext.disabled"          'false'
     fi
     prepareConfigLine "org.optaplanner.server.ext.disabled"        'false'
-    prepareConfigLine "org.kie.server.id"                          "$serverId"
+    if [[ "$pamInstall" != "ukie" ]]; then
+     prepareConfigLine "org.kie.server.id"                          "$serverId"
+    fi
+    if [[ "$pamInstall" == "ukie" ]]; then
+     prepareConfigLine "org.kie.server.id"                          "ks1"
+    fi
     if [[ "${pamInstall/kie/}" != "$pamInstall" ]] || [[ "$pamInstall" == "both" ]]; then
       #local sedclv=$(echo ${clv} | sed -e "s#/#\\\/#g")
       # properties for managed KIE Server
