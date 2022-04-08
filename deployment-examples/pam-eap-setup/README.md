@@ -427,6 +427,7 @@ BC or KIE nodes will be created using the same EAP base installation, as per <ht
 - node-identifier property in EAP configured as per <https://access.redhat.com/solutions/721613>
 - ActiveMQ Artemis disk threshold increased as per <https://access.redhat.com/solutions/4390511> to better handle near full disks
 - Enable CORS for first four nodes of KIE Server as per <https://access.redhat.com/solutions/4036301> and <https://access.redhat.com/solutions/3713131>
+-- To enable CORS in an OCP environment, please refer to <https://access.redhat.com/solutions/6859471>
 - Enabling logging messages that will show when a project or space is deleted in RHPAM or Decision Manager as per [KB6139932](https://access.redhat.com/solutions/6139932)
 
 ### Install location - Installation log
