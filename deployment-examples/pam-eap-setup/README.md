@@ -33,8 +33,8 @@ Supported (i.e. tested) versions:
   - patch level 7.3.5+ for RHPAM/RHDM 7.10 onwards
 - EAP 7.4
   - patch level 7.4.3+, to be used for RHPAM.7.12.0 onwards 
-- PAM versions 7.2, 7.3, 7.3.1, 7.4, 7.5, 7.5.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1, 7.11.0, 7.11.1, 7.12.0
-- DM version 7.3.1, 7.4.1, 7.6.0, 7.7.0, 7.7.1, 7.8.0, 7.8.1, 7.9.0, 7.9.1, 7.10.0, 7.10.1, 7.11.0, 7.11.1, 7.12.0
+- PAM versions 7.2 onwards
+- DM version 7.3.1 onwards
 
 For details about node configuration check out [Nodes configuration](#nodes-configuration) section at the end of this document. Also:
 
@@ -169,6 +169,15 @@ Business Central as their controller and one KIE Server in _unmanaged_ mode.
 The KIE Servers on EAP nodes 1 and 2 are going to have the KIE Server Id of
 "remote-kieserver" and are going to be deployed in managed mode. The KIE Server
 in EAP node 3, is going to have the Id of "ks1" and is going to be installed in unmanaged mode.
+
+The result of this setup as far as deployments go is that KJAR deployments to
+KIE Servers 1 and 2 would happen through Business Central, while any deployments
+to KIE Server 3 would have to happen by explicitly invoking the REST API
+endpoints offered OOTB.
+
+> The [Using the REST
+> API](../using-the-rest-api#direct-deployment-to-a-kie-server) document
+> contains a section about deploying to KIE Server directly using the REST API
         
 ## Prerequisites
 
