@@ -252,17 +252,29 @@ Invoke with `-h`, i.e. `./pam-setup  -h` for usage info:
                     both : (default) full suite of PAM along with a separate KIE ES having
                            same node as controller, suitable for a development environment
 
-                   multi : a multi-node managed KIE Server installation, with the following
-                           configuration:
+                   multi : a number designating multi-node managed KIE Server installations,
+                           with the following configuration:
                            node 1 : 'both' mode installation, i.e. Business Central and KIE ES
                            node 2 : 'kie' mode installation, i.e. only the KIE ES
                            node 3 onwards: 'kie' mode installation
+                           example: -o multi=3
 
                            Startup scripts will be generated according to the number of nodes specified
                            Node 1 will use the IP:PORT specified with '-n' with each subsequent node
                            using a port offset of 100
                            
                            Startup scripts will be placed to the directory specified by 'install_dir' option
+
+                  custom : Allow for custom topologies mixing managed and unamanged KIE Servers.
+                           Values recognized are :
+                             controller : for business or decision-central
+                                    kie : for managed KIE Servers, will be managed by the 'controller'
+                                   ukie : for un-managed KIE Servers
+                           Example:
+                             custom=controller,kie,kie,ukie
+                             
+                           Please note that 'ukie' for unamanaged KIE Servers can only be used
+                           with the 'custom' option
 
             -c :  Mandatory for 'kie' mode of PAM installation, ignored in other modes
                   Specify list of controllers that this KIE ES should connect to.
