@@ -4,7 +4,11 @@ Content generated during workshops or other training activities. Could also be l
 
 ## RHPAM on EAP
 
-* [Introduction to EAP authentication and authorisation modules (OOTB as well as custom ones) in the contect of RHPAM](https://docs.google.com/presentation/d/1LuaH6-WhWMid-LWqNntSChBUPRqMUMSRh0qbb2WqV54/edit?usp=sharing). Deliverd as part of an internal training for members of the UKI Team.
+* [Introduction to EAP authentication and authorisation modules (OOTB as well as custom ones) in the contect of RHPAM](https://docs.google.com/presentation/d/1LuaH6-WhWMid-LWqNntSChBUPRqMUMSRh0qbb2WqV54/edit?usp=sharing). 
+  Deliverd as part of an internal training for members of the UKI Team.
 
+## Authoring on RHPAM
+
+* Hands on experience on the authoring and management platform for RHPAM, showcasing [User, Groups, RuleFlows and Decision Tables](https://github.com/snandakumar87/loan-approval-admin/blob/master/Loan_Provision.adoc)
 
 
