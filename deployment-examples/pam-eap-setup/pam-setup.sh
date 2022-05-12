@@ -510,27 +510,66 @@ function installUsers() {
     #
     # look for : org.jbpm.ht.admin.user, org.jbpm.ht.admin.group, 16.3.1. Tasks visible to the current user
     #
-    for u in "${uList[@]}"; do
-      ./add-user.sh -sc "$scPath" -s -a --user "$u" --password "${uPass[$u]}" --role "${uRole[$u]}"
-      summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
-    done
     
-    # echo "Targeting $target"
-    
+    elytronUsers=no
     test="$target" && test="${test%?}"
     if [[ "x$test" == "xPAM712" ]] || [[ "x$test" == "xDM712" ]]; then
-      # echo "filesystem realm"
-      ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --security-domain-name "ApplicationDomain" --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
+      if [[ "x$pamInstall" == "xcontroller" ]] || [[ "x$pamInstall" == "xboth" ]]; then
+        elytronUsers=yes
+      fi
     fi
+    #
+    if [[ "x$elytronUsers" == "xyes" ]]; then
+      # new elytron based user setup
+      # since jboss-cli.sh in embedded mode cannot handle multiple base dirs we need to play tricksies...
+      if [[ "$nodedir" != "standalone" ]]; then
+        cp $EAP_HOME/standalone/configuration/standalone.xml $EAP_HOME/standalone/configuration/standalone.xml.backup
+        mv $EAP_HOME/standalone/configuration/kie-fs-realm-users $EAP_HOME/standalone/configuration/kie-fs-realm-users.backup
+        cp $scPath/standalone.xml $EAP_HOME/standalone/configuration/standalone.xml
+      fi
+      local -a aut
+      aut+=( "embed-server" )
+      for u in "${uList[@]}"; do
+        aut+=( "/subsystem=elytron/filesystem-realm=ApplicationRealm:add-identity(identity=$u)" )
+        aut+=( "/subsystem=elytron/filesystem-realm=ApplicationRealm:set-password(identity=$u, clear={password=${uPass[$u]}})" )
+        aut+=( "/subsystem=elytron/filesystem-realm=ApplicationRealm:add-identity-attribute(identity=$u, name=role, value=[${uRole[$u]}])" )
+        # ./jboss-cli.sh --commands="embed-server --std-out=echo,/subsystem=elytron/filesystem-realm=ApplicationRealm:add-identity(identity=<USERNAME>),/subsystem=elytron/filesystem-realm=ApplicationRealm:set-password(identity=<USERNAME>, clear={password=<PASSWORD>}),/subsystem=elytron/filesystem-realm=ApplicationRealm:add-identity-attribute(identity=<USERNAME>, name=role, value=[admin,rest-all,kie-server])"
+        summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
+      done
+      aut+=( "stop-embedded-server" )
+      : > user.tmp
+      printf '%s\n' "${aut[@]}"  >> user.tmp
+      ./jboss-cli.sh --file=user.tmp # &> /dev/null
+      if [[ "$nodedir" != "standalone" ]]; then
+        cp $EAP_HOME/standalone/configuration/standalone.xml $scPath/standalone.xml
+        mv $EAP_HOME/standalone/configuration/kie-fs-realm-users $scPath
+        cp $EAP_HOME/standalone/configuration/standalone.xml.backup $EAP_HOME/standalone/configuration/standalone.xml
+        mv $EAP_HOME/standalone/configuration/kie-fs-realm-users.backup $EAP_HOME/standalone/configuration/kie-fs-realm-users
+      fi
+      rm -f user.tmp
+      unset aut
+    else
+      # pre-elytron user setup
+      for u in "${uList[@]}"; do
+        ./add-user.sh -sc "$scPath" -s -a --user "$u" --password "${uPass[$u]}" --role "${uRole[$u]}"
+        summary "Added PAM user :- $u / ${uPass[$u]} / ${uRole[$u]}"
+      done
+    fi
+   
+    ## test="$target" && test="${test%?}"
+    ## if [[ "x$test" == "xPAM712" ]] || [[ "x$test" == "xDM712" ]]; then
+    ##   # echo "filesystem realm"
+    ##   ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --security-domain-name "ApplicationDomain" --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
+    ## fi
 
-    # check if the Elytron filesystem based Domain is present (default on v7.12.0+) in the standalone.xml, 
-    # which means Elytron is being used instead of Legacy Security
-    if [[ $(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l) -ne 0 ]]; then
-      # echo "elytronRealmCheck is [$(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l)]"
-      ### ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
-      # fix the elytron simple-role-decoder to use the correct role attribute name
-      "$SED" -i "s]name=\"from-roles-attribute\" attribute=\"role\"]name=\"from-roles-attribute\" attribute=\"roles\"]" "$scPath"/standalone*.xml
-    fi
+    ## # check if the Elytron filesystem based Domain is present (default on v7.12.0+) in the standalone.xml, 
+    ## # which means Elytron is being used instead of Legacy Security
+    ## if [[ $(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l) -ne 0 ]]; then
+    ##   # echo "elytronRealmCheck is [$(grep "kie-fs-realm-users" "$scPath"/standalone.xml | wc -l)]"
+    ##   ### ./elytron-tool.sh filesystem-realm --filesystem-realm-name kie-fs-realm-users --users-file "$scPath"/application-users.properties --roles-file "$scPath"/application-roles.properties --output-location "$scPath"/kie-fs-realm-users
+    ##   # fix the elytron simple-role-decoder to use the correct role attribute name
+    ##   "$SED" -i "s]name=\"from-roles-attribute\" attribute=\"role\"]name=\"from-roles-attribute\" attribute=\"roles\"]" "$scPath"/standalone*.xml
+    ## fi
   popd &> /dev/null
 }
 
@@ -1456,9 +1495,10 @@ if [ "$skip_install" != "yes" ]; then
       summary "--- Node instalation node${node} as $nodeParam : ${nodeConfig[nodeName]}"
       ( [[ "$pamInstall" == "controller" ]]         || [[ "$pamInstall" == "both" ]] ) && installBC && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} controller"
       ( [[ "${pamInstall/kie/}" != "$pamInstall" ]] || [[ "$pamInstall" == "both" ]] ) && [[ -r $KIE_ZIP ]] && installKIE $nodeParam  && nodeConfig['pamInstall']="${nodeConfig['pamInstall']} kie"
-      installUsers $nodeParam
+      # installUsers $nodeParam
       applyAdditionalNodeConfig $nodeParam
       modifyConfiguration $nodeParam
+      installUsers $nodeParam
       [[ ! -z "$jvm_memory" ]] && echo 'JAVA_OPTS="$JAVA_OPTS -Xmx'$jvm_memory'm "' >> "${EAP_HOME}/bin/standalone.conf"
       startUp $nodeParam $nodeCounter "$EAP_LOCATION"
       # declare -p nodeConfig
