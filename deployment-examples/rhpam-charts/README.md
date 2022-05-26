@@ -11,7 +11,7 @@ the deployment in the OpenShift environment, exposing the following features:
 ## TL;DR
 ```shell
 git clone https://github.com/redhat-cop/businessautomation-cop.git
-cd deployment-examples/rhpam-charts
+cd businessautomation-cop/deployment-examples/rhpam-charts
 helm install -n my-namespace -f my-rhpam.yaml my-rhpam .
 ```
 
@@ -82,9 +82,9 @@ helm upgrade -n my-namespace -f my-rhpam.yaml my-rhpam redhat-cop/rhpam
 ```
 
 ## Uninstalling the chart
-To uninstall/delete the my-rhpam deployment:
+To uninstall the my-rhpam deployment:
 ```shell
-helm delete -n my-namespace my-rhpam
+helm uninstall -n my-namespace my-rhpam
 ```
 The command removes all the OpenShift resources and deletes the release. Some resources might remain as they are
 installed as Helm hooks.
