@@ -1,0 +1,150 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: rhpam-{{ .Values.global.rhpam.environment }}
+  namespace: {{ .Values.global.rhpam.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+spec:
+  {{- $isProduction := eq .Values.global.rhpam.environment "production" }}
+  environment: {{ if $isProduction }}rhpam-production-immutable{{ else }}rhpam-authoring{{ end }}
+  commonConfig:
+{{- $adminUser := ""}}
+{{- $adminPassword := "" }}
+{{- $secret := (lookup "v1" "Secret" .Values.global.rhsso.namespace "rhsso-rhpam-admin-secret") }}
+{{- if $secret }}
+  {{- $adminUser = (index $secret.data "ADMIN_USERNAME" | b64dec) }}
+  {{- $adminPassword = (index $secret.data "ADMIN_PASSWORD" | b64dec) }}
+{{- end }}
+{{- if $adminUser }}
+    adminPassword: {{ $adminPassword }}
+    adminUser: {{ $adminUser }}
+  {{- end }}
+  auth:
+    sso:
+{{- $cluster := lookup "config.openshift.io/v1" "Ingress" ".Values.global.rhpam.namespace" "cluster" }}
+{{- $domain := "UNKNOWN" }}
+{{- if hasKey $cluster "spec" }}
+  {{- if hasKey $cluster.spec "domain" }}
+    {{- $domain = $cluster.spec.domain}}
+  {{- end }}
+{{- end }}
+{{- $keycloakRoute :=  printf "https://keycloak-%s.%s/auth" .Values.global.rhsso.namespace $domain }}
+      realm: {{ .Values.global.rhsso.realm }}
+      url: {{ $keycloakRoute }}
+  objects:
+    {{- if not $isProduction }}
+    console:
+      gitHooks:
+        from:
+          kind: ConfigMap
+          name: rhpam-git-hooks
+        mountPath: /opt/kie/data/git/hooks
+        sshSecret: rhpam-git-hooks-secret
+      ssoClient:
+        name: business-central
+        secret: {{ index .Values.global.rhsso.clients "business-central" "secret" }}
+      env:
+        - name: MAVEN_REPO_URL
+          valueFrom:
+            configMapKeyRef:
+              key: MAVEN_REPO_URL
+              name: rhpam-configmap
+        - name: MAVEN_REPO_ID
+          valueFrom:
+            configMapKeyRef:
+              key: MAVEN_REPO_ID
+              name: rhpam-configmap
+        - name: MAVEN_REPO_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: MAVEN_REPO_USERNAME
+              name: rhpam-secret
+        - name: MAVEN_REPO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: MAVEN_REPO_PASSWORD
+              name: rhpam-secret
+      image: {{ .Values.common.console.image }}
+      imageContext: {{ .Values.common.imageContext }}
+      imageTag: {{ .Values.common.version | quote }}
+      {{- end }}
+    servers:
+      - persistRepos: false
+        {{- include "buildServerImage" . | indent 8}}
+        {{- $database := .Values.database }}
+        database:
+          externalConfig:
+            {{- if $database.jdbcURL }}
+            jdbcURL: {{ $database.jdbcURL }}
+            {{- end }}
+            dialect: {{ $database.dialect }}
+            driver: {{ $database.driver }}
+            {{- if not $database.jdbcURL }}
+            host: {{ $database.host }}
+            name: {{ $database.name }}
+            {{- end }}
+            password: {{ $database.password }}
+            port: {{ $database.port | quote }}
+            username: {{ $database.username }}
+            nonXA: {{ $database.nonXA | quote }}
+          type: external
+        ssoClient:
+          name: kie-server
+          secret: {{ index .Values.global.rhsso.clients "kie-server" "secret" }}
+#        jvm:
+#          javaOptsAppend: >-
+#            -Dtest1=value1
+#            -Dtest2=value2
+        env:
+          {{- if $isProduction }}
+          - name: KIE_SERVER_CONTAINER_DEPLOYMENT
+            value: {{ join "|"  .Values.containers | quote }}
+          - name: KIE_SERVER_MGMT_DISABLED
+            value: "true"
+          - name: KIE_SERVER_MODE
+            value: {{ if .Values.common.isRelease }}PRODUCTION{{ else }}DEVELOPMENT{{ end }}
+          {{- end }}
+          - name: EXTERNAL_MAVEN_REPO_URL
+            valueFrom:
+              configMapKeyRef:
+                key: MAVEN_REPO_URL
+                name: rhpam-configmap
+          - name: EXTERNAL_MAVEN_REPO_ID
+            valueFrom:
+              configMapKeyRef:
+                key: MAVEN_REPO_ID
+                name: rhpam-configmap
+          - name: EXTERNAL_MAVEN_REPO_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: MAVEN_REPO_USERNAME
+                name: rhpam-secret
+          - name: EXTERNAL_MAVEN_REPO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: MAVEN_REPO_PASSWORD
+                name: rhpam-secret
+{{- range $k, $v := .Values.customProps }}
+  {{- $variableName := include "envVariableName" $k }}
+          - name: {{ $variableName }}
+            valueFrom:
+              configMapKeyRef:
+                key: {{ $variableName }}
+                name: rhpam-custom-configmap
+{{- end }}
+{{- range $k, $v := .Values.customSecrets }}
+  {{- $variableName := include "envVariableName" $k }}
+          - name: {{ $variableName }}
+            valueFrom:
+              secretKeyRef:
+                key: {{ $variableName }}
+                name: rhpam-custom-secret
+{{- end }}
+        name: rhpam-server
+        id: rhpam-server
+        replicas: {{ .Values.common.server.replicas }}
+        image: {{ if .Values.global.rhpam.installPostconfigure }}custom-{{ end }}{{ .Values.common.server.image }}
+        imageContext: {{ if $isProduction }}{{ .Values.global.rhsso.namespace }}{{ else }}{{ .Values.common.imageContext }}{{ end }}
+        imageTag: {{ .Values.common.version | quote }}
+  imageRegistry:
+    registry: {{ .Values.global.imageRegistry | quote }}

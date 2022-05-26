@@ -1,0 +1,8 @@
+#!/bin/sh
+branches="$(git branch | colrm 1 2 | awk '"'"'{print $1}'"'"')"
+for branch in $branches; do
+    source="$branch"
+    target="$branch"
+    echo "PUSHING TO BRANCH [$source:$target]"
+    git push -u origin "$source":"$target"
+done

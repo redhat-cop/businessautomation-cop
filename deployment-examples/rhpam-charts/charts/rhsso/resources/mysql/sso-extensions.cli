@@ -1,0 +1,27 @@
+batch
+
+set DB_DRIVER_NAME=mysql
+set DB_DRIVER=com.mysql.cj.jdbc.Driver
+set DB_XA_DRIVER=com.mysql.cj.jdbc.MysqlXADataSource
+set DB_EAP_MODULE=org.mysql
+
+set DB_HOST={{ .Values.database.host }}
+set DB_PORT={{ .Values.database.port }}
+set DB_NAME={{ .Values.database.name }}
+set DB_USERNAME={{ .Values.database.username }}
+set DB_PASSWORD={{ .Values.database.password }}
+
+# Note: = characters in URL connection properties must be escaped with \\
+set DB_JDBC_URL=jdbc:mysql:/$DB_HOST:$DB_PORT:/$DB_NAME?characterEncoding\\=UTF-8
+set DRIVER_FILE={{ .Values.database.driverURL | base  | replace "zip" "jar"}}
+set FILE=/opt/eap/extensions/$DRIVER_FILE
+
+module add --name=$DB_EAP_MODULE --resources=$FILE --dependencies=javax.api,javax.transaction.api
+/subsystem=datasources/jdbc-driver=$DB_DRIVER_NAME:add( \
+  driver-name=$DB_DRIVER_NAME, \
+  driver-module-name=$DB_EAP_MODULE, \
+  driver-class-name=$DB_DRIVER, \
+  driver-xa-datasource-class-name=$DB_XA_DRIVER \
+)
+
+run-batch

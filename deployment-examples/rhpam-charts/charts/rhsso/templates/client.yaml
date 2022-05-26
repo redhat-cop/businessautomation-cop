@@ -1,0 +1,50 @@
+{{- $cluster := lookup "config.openshift.io/v1" "Ingress" ".Values.global.rhsso.namespace" "cluster" }}
+{{- $domain := "UNKNOWN" }}
+{{- if hasKey $cluster "spec" }}
+  {{- if hasKey $cluster.spec "domain" }}
+    {{- $domain = $cluster.spec.domain}}
+  {{- end }}
+{{- end }}
+{{- range $id, $client := .Values.global.rhsso.clients }}
+{{- $route := "" }}
+  {{- if eq $id "business-central" }}
+    {{- $route =  printf "https://rhpam-%s-rhpamcentr-%s.%s" $.Values.global.rhpam.environment $.Values.global.rhpam.namespace $domain }}
+  {{- else }}
+    {{- $route =  printf  "https://rhpam-server-%s.%s" $.Values.global.rhpam.namespace $domain }}
+  {{- end }}
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakClient
+metadata:
+  name: {{ $id }}
+  namespace: {{ $.Values.global.rhsso.namespace }}
+  labels:
+    app: sso
+    {{- include "commonLabels" $ | indent 4 }}
+spec:
+  client:
+    redirectUris:
+      - {{ $route }}/*
+    clientId: {{ $id }}
+    secret: {{ .secret | quote }}
+    clientAuthenticatorType: client-secret
+    rootUrl: {{ $route }}
+    adminUrl: {{ $route }}
+    enabled: true
+    name: {{ $id }}
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: true
+    defaultClientScopes:
+      - email
+      - profile
+      - roles
+      - web-origins
+    optionalClientScopes:
+      - address
+      - microprofile-jwt
+      - offline_access
+      - phone
+  realmSelector:
+    matchLabels:
+      realm: {{ $.Values.global.rhsso.realm }}
+---
+{{- end}}

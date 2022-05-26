@@ -1,0 +1,18 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: businessautomation-operator
+  namespace: {{ .Values.global.rhpam.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+spec:
+{{ toYaml .Values.operator | indent 2 }}
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: rhpam-operator-group
+  namespace: {{ .Values.global.rhpam.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+spec:
+  targetNamespaces:
+    - {{ .Values.global.rhpam.namespace }}
