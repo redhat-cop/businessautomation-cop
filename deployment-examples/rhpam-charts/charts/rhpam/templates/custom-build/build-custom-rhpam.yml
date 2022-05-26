@@ -55,7 +55,7 @@ spec:
     - type: ConfigChange
 {{- end }}
 ---
-#{{- if eq .Values.database.driver "mssql" }}
+{{- if eq .Values.database.driver "mssql" }}
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
@@ -97,4 +97,4 @@ spec:
   nodeSelector: null
   triggers:
     - type: ConfigChange
-#{{- end }}
+{{- end }}
