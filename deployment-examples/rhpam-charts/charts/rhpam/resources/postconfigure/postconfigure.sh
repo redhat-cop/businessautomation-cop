@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "******  RUNNING ADDITIONAL CONFIGURATIONS WITH JBOSS-CLI - ADDING CUSTOM PROPERTIES **********"
 echo "trying to execute /opt/eap/bin/jboss-cli.sh --file=/opt/eap/extensions/custom-properties.cli"
 ls -l /opt/eap/bin/jboss-cli.xml

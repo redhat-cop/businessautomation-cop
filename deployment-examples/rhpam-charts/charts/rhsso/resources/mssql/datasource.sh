@@ -1,3 +1,4 @@
+#!/bin/bash
 source $JBOSS_HOME/bin/launch/datasource-common.sh
 
 function prepareEnv() {
