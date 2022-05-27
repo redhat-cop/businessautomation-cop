@@ -1,0 +1,12 @@
+{{- $namespace := lookup "v1" "Namespace" "" .Values.global.rhsso.namespace }}
+{{- if empty $namespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.global.rhsso.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- end }}

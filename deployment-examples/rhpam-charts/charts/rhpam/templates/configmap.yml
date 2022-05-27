@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rhpam-configmap
+  namespace: {{ .Values.global.rhpam.namespace }}
+data:
+  MAVEN_REPO_ID: {{ .Values.maven.repo.id }}
+  MAVEN_REPO_URL: {{ .Values.maven.repo.url }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rhpam-git-hooks
+  namespace: {{ .Values.global.rhpam.namespace }}
+data:
+  post-commit: |
+{{ .Files.Get "resources/git/post-commit" | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rhpam-custom-configmap
+  namespace: {{ .Values.global.rhpam.namespace }}
+data:
+{{- range $k, $v := .Values.customProps }}
+  {{- $variableName := include "envVariableName" $k }}
+  {{- printf "\n%s: %s" $variableName ($v | quote) | indent 2 }}
+{{- end }}

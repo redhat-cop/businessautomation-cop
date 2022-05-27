@@ -1,0 +1,65 @@
+{{- if or (eq .Values.database.driver "mysql") (eq .Values.database.driver "mssql") }}
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: {{ .Values.image.name }}-{{ .Values.database.driver }}
+  namespace: {{ .Values.global.rhsso.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+---
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: "custom-rhsso-build"
+  namespace: {{ $.Values.global.rhsso.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  source:
+    dockerfile: |
+      FROM {{ .Values.global.imageRegistry }}/{{ .Values.image.context }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+      LABEL name="RHSSO custom image from {{ .Values.image.name }}:{{ .Values.image.tag }} with {{ .Values.database.driver }} JDBC Driver"
+
+      RUN mkdir /opt/eap/extensions
+      {{- if eq .Values.database.driver "mysql" }}
+      {{- $driverZip := base .Values.database.driverURL }}
+      {{- $driverJar := $driverZip | replace "zip" "jar" }}
+      RUN curl -L {{ .Values.database.driverURL }} -o /tmp/{{ $driverZip }}
+      RUN unzip /tmp/{{ $driverZip }} mysql*/*.jar -d /tmp
+      RUN mv /tmp/mysql*/*.jar /opt/eap/extensions/
+      {{- else if eq .Values.database.driver "mssql" }}
+      {{- $driverJar := base .Values.database.driverURL }}
+      RUN curl -L {{ .Values.database.driverURL }} -o /opt/eap/extensions/{{ $driverJar }}
+      {{- end }}
+      COPY sso-extensions/sso-extensions.cli /opt/eap/extensions/
+      USER root
+      {{- if eq .Values.database.driver "mysql" }}
+      RUN mkdir -p /opt/eap/modules/org/mysql
+      RUN chmod 0775 /opt/eap/modules/org/mysql
+      {{- else if eq .Values.database.driver "mssql" }}
+      RUN mkdir -p /opt/eap/modules/com/microsoft
+      RUN chmod 0775 /opt/eap/modules/com/microsoft
+      COPY sso-extensions/*.sh /opt/eap/bin/launch/
+      RUN chmod 0775 /opt/eap/bin/launch/*.sh
+      {{- end }}
+      RUN chown jboss:root /opt/eap/extensions/*
+      RUN chmod 0555 /opt/eap/extensions/*
+      USER 185
+    configMaps:
+      - configMap:
+          name: sso-extensions
+        destinationDir: "sso-extensions"
+  strategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: {{ .Values.image.name }}-{{ .Values.database.driver }}:{{ .Values.image.tag }}
+  resources: {}
+  postCommit: {}
+  nodeSelector: null
+  triggers:
+    - type: ConfigChange
+{{- end }}

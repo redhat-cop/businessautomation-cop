@@ -1,0 +1,20 @@
+global:
+  imageRegistry: registry.redhat.io
+  internalImageRegistry: 'image-registry.openshift-image-registry.svc:5000'
+  rhpam:
+    namespace: rhpam
+    # One of: authoring/production
+    environment: authoring
+    installPostconfigure: true
+  rhsso:
+    namespace: rhsso
+    realm: rhpam
+    clients:
+      business-central:
+        # These 2 secrets can be defined using the UUID generator service at https://www.uuidgenerator.net/
+        secret:
+      kie-server:
+        secret:
+  labels:
+    helm-app: RHPAM
+    author: Red-Hat

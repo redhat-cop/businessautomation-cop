@@ -1,0 +1,71 @@
+global:
+  rhpam:
+    namespace: rhpam-cop
+    environment: authoring
+    installPostconfigure: true
+  rhsso:
+    namespace: rhsso-cop
+    realm: rhpam
+    clients:
+      business-central:
+        secret: <BUSINESS_CENTRAL_SECRET>
+      kie-server:
+        secret: <KIE_SERVER_SECRET>
+rhpam:
+  common:
+    version: 7.9.1
+    server:
+      replicas: 1
+  operator:
+    channel: stable
+    installPlanApproval: Automatic
+    name: businessautomation-operator
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+  containers: null
+    #- 'containerId=groupId:artifactId:version'
+  artifacts: null
+    #- gav: groupId:artifactId:version
+  maven:
+    repo:
+      url: <EXTERNAL_MAVEN_REPO_URL>
+      username: <EXTERNAL_MAVEN_REPO_USERNAME>
+      password: <EXTERNAL_MAVEN_REPO_PASSWORD>>
+  database:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    driver: postgresql
+    host: <POSTGRES_HOST>
+    name: <POSTGRES_DATABASE_NAME>
+    password: <POSTGRES_PASSWORD>
+    port: <POSTGRES_PORT>
+    username: <POSTGRES_USERNAME>
+    nonXA: 'false'
+  customProps:
+    #my-property1: value1
+    #my-property2: value2
+  customSecrets:
+    #my-secret-property1: value1
+    #my-secret-property2: value2
+rhsso:
+  image:
+    context: rhsso
+    name: sso74-openshift-rhel8
+    initContainerName: sso7-rhel8-init-container
+    tag: 7.4
+  database:
+    driver: postgresql
+    host: <POSTGRES_HOST>
+    name: <POSTGRES_DATABASE_NAME>
+    password: <POSTGRES_PASSWORD>
+    port: <POSTGRES_PORT>
+    username: <POSTGRES_USERNAME>
+  operator:
+    channel: alpha
+    installPlanApproval: Automatic
+    name: rhsso-operator
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+  rhpam:
+    admin:
+      username: rhpamadmin
+      password: redhat123#

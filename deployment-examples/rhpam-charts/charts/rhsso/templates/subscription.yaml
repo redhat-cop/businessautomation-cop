@@ -1,0 +1,24 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: rhsso-operator
+  namespace: {{ .Values.global.rhsso.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+spec:
+{{ toYaml .Values.operator | indent 2 }}
+{{- if or (eq .Values.database.driver "mysql") (eq .Values.database.driver "mssql") }}
+  config:
+    env:
+      - name: RELATED_IMAGE_RHSSO_OPENJDK
+        value: '{{ .Values.global.internalImageRegistry }}/{{ .Values.global.rhsso.namespace }}/{{ .Values.image.name }}-{{ .Values.database.driver }}:{{ .Values.image.tag }}'
+{{- end }}
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: rhsso-operator-group
+  namespace: {{ .Values.global.rhsso.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+spec:
+  targetNamespaces:
+    - {{ .Values.global.rhsso.namespace }}

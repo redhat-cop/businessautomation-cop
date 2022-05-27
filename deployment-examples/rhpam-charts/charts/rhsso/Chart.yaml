@@ -1,0 +1,8 @@
+apiVersion: v2
+name: rhsso
+description: A Helm chart to install RHSSO on Openshift
+
+type: application
+version: 0.1.0
+# This is NOT used as the tag for RHSSO images, matches image.tag property
+appVersion: 7.4

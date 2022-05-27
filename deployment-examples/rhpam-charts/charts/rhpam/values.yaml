@@ -1,0 +1,45 @@
+common:
+  imageContext: rhpam-7
+  # The image tag for both Business Central and Kie Server
+  version: 7.9.1
+  server:
+    image: rhpam-kieserver-rhel8
+    # Number of Kie Server replicas
+    replicas: 1
+  console:
+    image: rhpam-businesscentral-rhel8
+  # For production environment: true when the deployed containers are of RELEASE version
+  isRelease: false
+operator:
+  channel: stable
+  installPlanApproval: Automatic
+  name: businessautomation-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+
+# An optional list of containers to be pre-deployed on the servers in GAV format
+containers:
+#  - 'containerId=groupId:artifactId:version'
+# An optional list of dependency artifacts published on the Maven repository to be installed on the server, in GAV format
+artifacts:
+#  - gav: groupId:artifactId:version
+
+maven:
+  repo:
+    url:
+    id: rhpam
+    username:
+    password:
+
+database:
+  # Configuration example for PostgreSQL DB
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  driver: postgresql
+  host:
+  name:
+  password:
+  port: 5432
+  username:
+  nonXA: 'false'
+customProps:
+customSecrets:

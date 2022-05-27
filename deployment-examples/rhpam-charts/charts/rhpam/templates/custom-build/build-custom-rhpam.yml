@@ -1,0 +1,100 @@
+{{- if .Values.global.rhpam.installPostconfigure }}
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: "custom-rhpam-build"
+  namespace: {{ $.Values.global.rhpam.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  source:
+    dockerfile: |
+      FROM {{ .Values.global.imageRegistry}}/{{ .Values.common.imageContext }}/{{ .Values.common.server.image }}:{{ .Values.common.version }}
+      RUN echo '<settings> \
+      <profiles> \
+      <profile> \
+      <id>custom-repo</id> \
+      <activation> \
+      <activeByDefault>true</activeByDefault> \
+      </activation> \
+      <repositories> \
+      <repository> \
+      <id>rhpam</id> \
+      <url>{{ $.Values.maven.repo.url }}</url> \
+      </repository> \
+      </repositories> \
+      </profile> \
+      </profiles> \
+      </settings>' > /tmp/settings.xml
+{{- range .Values.artifacts }}
+      RUN mvn dependency:copy -s /tmp/settings.xml -Dartifact={{ .gav }} -DoutputDirectory=/opt/eap/standalone/deployments/ROOT.war/WEB-INF/lib/
+{{- end }}
+      RUN mkdir /opt/eap/extensions
+      COPY extensions/* /opt/eap/extensions
+      USER root
+      RUN chown jboss:root /opt/eap/extensions/*
+      RUN chmod 0555 /opt/eap/extensions/*
+      USER 185
+    configMaps:
+      - configMap:
+          name: postconfigure
+        destinationDir: "extensions"
+  strategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: custom-{{ .Values.common.server.image }}:{{ .Values.common.version }}
+  resources: {}
+  postCommit: {}
+  nodeSelector: null
+  triggers:
+    - type: ConfigChange
+{{- end }}
+---
+{{- if eq .Values.database.driver "mssql" }}
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: "mssql-extension-build"
+  namespace: {{ $.Values.global.rhpam.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  source:
+    dockerfile: |
+      FROM bash:5.1.8
+      LABEL name="Microsoft SQL Server JDBC Driver" \
+            version="{{ .Values.database.version }}"
+      ENV VERSION="{{ .Values.database.version }}"
+      ENV DRIVER_DIR="com/microsoft/main"
+      ENV DRIVER_JDBC_ARTIFACT_NAME="mssql-jdbc-${VERSION}.jar"
+
+      RUN mkdir -p /extensions/modules/${DRIVER_DIR}
+      COPY extensions/* /extensions
+      RUN mv extensions/module.xml /extensions/modules/${DRIVER_DIR}
+
+      RUN wget -O /extensions/modules/${DRIVER_DIR}/${DRIVER_JDBC_ARTIFACT_NAME} \
+      https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/${VERSION}/${DRIVER_JDBC_ARTIFACT_NAME}
+    configMaps:
+      - configMap:
+          name: mssql-extension
+        destinationDir: "extensions"
+  strategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: {{ include "msSqlExtensionImageName" . }}:{{ .Values.common.version }}
+  resources: {}
+  postCommit: {}
+  nodeSelector: null
+  triggers:
+    - type: ConfigChange
+{{- end }}

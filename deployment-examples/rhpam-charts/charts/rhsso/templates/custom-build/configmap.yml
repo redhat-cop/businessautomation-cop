@@ -1,0 +1,23 @@
+{{- if or (eq .Values.database.driver "mysql") (eq .Values.database.driver "mssql") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sso-extensions
+  namespace: {{ .Values.global.rhsso.namespace }}
+data:
+{{- $fileName := printf "resources/%s/*" .Values.database.driver }}
+{{ (tpl (.Files.Glob $fileName).AsConfig .) | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-probes
+  namespace: {{ .Values.global.rhsso.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+data:
+{{ (tpl (.Files.Glob "resources/liveness_probe.sh").AsConfig .) | indent 2 }}
+{{ (tpl (.Files.Glob "resources/readiness_probe.sh").AsConfig .) | indent 2 }}
+{{- end }}

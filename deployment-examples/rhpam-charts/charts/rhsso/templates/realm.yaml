@@ -1,0 +1,33 @@
+{{- $cluster := lookup "config.openshift.io/v1" "Ingress" ".Values.global.rhsso.namespace" "cluster" }}
+{{- $domain := "UNKNOWN" }}
+{{- if hasKey $cluster "spec" }}
+  {{- if hasKey $cluster.spec "domain" }}
+    {{- $domain = $cluster.spec.domain}}
+  {{- end }}
+{{- end }}
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakRealm
+metadata:
+  name: {{ .Values.global.rhsso.realm | replace "_" "-" }}
+  namespace: {{ .Values.global.rhsso.namespace }}
+  labels:
+    app: sso
+    realm: {{ .Values.global.rhsso.realm }}
+    {{- include "commonLabels" . | indent 4 }}
+spec:
+  instanceSelector:
+    matchLabels:
+      app: sso
+  realm:
+    id: {{ .Values.global.rhsso.realm }}
+    realm: {{ .Values.global.rhsso.realm }}
+    enabled: true
+    displayName: RHPAM authoring realm
+    roles:
+      realm:
+        - name: admin
+          description: RHPAM admin role
+        - name: kie-server
+          description: RHPAM kie-server role
+        - name: rest-all
+          description: RHPAM rest-all role

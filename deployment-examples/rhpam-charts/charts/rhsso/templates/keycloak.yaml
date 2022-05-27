@@ -1,0 +1,33 @@
+﻿apiVersion: keycloak.org/v1alpha1
+kind: Keycloak
+metadata:
+  labels:
+    app: sso
+    {{- include "commonLabels" . | indent 4 }}
+  name: rhsso
+  namespace: {{ .Values.global.rhsso.namespace }}
+spec:
+  externalDatabase:
+    enabled: true
+  externalAccess:
+    enabled: true
+  instances: 1
+  keycloakDeploymentSpec:
+    experimental:
+      env:
+        - name: DB_DRIVER
+          value: {{ .Values.database.driver }}
+        - name: DB_SERVICE_PREFIX_MAPPING
+          value: keycloak-{{ .Values.database.driver }}=DB
+        - name: TX_DATABASE_PREFIX_MAPPING
+          value: keycloak-{{ .Values.database.driver }}=DB
+        - name: KEYCLOAK_{{ .Values.database.driver | upper }}_SERVICE_HOST
+          value: {{ .Values.database.host }}
+        - name: KEYCLOAK_{{ .Values.database.driver | upper }}_SERVICE_PORT
+          value: {{ .Values.database.port | quote }}
+        {{- if eq .Values.database.driver "mssql" }}
+        - name: DB_URL
+          value: jdbc:sqlserver://{{ .Values.database.host }}:{{ .Values.database.port }};databaseName={{ .Values.database.name }}
+        - name: DB_NONXA
+          value: {{ not .Values.database.xa | quote }}
+        {{- end }}

@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postconfigure
+  namespace: {{ .Values.global.rhpam.namespace }}
+data:
+{{ (.Files.Glob "resources/postconfigure/*").AsConfig | indent 2 }}
+  custom-properties.cli: |-
+    embed-server --std-out=echo  --server-config=standalone-openshift.xml
+    batch
+
+{{- range $k, $v := .Values.customProps }}
+  {{- $variableName := include "envVariableName" $k }}
+  {{- printf "\n/system-property=%s:add(value=\"${%s:}\")" $k $variableName | indent 4 }}
+{{- end }}
+{{- range $k, $v := .Values.customSecrets }}
+  {{- $variableName := include "envVariableName" $k }}
+  {{- printf "\n/system-property=%s:add(value=\"${%s:}\")" $k $variableName | indent 4 }}
+{{- end }}
+
+    run-batch
+    quit
+---
+{{- if eq .Values.database.driver "mssql" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mssql-extension
+  namespace: {{ .Values.global.rhpam.namespace }}
+data:
+{{ (.Files.Glob "resources/mssql/*").AsConfig | replace "VERSION" (default "" .Values.database.version) | indent 2 }}
+{{- end }}

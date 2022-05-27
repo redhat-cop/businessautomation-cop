@@ -1,0 +1,25 @@
+batch
+
+set DB_DRIVER_NAME=mssql
+set DB_DRIVER=com.microsoft.sqlserver.jdbc.SQLServerDriver
+set DB_XA_DRIVER=com.microsoft.sqlserver.jdbc.SQLServerXADataSource
+set DB_EAP_MODULE=com.microsoft
+
+set DB_HOST={{ .Values.database.host }}
+set DB_PORT={{ .Values.database.port }}
+set DB_NAME={{ .Values.database.name }}
+set DB_USERNAME={{ .Values.database.username }}
+set DB_PASSWORD={{ .Values.database.password }}
+
+set DRIVER_FILE={{ .Values.database.driverURL | base }}
+set FILE=/opt/eap/extensions/$DRIVER_FILE
+
+module add --name=$DB_EAP_MODULE --resources=$FILE --dependencies=javax.api,javax.transaction.api
+/subsystem=datasources/jdbc-driver=$DB_DRIVER_NAME:add( \
+  driver-name=$DB_DRIVER_NAME, \
+  driver-module-name=$DB_EAP_MODULE, \
+  driver-class-name=$DB_DRIVER, \
+  driver-xa-datasource-class-name=$DB_XA_DRIVER \
+)
+
+run-batch

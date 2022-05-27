@@ -1,0 +1,32 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: custom-{{ .Values.common.server.image }}
+  namespace: {{ .Values.global.rhpam.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: jboss-kie-mysql-extension-openshift-image
+  namespace: {{ .Values.global.rhpam.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+  annotations:
+    openshift.io/display-name: mysql driver extension
+spec:
+  dockerImageRepository: quay.io/kiegroup/jboss-kie-mysql-extension-openshift-image
+  tags:
+    - name: '8.0.12'
+      annotations:
+        description: JBoss KIE custom mysql jdbc extension image, recommended version driver.
+        tags: mysql,extension,jdbc,driver
+        version: '8.0.12'
+---
+{{- if eq .Values.database.driver "mssql" }}
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: {{ include "msSqlExtensionImageName" . }}
+  namespace: {{ .Values.global.rhpam.namespace }}
+  labels: {{- include "commonLabels" . | indent 4 }}
+{{- end }}

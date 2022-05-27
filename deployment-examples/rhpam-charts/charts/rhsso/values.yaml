@@ -1,0 +1,29 @@
+image:
+  # Must be the target namespace in case of using the internal registry
+  context: rh-sso-7
+  name: sso74-openshift-rhel8
+  initContainerName: sso7-rhel8-init-container
+  tag: 7.4
+database:
+  # Configuration example for PostgreSQL DB
+  # One of: postgresql, mysql, mssql
+  driver: postgresql
+  host:
+  port: 5432
+  name:
+  password:
+  username:
+  xa: true
+  # Configuration example for MySQL DB
+#  driverURL: 'https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-java-8.0.22.zip'
+operator:
+  channel: alpha
+  installPlanApproval: Automatic
+  name: rhsso-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+
+rhpam:
+  admin:
+    username: rhpamadmin
+    password: redhat123#

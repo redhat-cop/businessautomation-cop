@@ -1,0 +1,55 @@
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakUser
+metadata:
+  name: rhpamadmin
+  namespace: {{ .Values.global.rhsso.namespace }}
+  labels:
+    app: sso
+    realm: {{ .Values.global.rhsso.realm }}
+    {{- include "commonLabels" . | indent 4 }}
+spec:
+  user:
+    id: {{ .Values.rhpam.admin.username }}
+    username: {{ .Values.rhpam.admin.username }}
+    clientRoles:
+      realm-management:
+        - realm-admin
+    realmRoles:
+      - admin
+      - kie-server
+      - rest-all
+    enabled: True
+    credentials:
+      - type: "password"
+        value: {{ .Values.rhpam.admin.password | quote }}
+  realmSelector:
+    matchLabels:
+      realm: {{ .Values.global.rhsso.realm }}
+---
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakUser
+metadata:
+  name: admin
+  namespace: {{ .Values.global.rhsso.namespace }}
+  labels:
+    app: sso
+    realm: {{ .Values.global.rhsso.realm }}
+    {{- include "commonLabels" . | indent 4 }}
+spec:
+  user:
+    id: admin
+    username: admin
+    clientRoles:
+      realm-management:
+      - realm-admin
+    realmRoles:
+      - admin
+      - kie-server
+      - rest-all
+    enabled: True
+    credentials:
+      - type: "password"
+        value: {{ .Values.rhpam.admin.password | quote }}
+  realmSelector:
+    matchLabels:
+      realm: {{ .Values.global.rhsso.realm }}
