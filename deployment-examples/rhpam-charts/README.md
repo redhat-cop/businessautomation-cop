@@ -18,6 +18,7 @@ helm install -n my-namespace -f my-rhpam.yaml my-rhpam .
 ```
 
 ## Introduction
+
 This chart provides an Helm-based deployment of RHPAM according to the following requirements:
 * The RH Operators are installed as part of the deployment
 * The authentication is managed by an [RHSSO](https://access.redhat.com/products/red-hat-single-sign-on) instance

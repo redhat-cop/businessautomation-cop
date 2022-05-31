@@ -49,7 +49,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: ludeeus/action-shellcheck@master
         env:
-          SHELLCHECK_OPTS: -e SC3043 -e SC2086 -e SC2112 -e SC3059 -e SC2034 -e SC1072 -e SC1056 -e SC1073 -e SC1054 
+          SHELLCHECK_OPTS: -e SC3043 -e SC2086 -e SC2112 -e SC3059 -e SC2034 -e SC1072 -e SC1056 -e SC1073 -e SC1054 -e SC2068 
 
 #        with:
 #          ignore: bcgithook bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-vagrant rhpam-charts
