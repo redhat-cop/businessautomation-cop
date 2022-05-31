@@ -3,11 +3,11 @@ name: Java CI with Maven for deployment-examples
 on:
   push:
     paths:
-      - .github/workflows/mvn-deployment-examples.yaml
+      - .github/workflows/mvn-deployment-examples-rhpam-charts.yaml
       - deployment-examples/rhpam-charts/**
   pull_request:
     paths:
-      - .github/workflows/mvn-deployment-examples.yaml
+      - .github/workflows/mvn-deployment-examples-rhpam-charts.yaml
       - deployment-examples/rhpam-charts/**
 
 jobs:
