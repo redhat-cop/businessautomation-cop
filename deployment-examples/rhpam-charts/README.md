@@ -1,4 +1,5 @@
 # RHPAM packaged with Helm chart 
+
 This repository holds a configurable Helm chart of [RHPAM](https://developers.redhat.com/products/rhpam/overview), to simplify
 the deployment in the OpenShift environment, exposing the following features:
 * Managed by Red Hat operators
@@ -9,6 +10,7 @@ the deployment in the OpenShift environment, exposing the following features:
 * Git hooks integration (with SSH authentication)
 
 ## TL;DR
+
 ```shell
 git clone https://github.com/redhat-cop/businessautomation-cop.git
 cd businessautomation-cop/deployment-examples/rhpam-charts
@@ -16,6 +18,7 @@ helm install -n my-namespace -f my-rhpam.yaml my-rhpam .
 ```
 
 ## Introduction
+
 This chart provides an Helm-based deployment of RHPAM according to the following requirements:
 * The RH Operators are installed as part of the deployment
 * The authentication is managed by an [RHSSO](https://access.redhat.com/products/red-hat-single-sign-on) instance
