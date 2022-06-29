@@ -1147,17 +1147,6 @@ function installBCGitHook() {
 
 TMP_FILE=tmp_file.$(randomid)
 
-#
-# - try to detect CYGWIN
-#
-CYGWIN_ON=no
-# a=`uname -a` && al=${a,,} && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
-# use awk to workaround MacOS bash version
-a=`uname -a` && al=`echo $a | awk '{ print tolower($0); }'` && ac=${al%cygwin} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes
-if [[ "$CYGWIN_ON" == "yes" ]]; then
-  sout "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
-fi
-
 WORKDIR=$PWD
 [[ "$CYGWIN_ON" == "yes" ]] && WORKDIR=$(cygpath -w ${WORKDIR})
 
