@@ -53,7 +53,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           severity: error
-          ignore: bcgithook bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-quick-examples pam-vagrant
+          ignore: bcgithook bdd-ui kogito-quick-start-workshop offliner-maven-plugin pam-eap-setup pam-quick-examples pam-vagrant rhpam-charts
 
       - name: Build offliner-maven-plugin
         run: |
