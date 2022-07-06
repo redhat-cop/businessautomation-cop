@@ -69,7 +69,7 @@ tmp=$(java -XshowSettings:all -version 2>&1| grep version | grep specification |
 tmp="${tmp#"${tmp%%[![:space:]]*}"}" && tmp="${tmp%"${tmp##*[![:space:]]}"}"
 javaspec="$tmp"
 goon=no && ( [[ "$javaspec" == "1.8" ]] || [[ "$javaspec" == "11" ]] ) && goon=yes
-[[ "$goon" == "no"  ]] && { echo >&2 "ERROR: JAVA VERSION not supported. Please install version 8 or 11, found version $javascped - Aborting"; exit 1; }
+[[ "$goon" == "no"  ]] && { echo >&2 "ERROR: JAVA VERSION not supported. Please install version 8 or 11, found version $javaspec - Aborting"; exit 1; }
 unset tmp javaspec goon
 
 # - check sed version on Mac
