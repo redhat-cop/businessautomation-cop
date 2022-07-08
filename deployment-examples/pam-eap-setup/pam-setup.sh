@@ -9,6 +9,7 @@
 #
 # sanity environment check
 CYGWIN_ON=no
+GITBASH_ON=no
 MACOS_ON=no
 LINUX_ON=no
 min_bash_version=4
@@ -21,7 +22,11 @@ if [[ "$CYGWIN_ON" == "yes" ]]; then
   echo "CYGWIN DETECTED - WILL TRY TO ADJUST PATHS"
   min_bash_version=4
 fi
-
+a=$(uname -a) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al#mingw64} && [[ "$al" != "$ac" ]] && CYGWIN_ON=yes && GITBASH_ON=yes
+if [[ "$CYGWIN_ON" == "yes" ]] && [[ "$GITBASH_ON" == "yes" ]]; then
+  echo "GITBASH DETECTED - WILL PRETEND IS CYGWIN - WILL TRY TO ADJUST PATHS"
+  min_bash_version=4
+fi
 # - try to detect MacOS
 a=$(uname) && al=$(echo "$a" | awk '{ print tolower($0); }') && ac=${al%darwin} && [[ "$al" != "$ac" ]] && MACOS_ON=yes
 [[ "$MACOS_ON" == "yes" ]] && min_bash_version=5 && echo "macOS DETECTED"
