@@ -322,7 +322,7 @@ function prepareConfigLine() {
     pamConfigList+=( "if (outcome == success) of /system-property=$key:read-resource" )
     pamConfigList+=( "  /system-property=$key:remove > $TMP_FILE" )
     pamConfigList+=( "end-if" )
-    pamConfigList+=( "/system-property=$key:add(value=$result) > $TMP_FILE" )
+    pamConfigList+=( "/system-property=$key:add(value=\"$result\") > $TMP_FILE" )
   fi
 }
 
