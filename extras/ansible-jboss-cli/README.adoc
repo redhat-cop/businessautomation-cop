@@ -3,16 +3,16 @@
 ## Ansible playbook to execute JBoss CLI
 
 You can run JBoss CLI commands from Ansible.
-These playbooks dynamically wrapped the JBoss CLI commands to give you the Ansible checking capabilities over the Wildfly command lines tool. 
+These playbooks dynamically wrap the JBoss CLI commands to give you the Ansible checking capabilities over the Wildfly command line tool. 
 In addition, you can use Ansible Tower to integrate these playbooks creating an automatic order/flow and monitor it.
 
-In order to run all the playbook below you need to pass this an argument called `{{jboss-home}}` 
+In order to run all the playbook below, you need to pass this an argument called `{{jboss-home}}` 
 e.g
 ----
 ansible-playbook <playbook name> --extra-vars "<jboss path installation>"
 ----
 
-Pre requirement to run these playbook is to have Wildfly running, it will check and failed if Wildfly/JBoss is not up and running
+Prerequisite to run these playbooks is to have Wildfly running, it will check and failed if Wildfly/JBoss is not up and running
 
 ### jboss-bound-address
 
