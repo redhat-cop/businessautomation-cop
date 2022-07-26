@@ -1,0 +1,37 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: immutable-with-nexus-example
+spec:
+  commonConfig:
+    adminPassword: P@ssw0rd
+    adminUser: rhpamAdmin
+  environment: rhpam-production-immutable
+  useImageTags: true
+  objects:
+    servers:
+      - database:
+          type: h2
+        env:
+          - name: MAVEN_REPO_ID
+            value: repo-custom
+          - name: MAVEN_REPO_USERNAME
+            value: admin
+          - name: MAVEN_REPO_PASSWORD
+            value: admin123
+          - name: MAVEN_REPO_URL # repo that contains the kjar that's to be deployed into kie-server
+            value: >-
+              http://nexus-pam-710.apps-crc.testing/repository/pam-mixed/
+          - name: MAVEN_MIRROR_URL # repo that contains all the dependent artifacts required for kie-server to run
+            value: >-
+              http://nexus-pam-710.apps-crc.testing/repository/pam-group/
+          - name: MAVEN_MIRROR_OF
+            value: 'external:*,!repo-custom'
+          - name: KIE_SERVER_CONTAINER_DEPLOYMENT
+            value: 'afps_1.0.3(afps-rules)=com.test.nems:afps-rules:1.0.3'
+        replicas: 1
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            memory: 1Gi
