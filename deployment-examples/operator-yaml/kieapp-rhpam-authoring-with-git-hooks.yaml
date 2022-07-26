@@ -1,7 +1,7 @@
 apiVersion: app.kiegroup.org/v2
 kind: KieApp
 metadata:
-  name: feb25841
+  name: git-hooks-example
 spec:
   commonConfig:
     adminPassword: P@ssw0rd
