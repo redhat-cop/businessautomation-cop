@@ -1,0 +1,27 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: feb25841
+spec:
+  commonConfig:
+    adminPassword: P@ssw0rd
+    adminUser: rhpamAdmin
+  environment: rhpam-authoring
+  useImageTags: true
+  objects:
+    console:
+      gitHooks:
+        mountPath: /opt/kie/data/git/hooks
+        from:
+          kind: ConfigMap
+          name: git-hooks
+      replicas: 1
+    servers:
+      - database:
+          type: h2
+        replicas: 1
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            memory: 1Gi
