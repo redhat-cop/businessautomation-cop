@@ -1,0 +1,29 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: authoring-deploy-restart
+spec:
+  commonConfig:
+    adminPassword: P@ssw0rd
+    adminUser: rhpamAdmin
+  environment: rhpam-authoring
+  objects:
+    console:
+      env:
+        - name: KIE_SERVER_CONTROLLER_OPENSHIFT_ENABLED
+          value: 'false'
+      replicas: 1
+    servers:
+      - database:
+          type: h2
+        env:
+          - name: KIE_SERVER_STARTUP_STRATEGY
+            value: ControllerBasedStartupStrategy
+        replicas: 1
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            memory: 1Gi
+  upgrades: {}
+  useImageTags: true

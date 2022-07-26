@@ -1,0 +1,48 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: rhpam-optr-psql-unique
+spec:
+  commonConfig:
+    adminPassword: P@ssw0rd
+    adminUser: rhpamAdmin
+  environment: rhpam-authoring
+  objects:
+    console:
+      env:
+        - name: HTTPS_KEYSTORE
+          value: server.jks
+        - name: HTTPS_NAME
+          value: jboss
+        - name: HTTPS_PASSWORD
+          value: mykeystorepass
+      keystoreSecret: businesscentral-app-secret
+      replicas: 1
+    servers:
+      - database:
+          externalConfig:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            driver: postgresql
+            extensionImage: true
+            host: postgresql.rhpam-ext-ds.svc.cluster.local
+            name: sampledb
+            password: pjXgU4qDiHcSsU7w
+            port: '5432'
+            username: userBGU
+          type: external
+        id: kiextds
+        name: kiextds
+        replicas: 1
+        build:
+          extensionImageStreamTag: 'jboss-kie-postgresql-extension-openshift-image:42.2.5'
+          extensionImageStreamTagNamespace: exter-ns-custom
+          extensionImageInstallDir: /extensions
+        env:
+          - name: HTTPS_KEYSTORE
+            value: server.jks
+          - name: HTTPS_PASSWORD
+            value: mykeystorepass
+          - name: HTTPS_NAME
+            value: jboss
+        keystoreSecret: kieserver-app-secret
+  useImageTags: true
