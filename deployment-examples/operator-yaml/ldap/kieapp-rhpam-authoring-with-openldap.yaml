@@ -1,0 +1,39 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: rhpam-auth-with-ldap
+spec:
+  environment: rhpam-authoring
+  useImageTags: true
+  auth:
+    ldap:
+      baseCtxDN: 'ou=People,dc=example,dc=com'
+      roleAttributeID: cn
+      bindDN: 'uid=admin,ou=People,dc=example,dc=com'
+      baseFilter: '(uid={0})'
+      searchScope: SUBTREE_SCOPE
+      roleFilter: '(member={1})'
+      url: 'ldap://openldap-2441-centos7:389'
+      rolesCtxDN: 'ou=Roles,dc=example,dc=com'
+      bindCredential: secret
+      roleNameAttributeID: cn
+      roleAttributeIsDN: true
+    roleMapper:
+      rolesProperties: /opt/eap/standalone/configuration/rolemapping/rolemapping.properties 
+      from:
+        kind: ConfigMap 
+        # Create a file with the name "my-role-map" on local machine with the content ==> Manager = kie-server,rest-all,admin 
+        # Create a configmap using this file ==> oc create configmap ldap-role-mapping --from-file=rolemapping.properties=my-role-map
+        name: ldap-role-mapping
+  objects:
+    console:
+      replicas: 1
+    servers:
+      - database:
+          type: h2
+        replicas: 1
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            memory: 1Gi
