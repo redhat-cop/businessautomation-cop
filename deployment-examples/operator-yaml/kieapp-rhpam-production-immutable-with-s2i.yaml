@@ -1,0 +1,31 @@
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: s2i-with-kjar
+spec:
+  commonConfig:
+    adminPassword: P@ssw0rd
+    adminUser: rhpamAdmin
+  environment: rhpam-production-immutable
+  useImageTags: true
+  objects:
+    servers:
+      - database:
+          type: h2
+        id: kie-s2i
+        name: kie-s2i
+        build:
+          kieServerContainerDeployment: >-
+            mortgage_1.0.0-SNAPSHOT(mortgage)=com.redhat.bpms.examples:mortgage:1.0.0-SNAPSHOT
+          gitSource:
+            uri: 'https://github.com/bbalakriz/rhpam7-mortgage-demo-repo.git'
+            reference: master
+        replicas: 1
+        env: # To enable prometheus, set the below env variable to false
+          - name: PROMETHEUS_SERVER_EXT_DISABLED
+            value: 'false'        
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            memory: 1Gi
