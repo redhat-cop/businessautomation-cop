@@ -1,0 +1,1107 @@
+# Sample kieconfig yaml with a custom volume mount. Search of "CUSTOM" in the yaml below to see what changes are required. 
+
+apiVersion: v1
+data:
+  common.yaml: |
+    console:
+      deploymentConfigs:
+        - metadata:
+            name: "[[.ApplicationName]]-[[.Console.Name]]"
+            labels:
+              app: "[[.ApplicationName]]"
+              application: "[[.ApplicationName]]"
+              service: "[[.ApplicationName]]-[[.Console.Name]]"
+          spec:
+            strategy:
+              type: Recreate
+            triggers:
+              #[[if not .Console.OmitImageStream]]
+              - type: ImageChange
+                imageChangeParams:
+                  automatic: true
+                  containerNames:
+                    - "[[.ApplicationName]]-[[.Console.Name]]"
+                  from:
+                    kind: ImageStreamTag
+                    namespace: "openshift"
+                    name: "[[.Console.Image]]:[[.Console.ImageTag]]"
+              #[[end]]
+              - type: ConfigChange
+            replicas: [[.Console.Replicas]]
+            selector:
+              deploymentConfig: "[[.ApplicationName]]-[[.Console.Name]]"
+            template:
+              metadata:
+                name: "[[.ApplicationName]]-[[.Console.Name]]"
+                labels:
+                  deploymentConfig: "[[.ApplicationName]]-[[.Console.Name]]"
+                  app: "[[.ApplicationName]]"
+                  application: "[[.ApplicationName]]"
+                  service: "[[.ApplicationName]]-[[.Console.Name]]"
+              spec:
+                serviceAccountName: "[[.ApplicationName]]-[[.Constants.Product]]svc"
+                terminationGracePeriodSeconds: 60
+                containers:
+                  - name: "[[.ApplicationName]]-[[.Console.Name]]"
+                    image: "[[.Console.ImageURL]]"
+                    imagePullPolicy: Always
+                    livenessProbe:
+                      httpGet:
+                        path: /rest/healthy
+                        port: 8080
+                        scheme: HTTP
+                      initialDelaySeconds: 90
+                      timeoutSeconds: 2
+                      periodSeconds: 15
+                      failureThreshold: 10
+                    startupProbe:
+                      httpGet:
+                        path: /rest/healthy
+                        port: 8080
+                        scheme: HTTP
+                      initialDelaySeconds: 180
+                      timeoutSeconds: 2
+                      periodSeconds: 15
+                      successThreshold: 1
+                      failureThreshold: 36
+                    readinessProbe:
+                      httpGet:
+                        path: /rest/ready
+                        port: 8080
+                        scheme: HTTP
+                      initialDelaySeconds: 60
+                      timeoutSeconds: 2
+                      periodSeconds: 5
+                      failureThreshold: 36
+                    ports:
+                      - name: jolokia
+                        containerPort: 8778
+                        protocol: TCP
+                      - name: http
+                        containerPort: 8080
+                        protocol: TCP
+                      - name: https
+                        containerPort: 8443
+                        protocol: TCP
+                      - name: ping
+                        containerPort: 8888
+                        protocol: TCP
+                    env:
+                      - name: APPLICATION_USERS_PROPERTIES
+                        value: "/opt/kie/data/configuration/application-users.properties"
+                      - name: APPLICATION_ROLES_PROPERTIES
+                        value: "/opt/kie/data/configuration/application-roles.properties"
+                      - name: KIE_ADMIN_USER
+                        value: "[[.AdminUser]]"
+                      - name: KIE_ADMIN_PWD
+                        value: "[[.AdminPassword]]"
+                      - name: KIE_MBEANS
+                        value: enabled
+                      #[[if or .Console.GitHooks.MountPath .Console.GitHooks.From]]
+                      - name: GIT_HOOKS_DIR
+                        value: "[[.Console.GitHooks.MountPath]]"
+                      #[[end]]
+                      #[[if .Dashbuilder.Config.EnableBusinessCentral]]
+                      - name: KIE_DASHBUILDER_RUNTIME_LOCATION
+                        value: "[[.Console.DashbuilderLocation]]"
+                      #[[end]]
+                      ## OpenShift Enhancement BEGIN
+                      - name: KIE_SERVER_CONTROLLER_OPENSHIFT_ENABLED
+                        value: "true"
+                      - name: KIE_SERVER_CONTROLLER_OPENSHIFT_GLOBAL_DISCOVERY_ENABLED
+                        value: "true"
+                      - name: KIE_SERVER_CONTROLLER_OPENSHIFT_PREFER_KIESERVER_SERVICE
+                        value: "true"
+                      - name: KIE_SERVER_CONTROLLER_TEMPLATE_CACHE_TTL
+                        value: "5000"
+                      ## OpenShift Enhancement END
+                      - name: HTTPS_KEYSTORE_DIR
+                        value: "/etc/businesscentral-secret-volume"
+                      - name: HTTPS_KEYSTORE
+                        value: "keystore.jks"
+                      - name: HTTPS_NAME
+                        value: "jboss"
+                      - name: HTTPS_PASSWORD
+                        value: "[[.KeyStorePassword]]"
+                      - name: WORKBENCH_ROUTE_NAME
+                        value: "[[.ApplicationName]]-[[.Console.Name]]"
+                      - name: JGROUPS_PING_PROTOCOL
+                        value: "openshift.DNS_PING"
+                      - name: OPENSHIFT_DNS_PING_SERVICE_NAME
+                        value: "[[.ApplicationName]]-[[.Console.Name]]-ping"
+                      - name: OPENSHIFT_DNS_PING_SERVICE_PORT
+                        value: "8888"
+                      # Auth config BEGIN
+                      ## SSO config BEGIN
+                      #[[if .Auth.SSO.URL]]
+                      - name: SSO_OPENIDCONNECT_DEPLOYMENTS
+                        value: ROOT.war
+                      - name: SSO_URL
+                        value: "[[.Auth.SSO.URL]]"
+                      - name: SSO_REALM
+                        value: "[[.Auth.SSO.Realm]]"
+                      - name: SSO_USERNAME
+                        value: "[[.Auth.SSO.AdminUser]]"
+                      - name: SSO_PASSWORD
+                        value: "[[.Auth.SSO.AdminPassword]]"
+                      - name: SSO_DISABLE_SSL_CERTIFICATE_VALIDATION
+                        value: "[[.Auth.SSO.DisableSSLCertValidation]]"
+                      - name: SSO_PRINCIPAL_ATTRIBUTE
+                        value: "[[.Auth.SSO.PrincipalAttribute]]"
+                      - name: SSO_SECRET
+                        value: "[[.Console.SSOAuthClient.Secret]]"
+                      - name: SSO_CLIENT
+                        value: "[[.Console.SSOAuthClient.Name]]"
+                      - name: HOSTNAME_HTTP
+                        value: "[[.Console.SSOAuthClient.HostnameHTTP]]"
+                      - name: HOSTNAME_HTTPS
+                        value: "[[.Console.SSOAuthClient.HostnameHTTPS]]"
+                      #[[end]]
+                      ## SSO config END
+                      ## LDAP config BEGIN
+                      #[[if .Auth.LDAP.URL]]
+                      - name: AUTH_LDAP_URL
+                        value: "[[.Auth.LDAP.URL]]"
+                      - name: AUTH_LDAP_BIND_DN
+                        value: "[[.Auth.LDAP.BindDN]]"
+                      - name: AUTH_LDAP_BIND_CREDENTIAL
+                        value: "[[.Auth.LDAP.BindCredential]]"
+                      - name: AUTH_LDAP_JAAS_SECURITY_DOMAIN
+                        value: "[[.Auth.LDAP.JAASSecurityDomain]]"
+                      - name: AUTH_LDAP_LOGIN_MODULE
+                        value: "[[.Auth.LDAP.LoginModule]]"
+                      - name: AUTH_LDAP_BASE_CTX_DN
+                        value: "[[.Auth.LDAP.BaseCtxDN]]"
+                      - name: AUTH_LDAP_BASE_FILTER
+                        value: "[[.Auth.LDAP.BaseFilter]]"
+                      - name: AUTH_LDAP_SEARCH_SCOPE
+                        value: "[[.Auth.LDAP.SearchScope]]"
+                      - name: AUTH_LDAP_SEARCH_TIME_LIMIT
+                        value: "[[.Auth.LDAP.SearchTimeLimit]]"
+                      - name: AUTH_LDAP_DISTINGUISHED_NAME_ATTRIBUTE
+                        value: "[[.Auth.LDAP.DistinguishedNameAttribute]]"
+                      - name: AUTH_LDAP_PARSE_USERNAME
+                        value: "[[.Auth.LDAP.ParseUsername]]"
+                      - name: AUTH_LDAP_USERNAME_BEGIN_STRING
+                        value: "[[.Auth.LDAP.UsernameBeginString]]"
+                      - name: AUTH_LDAP_USERNAME_END_STRING
+                        value: "[[.Auth.LDAP.UsernameEndString]]"
+                      - name: AUTH_LDAP_ROLE_ATTRIBUTE_ID
+                        value: "[[.Auth.LDAP.RoleAttributeID]]"
+                      - name: AUTH_LDAP_ROLES_CTX_DN
+                        value: "[[.Auth.LDAP.RolesCtxDN]]"
+                      - name: AUTH_LDAP_ROLE_FILTER
+                        value: "[[.Auth.LDAP.RoleFilter]]"
+                      - name: AUTH_LDAP_ROLE_RECURSION
+                        value: "[[.Auth.LDAP.RoleRecursion]]"
+                      - name: AUTH_LDAP_DEFAULT_ROLE
+                        value: "[[.Auth.LDAP.DefaultRole]]"
+                      - name: AUTH_LDAP_ROLE_NAME_ATTRIBUTE_ID
+                        value: "[[.Auth.LDAP.RoleNameAttributeID]]"
+                      - name: AUTH_LDAP_PARSE_ROLE_NAME_FROM_DN
+                        value: "[[.Auth.LDAP.ParseRoleNameFromDN]]"
+                      - name: AUTH_LDAP_ROLE_ATTRIBUTE_IS_DN
+                        value: "[[.Auth.LDAP.RoleAttributeIsDN]]"
+                      - name: AUTH_LDAP_REFERRAL_USER_ATTRIBUTE_ID_TO_CHECK
+                        value: "[[.Auth.LDAP.ReferralUserAttributeIDToCheck]]"
+                      #[[end]]
+                      ## LDAP config END
+                      ## RoleMapping config BEGIN
+                      #[[if .Auth.RoleMapper.RolesProperties]]
+                      - name: AUTH_ROLE_MAPPER_ROLES_PROPERTIES
+                        value: "[[.Auth.RoleMapper.RolesProperties]]"
+                      - name: AUTH_ROLE_MAPPER_REPLACE_ROLE
+                        value: "[[.Auth.RoleMapper.ReplaceRole]]"
+                      #[[end]]
+                      ## RoleMapping config END
+                      # Auth config END
+                      ## Jvm config BEGIN
+                      #[[if .Console.Jvm.JavaOptsAppend]]
+                      - name: JAVA_OPTS_APPEND
+                        value: "[[.Console.Jvm.JavaOptsAppend]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.JavaMaxMemRatio]]
+                      - name: JAVA_MAX_MEM_RATIO
+                        value: "[[.Console.Jvm.JavaMaxMemRatio]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.JavaInitialMemRatio]]
+                      - name: JAVA_INITIAL_MEM_RATIO
+                        value: "[[.Console.Jvm.JavaInitialMemRatio]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.JavaMaxInitialMem]]
+                      - name: JAVA_MAX_INITIAL_MEM
+                        value: "[[.Console.Jvm.JavaMaxInitialMem]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.JavaDiagnostics]]
+                      - name: JAVA_DIAGNOSTICS
+                        value: "[[.Console.Jvm.JavaDiagnostics]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.JavaDebug]]
+                      - name: JAVA_DEBUG
+                        value: "[[.Console.Jvm.JavaDebug]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.JavaDebugPort]]
+                      - name: JAVA_DEBUG_PORT
+                        value: "[[.Console.Jvm.JavaDebugPort]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.GcMinHeapFreeRatio]]
+                      - name: GC_MIN_HEAP_FREE_RATIO
+                        value: "[[.Console.Jvm.GcMinHeapFreeRatio]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.GcMaxHeapFreeRatio]]
+                      - name: GC_MAX_HEAP_FREE_RATIO
+                        value: "[[.Console.Jvm.GcMaxHeapFreeRatio]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.GcTimeRatio]]
+                      - name: GC_TIME_RATIO
+                        value: "[[.Console.Jvm.GcTimeRatio]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.GcAdaptiveSizePolicyWeight]]
+                      - name: GC_ADAPTIVE_SIZE_POLICY_WEIGHT
+                        value: "[[.Console.Jvm.GcAdaptiveSizePolicyWeight]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.GcMaxMetaspaceSize]]
+                      - name: GC_MAX_METASPACE_SIZE
+                        value: "[[.Console.Jvm.GcMaxMetaspaceSize]]"
+                      #[[end]]
+                      #[[if .Console.Jvm.GcContainerOptions]]
+                      - name: GC_CONTAINER_OPTIONS
+                        value: "[[.Console.Jvm.GcContainerOptions]]"
+                      #[[end]]
+                      ## Jvm config END
+                    volumeMounts:
+                      - name: "[[.ApplicationName]]-[[.Console.Name]]-[[.Constants.KeystoreVolumeSuffix]]"
+                        mountPath: "/etc/businesscentral-secret-volume"
+                        readOnly: true
+                      #[[if not .Console.Simplified]]
+                      - name: "[[.ApplicationName]]-[[.Console.Name]]-pvol"
+                        mountPath: "/opt/kie/data"
+                      #[[end]]
+                      #[[if .Auth.RoleMapper.From]]
+                      - name: "[[.Constants.RoleMapperVolume]]"
+                        mountPath: "[[.Auth.RoleMapper.MountPath]]"
+                        readOnly: true
+                      #[[end]]
+                      #[[if .Console.GitHooks.From]]
+                      - name: "[[.Constants.GitHooksVolume]]"
+                        mountPath: "[[.Console.GitHooks.MountPath]]"
+                        readOnly: true
+                      #[[end]]
+                      #[[if ne .Console.GitHooks.SSHSecret ""]]
+                      - name: "[[.Constants.GitHooksSSHSecret]]"
+                        mountPath: "/home/jboss/.ssh"
+                      #[[end]]
+                volumes:
+                  - name: "[[.ApplicationName]]-[[.Console.Name]]-[[.Constants.KeystoreVolumeSuffix]]"
+                    secret:
+                      secretName: "[[.Console.KeystoreSecret]]"
+                  #[[if not .Console.Simplified]]
+                  - name: "[[.ApplicationName]]-[[.Console.Name]]-pvol"
+                    persistentVolumeClaim:
+                      claimName: "[[.ApplicationName]]-[[.Console.Name]]-claim"
+                  #[[end]]
+                  #[[if .Auth.RoleMapper.From]]
+                  - name: "[[.Constants.RoleMapperVolume]]"
+                  #[[if eq .Auth.RoleMapper.From.Kind "ConfigMap"]]
+                    configMap:
+                      name: "[[.Auth.RoleMapper.From.Name]]"
+                      defaultMode: 420
+                  #[[end]]
+                  #[[if eq .Auth.RoleMapper.From.Kind "Secret"]]
+                    secret:
+                      secretName: "[[.Auth.RoleMapper.From.Name]]"
+                  #[[end]]
+                  #[[if eq .Auth.RoleMapper.From.Kind "PersistentVolumeClaim"]]
+                    persistentVolumeClaim:
+                      claimName: "[[.Auth.RoleMapper.From.Name]]"
+                  #[[end]]
+                  #[[end]]
+                  #[[if .Console.GitHooks.From]]
+                  - name: "[[.Constants.GitHooksVolume]]"
+                  #[[if eq .Console.GitHooks.From.Kind "ConfigMap"]]
+                    configMap:
+                      name: "[[.Console.GitHooks.From.Name]]"
+                      defaultMode: 0770
+                  #[[end]]
+                  #[[if eq .Console.GitHooks.From.Kind "Secret"]]
+                    secret:
+                      secretName: "[[.Console.GitHooks.From.Name]]"
+                      defaultMode: 0770
+                  #[[end]]
+                  #[[if eq .Console.GitHooks.From.Kind "PersistentVolumeClaim"]]
+                    persistentVolumeClaim:
+                      claimName: "[[.Console.GitHooks.From.Name]]"
+                  #[[end]]
+                  #[[if ne .Console.GitHooks.SSHSecret ""]]
+                  - name: "[[.Constants.GitHooksSSHSecret]]"
+                    secret:
+                      secretName: "[[.Console.GitHooks.SSHSecret]]"
+                      items:
+                      - key: id_rsa
+                        path: id_rsa
+                        mode: 0440
+                      - key: known_hosts
+                        path: known_hosts
+                        mode: 0660
+                  #[[end]]
+                  #[[end]]
+      #[[if not .Console.Simplified]]
+      persistentVolumeClaims:
+        - metadata:
+            name: "[[.ApplicationName]]-[[.Console.Name]]-claim"
+          spec:
+            # [[ if ne .Console.StorageClassName "" ]]
+            storageClassName: "[[.Console.StorageClassName]]"
+            # [[ end ]]
+            accessModes:
+              - ReadWriteMany
+            resources:
+              requests:
+                storage: [[.Console.PvSize]]
+      #[[end]]
+      services:
+        - spec:
+            ports:
+              - name: http
+                port: 8080
+                targetPort: 8080
+              - name: https
+                port: 8443
+                targetPort: 8443
+            selector:
+              deploymentConfig: "[[.ApplicationName]]-[[.Console.Name]]"
+          metadata:
+            name: "[[.ApplicationName]]-[[.Console.Name]]"
+            labels:
+              app: "[[.ApplicationName]]"
+              application: "[[.ApplicationName]]"
+              service: "[[.ApplicationName]]-[[.Console.Name]]"
+            annotations:
+              description: All the Business Central web server's ports.
+        - spec:
+            clusterIP: "None"
+            ports:
+              - name: "ping"
+                port: 8888
+                targetPort: 8888
+            selector:
+              deploymentConfig: "[[.ApplicationName]]-[[.Console.Name]]"
+          metadata:
+            name: "[[.ApplicationName]]-[[.Console.Name]]-ping"
+            labels:
+              app: "[[.ApplicationName]]"
+              application: "[[.ApplicationName]]"
+              service: "[[.ApplicationName]]-[[.Console.Name]]"
+            annotations:
+              service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+              description: "The JGroups ping port for clustering."
+      routes:
+        - id: "[[.ApplicationName]]-[[.Console.Name]]-https"
+          metadata:
+            name: "[[.ApplicationName]]-[[.Console.Name]]"
+            labels:
+              app: "[[.ApplicationName]]"
+              application: "[[.ApplicationName]]"
+              service: "[[.ApplicationName]]-[[.Console.Name]]"
+            annotations:
+              description: Route for Business Central's https service.
+              haproxy.router.openshift.io/timeout: 60s
+          spec:
+            host: ""
+            to:
+              name: "[[.ApplicationName]]-[[.Console.Name]]"
+            port:
+              targetPort: https
+            tls:
+              insecureEdgeTerminationPolicy: Redirect
+              termination: passthrough
+    ## KIE smartrouter BEGIN
+    smartRouter:
+      persistentVolumeClaims:
+        - metadata:
+            name: "[[.ApplicationName]]-smartrouter-claim"
+            labels:
+              app: "[[.ApplicationName]]"
+              application: "[[.ApplicationName]]"
+              service: "[[.ApplicationName]]-smartrouter"
+          spec:
+            # [[ if ne .SmartRouter.StorageClassName "" ]]
+            storageClassName: "[[.SmartRouter.StorageClassName]]"
+            # [[ end ]]
+            accessModes:
+              - ReadWriteMany
+            resources:
+              requests:
+                storage: "64Mi"
+      deploymentConfigs:
+        - metadata:
+            name: "[[.ApplicationName]]-smartrouter"
+            labels:
+              app: "[[.ApplicationName]]"
+              application: "[[.ApplicationName]]"
+              service: "[[.ApplicationName]]-smartrouter"
+          spec:
+            strategy:
+              rollingParams:
+                maxSurge: 100%
+                maxUnavailable: 0
+              type: Rolling
+            triggers:
+              #[[if not .SmartRouter.OmitImageStream]]
+              - type: ImageChange
+                imageChangeParams:
+                  automatic: true
+                  containerNames:
+                    - "[[.ApplicationName]]-smartrouter"
+                  from:
+                    kind: ImageStreamTag
+                    namespace: "openshift"
+                    name: "[[.SmartRouter.Image]]:[[.SmartRouter.ImageTag]]"
+              #[[end]]
+              - type: ConfigChange
+            replicas: [[.SmartRouter.Replicas]]
+            selector:
+              deploymentConfig: "[[.ApplicationName]]-smartrouter"
+            template:
+              metadata:
+                name: "[[.ApplicationName]]-smartrouter"
+                labels:
+                  app: "[[.ApplicationName]]"
+                  application: "[[.ApplicationName]]"
+                  deploymentConfig: "[[.ApplicationName]]-smartrouter"
+                  service: "[[.ApplicationName]]-smartrouter"
+              spec:
+                serviceAccountName: "[[$.ApplicationName]]-[[$.Constants.Product]]svc"
+                terminationGracePeriodSeconds: 60
+                containers:
+                  - name: "[[.ApplicationName]]-smartrouter"
+                    image: "[[.SmartRouter.ImageURL]]"
+                    imagePullPolicy: Always
+                    ports:
+                      - name: http
+                        containerPort: 9000
+                        protocol: TCP
+                    env:
+                      - name: KIE_SERVER_ROUTER_HOST
+                        valueFrom:
+                          fieldRef:
+                            apiVersion: v1
+                            fieldPath: status.podIP
+                      - name: KIE_SERVER_ROUTER_PORT
+                        value: "9000"
+                      - name: KIE_SERVER_ROUTER_PORT_TLS
+                        value: "9443"
+                      - name: KIE_SERVER_ROUTER_ID
+                        value: "kie-server-router"
+                      - name: KIE_SERVER_ROUTER_NAME
+                        value: "KIE Server Router"
+                      - name: KIE_SERVER_ROUTER_PROTOCOL
+                        value: "[[.SmartRouter.Protocol]]"
+                      #[[if .SmartRouter.UseExternalRoute]]
+                      - name: KIE_SERVER_ROUTER_ROUTE_NAME
+                        value: "[[$.ApplicationName]]-smartrouter"
+                      #[[end]]
+                      - name: KIE_SERVER_ROUTER_SERVICE
+                        value: "[[.ApplicationName]]-smartrouter"
+                      - name: KIE_SERVER_ROUTER_TLS_KEYSTORE_KEYALIAS
+                        value: "jboss"
+                      - name: KIE_SERVER_ROUTER_TLS_KEYSTORE_PASSWORD
+                        value: "[[.KeyStorePassword]]"
+                      - name: KIE_SERVER_ROUTER_TLS_KEYSTORE
+                        value: "/etc/smartrouter-secret-volume/keystore.jks"
+                      - name: KIE_ADMIN_USER
+                        value: "[[.AdminUser]]"
+                      - name: KIE_ADMIN_PWD
+                        value: "[[.AdminPassword]]"
+                      - name: KIE_SERVER_CONTROLLER_SERVICE
+                        value: "[[.ApplicationName]]-[[.Console.Name]]"
+                      - name: KIE_SERVER_CONTROLLER_PROTOCOL
+                        value: "http"
+                      - name: KIE_SERVER_ROUTER_REPO
+                        value: "/opt/[[.Constants.Product]]-smartrouter/data"
+                      - name: KIE_SERVER_ROUTER_CONFIG_WATCHER_ENABLED
+                        value: "true"
+                    volumeMounts:
+                      - name: "[[.ApplicationName]]-smartrouter"
+                        mountPath: "/opt/[[.Constants.Product]]-smartrouter/data"
+                      - name: smartrouter-[[.Constants.KeystoreVolumeSuffix]]
+                        mountPath: "/etc/smartrouter-secret-volume"
+                        readOnly: true
+                volumes:
+                  - name: "[[.ApplicationName]]-smartrouter"
+                    persistentVolumeClaim:
+                      claimName: "[[.ApplicationName]]-smartrouter-claim"
+                  - name: smartrouter-[[.Constants.KeystoreVolumeSuffix]]
+                    secret:
+                      secretName: "[[.SmartRouter.KeystoreSecret]]"
+      services:
+        - spec:
+            ports:
+              - name: http
+                port: 9000
+                targetPort: 9000
+              - name: https
+                port: 9443
+                targetPort: 9443
+            selector:
+              deploymentConfig: "[[.ApplicationName]]-smartrouter"
+          metadata:
+            name: "[[.ApplicationName]]-smartrouter"
+            labels:
+              app: "[[.ApplicationName]]"
+              application: "[[.ApplicationName]]"
+              service: "[[.ApplicationName]]-smartrouter"
+            annotations:
+          description: The smart router server http and https ports.
+      routes:
+        - id: "[[.ApplicationName]]-smartrouter-https"
+          metadata:
+            name: "[[.ApplicationName]]-smartrouter"
+            labels:
+              app: "[[.ApplicationName]]"
+              application: "[[.ApplicationName]]"
+              service: "[[.ApplicationName]]-smartrouter"
+            annotations:
+              description: Route for Smart Router's https service.
+          spec:
+            host: ""
+            to:
+              name: "[[.ApplicationName]]-smartrouter"
+            port:
+              targetPort: https
+            tls:
+              insecureEdgeTerminationPolicy: Redirect
+              termination: passthrough
+    ## KIE smartrouter END
+    ## KIE Servers BEGIN
+    servers:
+      ## RANGE BEGINS
+      #[[ range $index, $Map := .Servers ]]
+      ## KIE server deployment config BEGIN
+      - deploymentConfigs:
+          - metadata:
+              name: "[[.KieName]]"
+              labels:
+                app: "[[$.ApplicationName]]"
+                application: "[[$.ApplicationName]]"
+                service: "[[.KieName]]"
+                services.server.kie.org/kie-server-id: "[[.KieServerID]]"
+            spec:
+              revisionHistoryLimit: 10
+              strategy:
+                rollingParams:
+                  maxSurge: 100%
+                  maxUnavailable: 0
+                type: Rolling
+              triggers:
+                #[[if not .OmitImageStream]]
+                - type: ImageChange
+                  imageChangeParams:
+                    automatic: true
+                    containerNames:
+                      - "[[.KieName]]"
+                    from:
+                      kind: "[[.From.Kind]]"
+                      namespace: "[[.From.Namespace]]"
+                      name: "[[.From.Name]]"
+                #[[end]]
+                - type: ConfigChange
+              replicas: [[.Replicas]]
+              selector:
+                deploymentConfig: "[[.KieName]]"
+              template:
+                metadata:
+                  name: "[[.KieName]]"
+                  labels:
+                    app: "[[$.ApplicationName]]"
+                    application: "[[$.ApplicationName]]"
+                    service: "[[.KieName]]"
+                    deploymentConfig: "[[.KieName]]"
+                    services.server.kie.org/kie-server-id: "[[.KieServerID]]"
+                spec:
+                  serviceAccountName: "[[$.ApplicationName]]-[[$.Constants.Product]]svc"
+                  terminationGracePeriodSeconds: 90
+                  containers:
+                    - name: "[[.KieName]]"
+                      image: "[[.ImageURL]]"
+                      imagePullPolicy: Always
+                      lifecycle:
+                        postStart:
+                          exec:
+                            command:
+                            - /bin/sh
+                            - /opt/eap/bin/launch/jboss-kie-kieserver-hooks.sh
+                        preStop:
+                          exec:
+                            command:
+                            - /bin/sh
+                            - /opt/eap/bin/launch/jboss-kie-kieserver-hooks.sh
+                      env:
+                        #[[if not .OmitConsole]]
+                        - name: WORKBENCH_SERVICE_NAME
+                          value: "[[$.ApplicationName]]-[[$.Console.Name]]"
+                        - name: KIE_SERVER_CONTROLLER_SERVICE
+                          value: "[[$.ApplicationName]]-[[$.Console.Name]]"
+                        - name: KIE_SERVER_CONTROLLER_PROTOCOL
+                          value: ws
+                        #[[end]]
+                        - name: KIE_ADMIN_USER
+                          value: "[[$.AdminUser]]"
+                        - name: KIE_ADMIN_PWD
+                          value: "[[$.AdminPassword]]"
+                        - name: KIE_SERVER_STARTUP_STRATEGY
+                          value: "OpenShiftStartupStrategy"
+                        - name: DROOLS_SERVER_FILTER_CLASSES
+                          value: "true"
+                        - name: KIE_SERVER_MODE
+                          value: DEVELOPMENT
+                        - name: KIE_MBEANS
+                          value: enabled
+                        - name: KIE_SERVER_HOST
+                          valueFrom:
+                            fieldRef:
+                              apiVersion: v1
+                              fieldPath: status.podIP
+                        - name: KIE_SERVER_ID
+                          valueFrom:
+                            fieldRef:
+                              apiVersion: v1
+                              fieldPath: metadata.labels['services.server.kie.org/kie-server-id']
+                        - name: KIE_SERVER_ROUTE_NAME
+                          value: "[[.KieName]]"
+                        - name: "[[$.Constants.MavenRepo]]_MAVEN_REPO_USERNAME"
+                          value: "[[$.AdminUser]]"
+                        - name: "[[$.Constants.MavenRepo]]_MAVEN_REPO_PASSWORD"
+                          value: "[[$.AdminPassword]]"
+                        - name: "[[$.Constants.MavenRepo]]_MAVEN_REPO_SERVICE"
+                          value: "[[$.ApplicationName]]-[[$.Console.Name]]"
+                        - name: MAVEN_REPOS
+                          value: "[[$.Constants.MavenRepo]],EXTERNAL"
+                        - name: "[[$.Constants.MavenRepo]]_MAVEN_REPO_PATH"
+                          value: /maven2/
+                        - name: KIE_SERVER_BYPASS_AUTH_USER
+                          value: "false"
+                        - name: HTTPS_KEYSTORE_DIR
+                          value: "/etc/kieserver-secret-volume"
+                        - name: HTTPS_KEYSTORE
+                          value: "keystore.jks"
+                        - name: HTTPS_NAME
+                          value: "jboss"
+                        - name: HTTPS_PASSWORD
+                          value: "[[$.KeyStorePassword]]"
+                        - name: JGROUPS_PING_PROTOCOL
+                          value: "openshift.DNS_PING"
+                        - name: OPENSHIFT_DNS_PING_SERVICE_NAME
+                          value: "[[.KieName]]-ping"
+                        - name: OPENSHIFT_DNS_PING_SERVICE_PORT
+                          value: "8888"
+                        # Auth config BEGIN
+                        ## SSO config BEGIN
+                        #[[if $.Auth.SSO.URL]]
+                        - name: SSO_OPENIDCONNECT_DEPLOYMENTS
+                          value: ROOT.war
+                        - name: SSO_URL
+                          value: "[[$.Auth.SSO.URL]]"
+                        - name: SSO_REALM
+                          value: "[[$.Auth.SSO.Realm]]"
+                        - name: SSO_USERNAME
+                          value: "[[$.Auth.SSO.AdminUser]]"
+                        - name: SSO_PASSWORD
+                          value: "[[$.Auth.SSO.AdminPassword]]"
+                        - name: SSO_DISABLE_SSL_CERTIFICATE_VALIDATION
+                          value: "[[$.Auth.SSO.DisableSSLCertValidation]]"
+                        - name: SSO_PRINCIPAL_ATTRIBUTE
+                          value: "[[$.Auth.SSO.PrincipalAttribute]]"
+                        - name: SSO_SECRET
+                          value: "[[.SSOAuthClient.Secret]]"
+                        - name: SSO_CLIENT
+                          value: "[[.SSOAuthClient.Name]]"
+                        - name: HOSTNAME_HTTP
+                          value: "[[.SSOAuthClient.HostnameHTTP]]"
+                        - name: HOSTNAME_HTTPS
+                          value: "[[.SSOAuthClient.HostnameHTTPS]]"
+                        #[[end]]
+                        ## SSO config END
+                        ## LDAP config BEGIN
+                        #[[if $.Auth.LDAP.URL]]
+                        - name: AUTH_LDAP_URL
+                          value: "[[$.Auth.LDAP.URL]]"
+                        - name: AUTH_LDAP_BIND_DN
+                          value: "[[$.Auth.LDAP.BindDN]]"
+                        - name: AUTH_LDAP_BIND_CREDENTIAL
+                          value: "[[$.Auth.LDAP.BindCredential]]"
+                        - name: AUTH_LDAP_JAAS_SECURITY_DOMAIN
+                          value: "[[$.Auth.LDAP.JAASSecurityDomain]]"
+                        - name: AUTH_LDAP_BASE_CTX_DN
+                          value: "[[$.Auth.LDAP.BaseCtxDN]]"
+                        - name: AUTH_LDAP_BASE_FILTER
+                          value: "[[$.Auth.LDAP.BaseFilter]]"
+                        - name: AUTH_LDAP_SEARCH_SCOPE
+                          value: "[[$.Auth.LDAP.SearchScope]]"
+                        - name: AUTH_LDAP_SEARCH_TIME_LIMIT
+                          value: "[[$.Auth.LDAP.SearchTimeLimit]]"
+                        - name: AUTH_LDAP_DISTINGUISHED_NAME_ATTRIBUTE
+                          value: "[[$.Auth.LDAP.DistinguishedNameAttribute]]"
+                        - name: AUTH_LDAP_PARSE_USERNAME
+                          value: "[[$.Auth.LDAP.ParseUsername]]"
+                        - name: AUTH_LDAP_USERNAME_BEGIN_STRING
+                          value: "[[$.Auth.LDAP.UsernameBeginString]]"
+                        - name: AUTH_LDAP_USERNAME_END_STRING
+                          value: "[[$.Auth.LDAP.UsernameEndString]]"
+                        - name: AUTH_LDAP_ROLE_ATTRIBUTE_ID
+                          value: "[[$.Auth.LDAP.RoleAttributeID]]"
+                        - name: AUTH_LDAP_ROLES_CTX_DN
+                          value: "[[$.Auth.LDAP.RolesCtxDN]]"
+                        - name: AUTH_LDAP_ROLE_FILTER
+                          value: "[[$.Auth.LDAP.RoleFilter]]"
+                        - name: AUTH_LDAP_ROLE_RECURSION
+                          value: "[[$.Auth.LDAP.RoleRecursion]]"
+                        - name: AUTH_LDAP_DEFAULT_ROLE
+                          value: "[[$.Auth.LDAP.DefaultRole]]"
+                        - name: AUTH_LDAP_ROLE_NAME_ATTRIBUTE_ID
+                          value: "[[$.Auth.LDAP.RoleNameAttributeID]]"
+                        - name: AUTH_LDAP_PARSE_ROLE_NAME_FROM_DN
+                          value: "[[$.Auth.LDAP.ParseRoleNameFromDN]]"
+                        - name: AUTH_LDAP_ROLE_ATTRIBUTE_IS_DN
+                          value: "[[$.Auth.LDAP.RoleAttributeIsDN]]"
+                        - name: AUTH_LDAP_REFERRAL_USER_ATTRIBUTE_ID_TO_CHECK
+                          value: "[[$.Auth.LDAP.ReferralUserAttributeIDToCheck]]"
+                        #[[end]]
+                        ## LDAP config END
+                        ## RoleMapping config BEGIN
+                        #[[if $.Auth.RoleMapper.RolesProperties]]
+                        - name: AUTH_ROLE_MAPPER_ROLES_PROPERTIES
+                          value: "[[$.Auth.RoleMapper.RolesProperties]]"
+                        - name: AUTH_ROLE_MAPPER_REPLACE_ROLE
+                          value: "[[$.Auth.RoleMapper.ReplaceRole]]"
+                        #[[end]]
+                        ## RoleMapping config END
+                        # Auth config END
+                        - name: KIE_SERVER_ROUTER_SERVICE
+                          value: "[[$.ApplicationName]]-smartrouter"
+                          #[[ if eq .SmartRouter.Protocol "https" ]]
+                        - name: KIE_SERVER_ROUTER_PORT
+                          value: "9443"
+                          #[[ else ]]
+                        - name: KIE_SERVER_ROUTER_PORT
+                          value: "9000"
+                          #[[ end ]]
+                        - name: KIE_SERVER_ROUTER_PROTOCOL
+                          value: "[[.SmartRouter.Protocol]]"
+                        ## Jvm config BEGIN
+                        #[[if .Jvm.JavaOptsAppend]]
+                        - name: JAVA_OPTS_APPEND
+                          value: "[[.Jvm.JavaOptsAppend]]"
+                        #[[end]]
+                        #[[if .Jvm.JavaMaxMemRatio]]
+                        - name: JAVA_MAX_MEM_RATIO
+                          value: "[[.Jvm.JavaMaxMemRatio]]"
+                        #[[end]]
+                        #[[if .Jvm.JavaInitialMemRatio]]
+                        - name: JAVA_INITIAL_MEM_RATIO
+                          value: "[[.Jvm.JavaInitialMemRatio]]"
+                        #[[end]]
+                        #[[if .Jvm.JavaMaxInitialMem]]
+                        - name: JAVA_MAX_INITIAL_MEM
+                          value: "[[.Jvm.JavaMaxInitialMem]]"
+                        #[[end]]
+                        #[[if .Jvm.JavaDiagnostics]]
+                        - name: JAVA_DIAGNOSTICS
+                          value: "[[.Jvm.JavaDiagnostics]]"
+                        #[[end]]
+                        #[[if .Jvm.JavaDebug]]
+                        - name: JAVA_DEBUG
+                          value: "[[.Jvm.JavaDebug]]"
+                        #[[end]]
+                        #[[if .Jvm.JavaDebugPort]]
+                        - name: JAVA_DEBUG_PORT
+                          value: "[[.Jvm.JavaDebugPort]]"
+                        #[[end]]
+                        #[[if .Jvm.GcMinHeapFreeRatio]]
+                        - name: GC_MIN_HEAP_FREE_RATIO
+                          value: "[[.Jvm.GcMinHeapFreeRatio]]"
+                        #[[end]]
+                        #[[if .Jvm.GcMaxHeapFreeRatio]]
+                        - name: GC_MAX_HEAP_FREE_RATIO
+                          value: "[[.Jvm.GcMaxHeapFreeRatio]]"
+                        #[[end]]
+                        #[[if .Jvm.GcTimeRatio]]
+                        - name: GC_TIME_RATIO
+                          value: "[[.Jvm.GcTimeRatio]]"
+                        #[[end]]
+                        #[[if .Jvm.GcAdaptiveSizePolicyWeight]]
+                        - name: GC_ADAPTIVE_SIZE_POLICY_WEIGHT
+                          value: "[[.Jvm.GcAdaptiveSizePolicyWeight]]"
+                        #[[end]]
+                        #[[if .Jvm.GcMaxMetaspaceSize]]
+                        - name: GC_MAX_METASPACE_SIZE
+                          value: "[[.Jvm.GcMaxMetaspaceSize]]"
+                        #[[end]]
+                        #[[if .Jvm.GcContainerOptions]]
+                        - name: GC_CONTAINER_OPTIONS
+                          value: "[[.Jvm.GcContainerOptions]]"
+                        #[[end]]
+                        ## Jvm config END
+                      livenessProbe:
+                        httpGet:
+                          path: /services/rest/server/healthcheck
+                          port: 8080
+                          scheme: HTTP
+                        initialDelaySeconds: 180
+                        timeoutSeconds: 2
+                        periodSeconds: 15
+                        failureThreshold: 3
+                      readinessProbe:
+                        httpGet:
+                          path: /services/rest/server/readycheck
+                          port: 8080
+                          scheme: HTTP
+                        initialDelaySeconds: 30
+                        timeoutSeconds: 2
+                        periodSeconds: 5
+                        failureThreshold: 36
+                      ports:
+                        - name: jolokia
+                          containerPort: 8778
+                          protocol: TCP
+                        - name: http
+                          containerPort: 8080
+                          protocol: TCP
+                        - name: https
+                          containerPort: 8443
+                          protocol: TCP
+                        - name: ping
+                          containerPort: 8888
+                          protocol: TCP
+                      volumeMounts:
+                        - mountPath: /etc/kieserver-secret-volume
+                          name: kieserver-[[$.Constants.KeystoreVolumeSuffix]]
+                          readOnly: true
+                        ## ****************** CUSTOM VOLUME MOUNT ****************** ##
+                        - mountPath: /home/bala
+                          name: custom-bala
+                          readOnly: true
+                        ## ****************** END OF CUSTOM VOLUME MOUNT ****************** ##
+                        #[[if $.Auth.RoleMapper.From]]
+                        - name: "[[$.Constants.RoleMapperVolume]]"
+                          mountPath: "[[$.Auth.RoleMapper.MountPath]]"
+                          readOnly: true
+                        #[[end]]
+                  ## ****************** CUSTOM VOLUME ****************** ##
+                  volumes:
+                    - name: custom-bala
+                      configMap:
+                        name: git-hooks
+                        defaultMode: 420
+                  ## ****************** END OF CUSTOM VOLUME ****************** ##
+                    - name: kieserver-[[$.Constants.KeystoreVolumeSuffix]]
+                      secret:
+                        secretName: "[[.KeystoreSecret]]"
+                    #[[if $.Auth.RoleMapper.From]]
+                    - name: "[[$.Constants.RoleMapperVolume]]"
+                    #[[if eq $.Auth.RoleMapper.From.Kind "ConfigMap"]]
+                      configMap:
+                        name: "[[$.Auth.RoleMapper.From.Name]]"
+                        defaultMode: 420
+                    #[[end]]
+                    #[[if eq $.Auth.RoleMapper.From.Kind "Secret"]]
+                      secret:
+                        secretName: "[[$.Auth.RoleMapper.From.Name]]"
+                    #[[end]]
+                    #[[if eq $.Auth.RoleMapper.From.Kind "PersistentVolumeClaim"]]
+                      persistentVolumeClaim:
+                        claimName: "[[$.Auth.RoleMapper.From.Name]]"
+                    #[[end]]
+                    #[[end]]
+          ## KIE server deployment config END
+        ## KIE server services BEGIN
+        services:
+          - spec:
+              ports:
+                - name: http
+                  port: 8080
+                  targetPort: 8080
+                - name: https
+                  port: 8443
+                  targetPort: 8443
+              selector:
+                deploymentConfig: "[[.KieName]]"
+              sessionAffinity: ClientIP
+              sessionAffinityConfig:
+                clientIP:
+                  timeoutSeconds: 3600
+            metadata:
+              name: "[[.KieName]]"
+              labels:
+                app: "[[$.ApplicationName]]"
+                application: "[[$.ApplicationName]]"
+                service: "[[.KieName]]"
+              annotations:
+                description: All the KIE server web server's ports. (KIE server)
+          - spec:
+              clusterIP: "None"
+              ports:
+                - name: "ping"
+                  port: 8888
+                  targetPort: 8888
+              selector:
+                deploymentConfig: "[[.KieName]]"
+            metadata:
+              name: "[[.KieName]]-ping"
+              labels:
+                app: "[[$.ApplicationName]]"
+                application: "[[$.ApplicationName]]"
+                service: "[[.KieName]]"
+              annotations:
+                service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+                description: "The JGroups ping port for clustering."
+          ## KIE server services END
+        ## KIE server routes BEGIN
+        routes:
+          - id: "[[.KieName]]-https"
+            metadata:
+              name: "[[.KieName]]"
+              labels:
+                app: "[[$.ApplicationName]]"
+                application: "[[$.ApplicationName]]"
+                service: "[[.KieName]]"
+              annotations:
+                description: Route for KIE server's https service.
+                haproxy.router.openshift.io/timeout: 60s
+            spec:
+              to:
+                name: "[[.KieName]]"
+              port:
+                targetPort: https
+              tls:
+                insecureEdgeTerminationPolicy: Redirect
+                termination: passthrough
+          ## KIE server routes END
+    #[[end]]
+    ## RANGE ends
+    ## KIE Servers END
+
+    ## Other required resources BEGIN
+    others:
+      - roles:
+          - metadata:
+              name: "[[.ApplicationName]]-[[.Constants.Product]]svc-edit"
+            rules:
+              - apiGroups:
+                  - ""
+                resources:
+                  - configmaps
+                  - serviceaccounts
+                  - pods
+                verbs:
+                  - create
+                  - delete
+                  - deletecollection
+                  - get
+                  - list
+                  - patch
+                  - update
+                  - watch
+              - apiGroups:
+                  - apps.openshift.io
+                resources:
+                  - deploymentconfigs
+                verbs:
+                  - create
+                  - delete
+                  - deletecollection
+                  - get
+                  - list
+                  - patch
+                  - update
+                  - watch
+              - apiGroups:
+                  - route.openshift.io
+                resources:
+                  - routes
+                verbs:
+                  - create
+                  - delete
+                  - deletecollection
+                  - get
+                  - list
+                  - patch
+                  - update
+                  - watch
+
+        serviceAccounts:
+          - metadata:
+              name: "[[.ApplicationName]]-[[.Constants.Product]]svc"
+              labels:
+                app: "[[.ApplicationName]]"
+                application: "[[.ApplicationName]]"
+
+        rolebindings:
+          - metadata:
+              name: "[[.ApplicationName]]-[[.Constants.Product]]svc-edit"
+            subjects:
+              - kind: ServiceAccount
+                name: "[[.ApplicationName]]-[[.Constants.Product]]svc"
+            roleRef:
+              kind: Role
+              name: "[[.ApplicationName]]-[[.Constants.Product]]svc-edit"
+    # Other required resources END
+kind: ConfigMap
+metadata:
+  annotations:
+    app.kiegroup.org: 7.10.0
+  creationTimestamp: "2021-02-23T02:38:27Z"
+  labels:
+    operators.coreos.com/businessautomation-operator.pam-710: ""
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data: {}
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:app.kiegroup.org: {}
+        f:ownerReferences:
+          .: {}
+          k:{"uid":"95a88283-c7c9-4d12-8c86-d210f72bbf8f"}:
+            .: {}
+            f:apiVersion: {}
+            f:blockOwnerDeletion: {}
+            f:controller: {}
+            f:kind: {}
+            f:name: {}
+            f:uid: {}
+    manager: kie-cloud-operator
+    operation: Update
+    time: "2021-02-23T02:38:27Z"
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:labels:
+          .: {}
+          f:operators.coreos.com/businessautomation-operator.pam-710: {}
+    manager: olm
+    operation: Update
+    time: "2021-02-23T02:38:27Z"
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        f:common.yaml: {}
+    manager: kubectl-edit
+    operation: Update
+    time: "2021-03-02T05:55:00Z"
+  name: kieconfigs-7.10.0
+  namespace: pam-710
+  ownerReferences:
+  - apiVersion: operators.coreos.com/v1alpha1
+    blockOwnerDeletion: false
+    controller: false
+    kind: ClusterServiceVersion
+    name: businessautomation-operator.7.10.0-2
+    uid: 95a88283-c7c9-4d12-8c86-d210f72bbf8f
+  resourceVersion: "518835"
+  selfLink: /api/v1/namespaces/pam-710/configmaps/kieconfigs-7.10.0
+  uid: f8af2647-e6d2-4d4e-a27d-c170c6061f0d
