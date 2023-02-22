@@ -158,6 +158,7 @@ MASTER_CONFIG=master.conf
 # versions supported
 #
 cat << "__CONFIG" > $MASTER_CONFIG
+PAM7132 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.13.2-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.13.2-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
 PAM7131 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.13.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.13.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
 PAM7130 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.13.0-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.13.0-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
 PAM7121 | EAP7_ZIP=jboss-eap-7.4.0.zip | EAP_PATCH_ZIP=jboss-eap-7.4.*-patch.zip | PAM_ZIP=rhpam-7.12.1-business-central-eap7-deployable.zip | KIE_ZIP=rhpam-7.12.1-kie-server-ee8.zip | PAM_PATCH_ZIP= | INSTALL_DIR=jboss-eap-7.4 | TARGET_TYPE=PAM
