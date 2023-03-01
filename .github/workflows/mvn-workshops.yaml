@@ -35,7 +35,7 @@ jobs:
         with:
           java-version: 1.8
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-kogito-quick-start-workshop-${{ hashFiles('**/pom.xml') }}
