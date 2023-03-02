@@ -34,6 +34,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 11
+          distribution: temurin
 
       - uses: actions/cache@v3
         with:
