@@ -39,7 +39,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-kogito-quick-start-workshop-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-kogito-quick-start-workshop
           restore-keys: |
             ${{ runner.os }}-maven-
 

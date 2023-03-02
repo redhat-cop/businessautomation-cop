@@ -39,7 +39,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-extras-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-extras
           restore-keys: |
             ${{ runner.os }}-maven-
 

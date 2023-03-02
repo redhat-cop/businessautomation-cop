@@ -36,7 +36,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-migration-examples-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-migration-examples
           restore-keys: |
             ${{ runner.os }}-maven-
 
