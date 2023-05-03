@@ -287,19 +287,19 @@ function timeElapsed() {
   local MIN=$((diff % 3600 / 60))
   local SEC=$((diff % 3600 % 60))
   if [ "$HRS" -gt 0 ]; then
-   tstr="$tstr $HRS hrs. "
+    tstr="$tstr $HRS hrs. "
   fi
   if [ "$MIN" -gt 0 ]; then
-   tstr="$tstr $MIN mins. "
+    tstr="$tstr $MIN mins. "
   fi
   if [ "$SEC" -gt 0 ]; then
-   if [ "$MIN" -gt 0 ]; then
-    tstr="$tstr and $SEC secs."
-   elif [ "$HRS" -gt 0 ]; then
-    tstr="$tstr and $SEC secs."
-   else
-    tstr="$tstr $SEC secs."
-   fi
+    if [ "$MIN" -gt 0 ]; then
+      tstr="$tstr and $SEC secs."
+    elif [ "$HRS" -gt 0 ]; then
+      tstr="$tstr and $SEC secs."
+    else
+      tstr="$tstr $SEC secs."
+    fi
   fi
   sout "$tstr"
 }
