@@ -54,3 +54,13 @@ RESPONSE:
 - Swagger UI: http://localhost:8090/webjars/swagger-ui/index.html?url=/api/api-doc
 - Spring Management (Actuator): http://localhost:8091/actuator/
 - H2 Console: http://localhost:8090/h2-console
+
+
+#### Notes
+
+- The project is based on Java.8
+- If you need to execute with a specific version of the spring-boot-maven-plugin the following could prove useful
+
+```
+mvn org.springframework.boot:spring-boot-maven-plugin:2.2.2.RELEASE:run
+```
