@@ -1,3 +1,4 @@
+# DEPRECATED - This repository is no longer maintained
 [![License](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)]()
 
 # Business Automation Community of Practice
